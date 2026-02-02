@@ -1,14 +1,13 @@
 import GoogleProvider from "next-auth/providers/google";
+import { cookies } from "next/headers";
 import { NextAuthOptions } from "next-auth";
 import { prisma } from "./prisma";
 
 export const authOptions: NextAuthOptions = {
-  // NO adapter here. This prevents automatic user creation.
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      
       authorization: {
         params: {
           prompt: "consent",
@@ -18,61 +17,56 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+
   session: {
     strategy: "jwt",
   },
-  
+
   callbacks: {
-    
-
-
-
-
-    async signIn({ user, account, profile }) {
+    async signIn({ user }) {
       if (!user.email) return false;
 
-      // 1. Fetch user from YOUR database
       const dbUser = await prisma.user.findUnique({
         where: { email: user.email },
       });
 
-      // 2. BLOCK: If user is not in your list
-      if (!dbUser ) {
+      if (!dbUser) {
         console.log("Access denied: User not found in whitelist.");
-        return false; 
-      }
-
-      // 3. BLOCK: Role Mismatch
-     
-      const url = new URL(typeof account?.callbackUrl === "string" ? account.callbackUrl : "");
-      const intendedRole = url.searchParams.get("role"); // 'ADMIN' or 'USER'
-
-      if (intendedRole && dbUser.role !== intendedRole) {
-        console.log(`Access denied: Role mismatch. DB:${dbUser.role} vs Clicked:${intendedRole}`);
         return false;
       }
 
-      // If we got here, they are in the DB and clicked the right button.
-      // We manually attach the role to the user object for the JWT callback.
+      // Read role from cookie
+      const cookieStore = await cookies();
+      const requestedRole = cookieStore.get("requestedRole")?.value;
+
+      console.log("Requested Role:", requestedRole);
+      console.log("DB Role:", dbUser.role);
+
+      if (requestedRole && dbUser.role !== requestedRole) {
+        console.log("Access denied: Role mismatch.");
+        return false;
+      }
+
       (user as any).role = dbUser.role;
       return true;
     },
 
     async jwt({ token, user }) {
-      if (user) {
-        token.role = (user as any).role;
-      }
+      if (user) token.role = (user as any).role;
       return token;
     },
 
     async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role as string;
-      }
+      if (session.user) session.user.role = token.role as string;
       return session;
     },
+
+    async redirect({ baseUrl }) {
+      return `${baseUrl}/dashboard`;
+    },
   },
+
   pages: {
-    error: "/", // Redirect here if signIn returns false
+    error: "/",
   },
 };
