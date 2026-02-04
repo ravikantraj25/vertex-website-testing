@@ -308,7 +308,7 @@ export default async function ClubPage({ params }: { params: Promise<{ slug: str
                     </ul>
                 </div>
             </div>
-        ) : /* Conditional Rendering for Sports Team */
+        ) : /* Conditional Rendering for Sports Team. */
         club.slug === 'sports' ? (
             <div className="space-y-12">
                 <div className="bg-white/5 p-8 rounded-2xl animate-fade-in-up">
