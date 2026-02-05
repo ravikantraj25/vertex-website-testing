@@ -27,7 +27,7 @@ export const authOptions: NextAuthOptions = {
       if (!user.email) return false;
 
       const dbUser = await prisma.user.findUnique({
-        where: { email: user.email },
+        where: { emailId: user.email },
       });
 
       if (!dbUser) {
@@ -35,19 +35,14 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
 
-      // Read role from cookie
+      
       const cookieStore = await cookies();
       const requestedRole = cookieStore.get("requestedRole")?.value;
-
       console.log("Requested Role:", requestedRole);
-      console.log("DB Role:", dbUser.role);
+      
+     
 
-      if (requestedRole && dbUser.role !== requestedRole) {
-        console.log("Access denied: Role mismatch.");
-        return false;
-      }
-
-      (user as any).role = dbUser.role;
+      (user as any).role = requestedRole === "ADMIN" ? "ADMIN" : "USER";
       return true;
     },
 
