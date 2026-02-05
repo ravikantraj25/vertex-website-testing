@@ -1,44 +1,39 @@
-import "dotenv/config"; 
 import { PrismaClient } from "@prisma/client";
-const dbUrl = process.env.DATABASE_URL;
 
-if (!dbUrl) {
-  throw new Error("❌ Error: DATABASE_URL is missing from process.env");
-}
-
-
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
   console.log("🌱 Seeding database...");
 
-  // Use the data you already have
-  await prisma.user.upsert({
-    where: { email: "harshpandey12378@gmail.com" },
-    update: {},
-    create: {
-      name: "Admin",
-      email: "harshpandey12378@gmail.com",
-      role: "ADMIN",
+  // ---------- ADMIN ----------
+  const admin = await prisma.admin.create({
+    data: {
+      usn: "1ds23et045",
+      emailId: "harshpandey12378@gmail.com",
+      phoneNo: "9999999999",
     },
   });
 
-  await prisma.user.upsert({
-    where: { email: "harshpandey12378@gmail.com" },
-    update: {},
-    create: {
-      name: "Test User",
-      email: "uharshpandey12378@gmail.com",
-      role: "USER",
+  console.log("✅ Admin created:", admin);
+
+  // ---------- USER ----------
+  const user = await prisma.user.create({
+    data: {
+      usn: "1ds23et045",
+      emailId: "harshpandey12378@gmail.com",
+      phoneNo: "8888888888",
+      eventIds: [], // required array field for Mongo relations
     },
   });
 
-  console.log("✅ Database seeded successfully!");
+  console.log("✅ User created:", user);
+
+  console.log("🌱 Seeding finished.");
 }
 
 main()
   .catch((e) => {
-    console.error("❌ Seeding failed:", e);
+    console.error("❌ Seeding error:", e);
     process.exit(1);
   })
   .finally(async () => {
