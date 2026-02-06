@@ -26,11 +26,16 @@ export const authOptions: NextAuthOptions = {
     async signIn({ user }) {
       if (!user.email) return false;
 
+<<<<<<< HEAD
       let role: string | null = null;
 
       // Check Admin table first
       const admin = await prisma.admin.findUnique({
         where: { email: user.email },
+=======
+      const dbUser = await prisma.user.findUnique({
+        where: { emailId: user.email },
+>>>>>>> 687062b237b7b4def08990507a8be1c0f2510047
       });
 
       if (admin) {
@@ -52,11 +57,11 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
 
-      // Read role from cookie
+      
       const cookieStore = await cookies();
       const requestedRole = cookieStore.get("requestedRole")?.value;
-
       console.log("Requested Role:", requestedRole);
+<<<<<<< HEAD
       console.log("DB Role:", role);
 
       if (requestedRole && role !== requestedRole) {
@@ -65,6 +70,12 @@ export const authOptions: NextAuthOptions = {
       }
 
       (user as any).role = role;
+=======
+      
+     
+
+      (user as any).role = requestedRole === "ADMIN" ? "ADMIN" : "USER";
+>>>>>>> 687062b237b7b4def08990507a8be1c0f2510047
       return true;
     },
 

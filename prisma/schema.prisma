@@ -24,7 +24,7 @@ model User {
 model Admin {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
   usn     String @unique
-  email   String @unique
+  emailId   String @unique
   phoneNo String
 
   // Relations
