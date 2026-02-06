@@ -1,4 +1,4 @@
-import "dotenv/config"; 
+import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 const dbUrl = process.env.DATABASE_URL;
 
@@ -12,24 +12,34 @@ const prisma = new PrismaClient()
 async function main() {
   console.log("🌱 Seeding database...");
 
-  // Use the data you already have
-  await prisma.user.upsert({
+  // Seed Admin user (goes into Admin table)
+  await prisma.admin.upsert({
     where: { email: "harshpandey12378@gmail.com" },
     update: {},
     create: {
-      name: "Admin",
+      usn: "ADMIN001",
       email: "harshpandey12378@gmail.com",
-      role: "ADMIN",
+      phoneNo: "0000000000",
     },
   });
 
+  // Seed regular User (goes into User table)
   await prisma.user.upsert({
-    where: { email: "harshpandey12378@gmail.com" },
+    where: { emailId: "testuser@gmail.com" },
     update: {},
     create: {
-      name: "Test User",
-      email: "uharshpandey12378@gmail.com",
-      role: "USER",
+      usn: "USER001",
+      emailId: "testuser@gmail.com",
+      phoneNo: "1111111111",
+    },
+  });
+  await prisma.user.upsert({
+    where: { emailId: "shashankchakraborty712005@gmail.com" },
+    update: {},
+    create: {
+      usn: "USER002",
+      emailId: "shashankchakraborty712005@gmail.com",
+      phoneNo: "1234567892",
     },
   });
 
