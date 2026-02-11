@@ -35,7 +35,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                 admin: {
                     select: {
                         usn: true,
-                        email: true,
+                        emailId: true,
                     },
                 },
             },

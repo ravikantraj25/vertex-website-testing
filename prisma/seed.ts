@@ -14,11 +14,11 @@ async function main() {
 
   // Seed Admin user (goes into Admin table)
   await prisma.admin.upsert({
-    where: { email: "harshpandey12378@gmail.com" },
+    where: { emailId: "harshpandey12378@gmail.com" },
     update: {},
     create: {
       usn: "ADMIN001",
-      email: "harshpandey12378@gmail.com",
+      emailId: "harshpandey12378@gmail.com",
       phoneNo: "0000000000",
     },
   });

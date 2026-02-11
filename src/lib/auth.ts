@@ -30,7 +30,7 @@ export const authOptions: NextAuthOptions = {
 
       // Check Admin table first
       const admin = await prisma.admin.findUnique({
-        where: { email: user.email },
+        where: { emailId: user.email },
       });
 
       if (admin) {

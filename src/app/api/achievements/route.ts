@@ -14,7 +14,7 @@ export async function GET() {
                 admin: {
                     select: {
                         usn: true,
-                        email: true,
+                        emailId: true,
                     },
                 },
             },
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
         // Get admin ID from the database using session email
         const admin = await prisma.admin.findUnique({
-            where: { email: session.user?.email ?? "" },
+            where: { emailId: session.user?.email ?? "" },
         });
 
         if (!admin) {

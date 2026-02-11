@@ -50,7 +50,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
                 admin: {
                     select: {
                         usn: true,
-                        email: true,
+                        emailId: true,
                     },
                 },
             },
@@ -116,7 +116,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
         // Get admin ID to link as reviewer
         const admin = await prisma.admin.findUnique({
-            where: { email: session.user?.email ?? "" },
+            where: { emailId: session.user?.email ?? "" },
         });
 
         // Update the application (only provided fields + assign reviewing admin)
