@@ -1,12 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
-
+import { ratelimit } from "@/lib/ratelimit";
 /**
  * GET /api/contact
  * Admin Only: List all contact form submissions
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+      const ip: string | null = request.headers.get("x-forwarded-for");
+       if(!ip) {
+        return new Response("Unable to determine IP address", { status: 400 });
+       }
+      const { success } = await ratelimit.limit(ip);
+    
+      if (!success) {
+        return new Response("Too many requests", { status: 429 });
+      }
     try {
         // Check admin authorization
         const session = await requireAdmin();
@@ -44,6 +53,15 @@ export async function GET() {
  * Public: Submit a contact form message
  */
 export async function POST(request: NextRequest) {
+      const ip: string | null = request.headers.get("x-forwarded-for");
+   if(!ip) {
+    return new Response("Unable to determine IP address", { status: 400 });
+   }
+  const { success } = await ratelimit.limit(ip);
+
+  if (!success) {
+    return new Response("Too many requests", { status: 429 });
+  }
     try {
         // Parse request body
         const body = await request.json();
