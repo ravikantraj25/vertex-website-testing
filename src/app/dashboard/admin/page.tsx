@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "./header";
 // --- REUSABLE COMPONENTS ---
@@ -40,27 +41,35 @@ const DashboardSection = ({ title, children }: { title: string, children: React.
 
 export default function AdminDashboard() {
   const [adminName, setAdminName] = useState<string>("Loading...");
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
   useEffect(() => {
-     //   TODO Replace this with your actual JWT decoding logic
-     //   Example: 
-      
-        console.log("Session data in AdminDashboard:", session);
-       if (session) {
-        setAdminName(session.user?.name || session.user?.email || "Admin");
-       }else{
-        setAdminName("Admin");
-       }
-    
-  }, [session]);
+    if (status === "loading") return;
+
+    if (!session || session.user?.role !== "ADMIN") {
+      router.push("/");
+      return;
+    }
+
+    setAdminName(session.user?.name || session.user?.email || "Admin");
+  }, [session, status, router]);
+
+  if (status === "loading" || (session && session.user?.role !== "ADMIN")) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 font-sans">
-      <Header  />
+      <Header />
 
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-6 py-8">
-        
+
         {/* Applications Section */}
         <DashboardSection title="Applications Management">
           <Link href="/dashboard/admin/applications">
@@ -92,7 +101,7 @@ export default function AdminDashboard() {
         {/* Messages Section (View/Delete Only) */}
         <DashboardSection title="Messages & Inbox">
           <ActionCard actionType="view" title="View Messages" description="Read incoming user messages and inquiries." />
-         
+
         </DashboardSection>
 
       </main>

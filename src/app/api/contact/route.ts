@@ -7,7 +7,7 @@ import { ratelimit } from "@/lib/ratelimit";
  * Admin Only: List all contact form submissions
  */
 export async function GET(request: NextRequest) {
-    
+
     try {
         // Check admin authorization
         const session = await requireAdmin();
@@ -45,16 +45,16 @@ export async function GET(request: NextRequest) {
  * Public: Submit a contact form message
  */
 export async function POST(request: NextRequest) {
-  
+
     try {
         // Parse request body
         const body = await request.json();
-        const { name, emailId, phoneNo } = body;
+        const { name, emailId, phoneNo, message } = body;
 
         // Validate required fields
-        if (!name || !emailId || !phoneNo) {
+        if (!name || !emailId || !phoneNo || !message) {
             return NextResponse.json(
-                { error: "Missing required fields: name, emailId, phoneNo" },
+                { error: "Missing required fields: name, emailId, phoneNo, message" },
                 { status: 400 }
             );
         }
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
                 name,
                 emailId,
                 phoneNo,
-                
+                message,
             },
         });
 

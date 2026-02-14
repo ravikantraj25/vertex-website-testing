@@ -97,7 +97,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
         // Parse request body
         const body = await request.json();
-        const { usn, emailId, phoneNo, team, role } = body;
+        const { usn, emailId, phoneNo, team, role, imageUrl } = body;
 
         // Validate team and role are arrays if provided
         if (team !== undefined && !Array.isArray(team)) {
@@ -123,6 +123,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
                 ...(phoneNo && { phoneNo }),
                 ...(team !== undefined && { team }),
                 ...(role !== undefined && { role }),
+                ...(imageUrl && { imageUrl }),
             },
         });
 
