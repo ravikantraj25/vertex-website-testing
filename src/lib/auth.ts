@@ -68,18 +68,21 @@ export const authOptions: NextAuthOptions = {
 
     async jwt({ token, user }) {
       if (user) token.role = (user as any).role;
+      if(user) token.email = user.email;
       return token;
     },
 
     async session({ session, token }) {
       if (session.user) session.user.role = token.role as string;
+      if (session.user) session.user.email = token.email as string;
+    
       return session;
     },
 
     async redirect({ baseUrl }) {
       const cookieStore = await cookies();
       const requestedRole = cookieStore.get("requestedRole")?.value;
-      return `${baseUrl}/dashboard/${requestedRole}`;
+      return `${baseUrl}/dashboard/${requestedRole?.toLocaleLowerCase()}`;
     },
   },
 

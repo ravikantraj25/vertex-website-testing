@@ -94,7 +94,7 @@ model ContactReceiving {
   name    String
   emailId String
   phoneNo String
-
+  
   adminId String? @db.ObjectId
   admin   Admin?  @relation(fields: [adminId], references: [id])
 }
