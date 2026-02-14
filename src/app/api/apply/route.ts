@@ -8,15 +8,7 @@ import { ratelimit } from "@/lib/ratelimit";
  * Any logged-in user can submit an application
  */
 export async function POST(request: NextRequest) {
-        const ip: string | null = request.headers.get("x-forwarded-for");
-       if(!ip) {
-        return new Response("Unable to determine IP address", { status: 400 });
-       }
-      const { success } = await ratelimit.limit(ip);
-    
-      if (!success) {
-        return new Response("Too many requests", { status: 429 });
-      }
+       
     try {
         // Check if user is authenticated (any role)
         const session = await getSession();

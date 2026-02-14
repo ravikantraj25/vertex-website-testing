@@ -44,15 +44,7 @@ export async function GET(request: NextRequest) {
  * Admin Only: Create a new achievement
  */
 export async function POST(request: NextRequest) {
-      const ip: string | null = request.headers.get("x-forwarded-for");
-   if(!ip) {
-    return new Response("Unable to determine IP address", { status: 400 });
-   }
-  const { success } = await ratelimit.limit(ip);
-
-  if (!success) {
-    return new Response("Too many requests", { status: 429 });
-  }
+     
     try {
         // Check admin authorization
         const session = await requireAdmin();
