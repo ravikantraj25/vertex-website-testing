@@ -74,6 +74,7 @@ export async function POST(request: NextRequest) {
                 name,
                 emailId,
                 phoneNo,
+                
             },
         });
 
