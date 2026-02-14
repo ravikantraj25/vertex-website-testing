@@ -34,18 +34,24 @@ async function ratelimitMiddleware(request: NextRequest): Promise<NextResponse |
 }
 
 export async function proxy(request: NextRequest) {
-  // Run bot check first
+  // Run bot check for ALL requests
   const botCheckResult = botcheckMiddleware(request);
   if (botCheckResult) {
     return botCheckResult;
   }
 
-  // Then run rate limit check
-  const rateLimitResult = await ratelimitMiddleware(request);
-  if (rateLimitResult) {
-    return rateLimitResult;
-  }
+  // Run rate limit check only for auth routes
+  if (request.method === "POST") {
+    const rateLimitResult = await ratelimitMiddleware(request);
+    if (rateLimitResult) {
+      return rateLimitResult;
+    }
+}
+  
 
   return NextResponse.next();
 }
 
+export const config = {
+  matcher: ["/:path*"],
+};
