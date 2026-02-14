@@ -1,6 +1,6 @@
 datasource db {
   provider = "mongodb"
-  url      = env("DATABASE_URL") // Your MongoDB connection string goes here
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -13,21 +13,18 @@ model User {
   emailId      String                  @unique
   phoneNo      String
   
-  // Relations
   application  RecruitmentApplication? 
   
-  // Many-to-many with Event (MongoDB uses arrays of IDs)
   eventIds     String[]                @db.ObjectId
   events       Event[]                 @relation(fields: [eventIds], references: [id])
 }
 
 model Admin {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  usn     String @unique
-  emailId   String @unique
-  phoneNo String
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  usn          String   @unique
+  emailId      String   @unique
+  phoneNo      String
 
-  // Relations
   achievements Achievement[]
   members      Member[]
   applications RecruitmentApplication[]
@@ -43,7 +40,6 @@ model RecruitmentApplication {
   phoneNo String
   team    String
 
-  // Relations
   userId  String @unique @db.ObjectId
   user    User   @relation(fields: [userId], references: [id])
   
@@ -52,33 +48,36 @@ model RecruitmentApplication {
 }
 
 model Member {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  usn     String   @unique
-  emailId String   @unique
-  phoneNo String
-  team    String[] // Multivalued attribute (perfect for Mongo arrays)
-  role    String[]
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  usn       String   @unique
+  emailId   String   @unique
+  phoneNo   String
+  team      String[] 
+  role      String[]
+  // Added image field for Cloudinary URL
+  imageUrl  String?  
 
-  adminId String? @db.ObjectId
-  admin   Admin?  @relation(fields: [adminId], references: [id])
+  adminId   String?  @db.ObjectId
+  admin     Admin?   @relation(fields: [adminId], references: [id])
 }
 
 model Event {
-  id    String   @id @default(auto()) @map("_id") @db.ObjectId
-  venue String
-  date  DateTime
-  time  String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  venue     String
+  date      DateTime
+  time      String
+  // Added image field for Event posters/photos
+  imageUrl  String?
 
-  // Relations
-  userIds String[] @db.ObjectId
-  users   User[]   @relation(fields: [userIds], references: [id])
+  userIds   String[] @db.ObjectId
+  users     User[]   @relation(fields: [userIds], references: [id])
 
-  adminId String?  @db.ObjectId
-  admin   Admin?   @relation(fields: [adminId], references: [id])
+  adminId   String?  @db.ObjectId
+  admin     Admin?   @relation(fields: [adminId], references: [id])
 }
 
 model Achievement {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
   participants String
   team         String
   rank         String
@@ -90,11 +89,13 @@ model Achievement {
 }
 
 model ContactReceiving {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
   name    String
   emailId String
   phoneNo String
-  
+  // Added message field for the person's inquiry
+  message String  
+
   adminId String? @db.ObjectId
   admin   Admin?  @relation(fields: [adminId], references: [id])
 }
