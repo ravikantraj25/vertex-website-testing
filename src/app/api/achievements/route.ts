@@ -1,12 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
-
+import { ratelimit } from "@/lib/ratelimit";
 /**
  * GET /api/achievements
  * Public: List all achievements
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+      const ip: string | null = request.headers.get("x-forwarded-for");
+       if(!ip) {
+        return new Response("Unable to determine IP address", { status: 400 });
+       }
+      const { success } = await ratelimit.limit(ip);
+    
+      if (!success) {
+        return new Response("Too many requests", { status: 429 });
+      }
     try {
         const achievements = await prisma.achievement.findMany({
             orderBy: { year: "desc" },
@@ -35,6 +44,7 @@ export async function GET() {
  * Admin Only: Create a new achievement
  */
 export async function POST(request: NextRequest) {
+     
     try {
         // Check admin authorization
         const session = await requireAdmin();

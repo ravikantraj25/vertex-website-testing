@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
-
+import { ratelimit } from "@/lib/ratelimit";
 /**
  * GET /api/events
  * Public: List all events
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+   
     try {
         const events = await prisma.event.findMany({
             orderBy: { date: "asc" },
@@ -35,6 +36,7 @@ export async function GET() {
  * Admin Only: Create a new event
  */
 export async function POST(request: NextRequest) {
+    
     try {
         // Check admin authorization
         const session = await requireAdmin();

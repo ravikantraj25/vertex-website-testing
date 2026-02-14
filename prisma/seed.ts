@@ -24,15 +24,7 @@ async function main() {
   });
 
   // Seed regular User (goes into User table)
-  await prisma.user.upsert({
-    where: { emailId: "testuser@gmail.com" },
-    update: {},
-    create: {
-      usn: "USER001",
-      emailId: "testuser@gmail.com",
-      phoneNo: "1111111111",
-    },
-  });
+  
   await prisma.user.upsert({
     where: { emailId: "shashankchakraborty712005@gmail.com" },
     update: {},

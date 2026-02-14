@@ -77,7 +77,9 @@ export const authOptions: NextAuthOptions = {
     },
 
     async redirect({ baseUrl }) {
-      return `${baseUrl}/dashboard`;
+      const cookieStore = await cookies();
+      const requestedRole = cookieStore.get("requestedRole")?.value;
+      return `${baseUrl}/dashboard/${requestedRole}`;
     },
   },
 

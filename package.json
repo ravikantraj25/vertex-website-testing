@@ -11,6 +11,8 @@
     "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.36.2",
     "framer-motion": "^12.23.26",
     "lucide-react": "^0.562.0",
     "mongodb": "^7.0.0",
