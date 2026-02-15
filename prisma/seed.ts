@@ -22,6 +22,15 @@ async function main() {
       phoneNo: "0000000000",
     },
   });
+  await prisma.admin.upsert({
+  where: { emailId: "ananyaarya1411@gmail.com" },
+  update: {},
+  create: {
+    usn: "ADMIN002",
+    emailId: "ananyaarya1411@gmail.com",
+    phoneNo: "9999999999",
+  },
+});
 
   // Seed regular User (goes into User table)
   

@@ -73,12 +73,33 @@ export default function CreateEventPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-200 mt-10 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0118] via-[#12042a] to-[#02010a] flex items-center justify-center px-4 text-white">
+
+  <div className="max-w-2xl w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl p-8 relative">
+  <div className="
+absolute inset-0
+rounded-2xl
+bg-gradient-to-r
+from-purple-500/10
+to-cyan-500/10
+blur-xl
+opacity-40
+group-hover:opacity-70
+transition-all duration-500
+pointer-events-none
+"/>
+
+
+
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Create New Event</h2>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+  Create New Event
+</h2>
+
         <Link 
           href="/dashboard/admin" 
-          className="text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors"
+          className="text-sm font-medium text-purple-400 hover:text-purple-300 transition"
+
         >
           &larr; Back to Dashboard
         </Link>
@@ -86,16 +107,16 @@ export default function CreateEventPage() {
 
       {/* Success/Error Message Display */}
       {message.text && (
-        <div className={`p-4 mb-6 rounded-md border ${message.type === 'success' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'}`}>
+        <div className={`p-4 mb-6 rounded-md border ${message.type === 'success' ? 'bg-green-500/10 text-green-400 border-green-500/30' : 'bg-red-500/10 text-red-400 border-red-500/30'}`}>
           {message.text}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-7">
         
         {/* Venue Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Venue</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">Venue</label>
           <input
             type="text"
             name="venue"
@@ -103,32 +124,35 @@ export default function CreateEventPage() {
             onChange={handleChange}
             placeholder="e.g. Main Auditorium"
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+            className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition"
+
           />
         </div>
 
         {/* Date & Time Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Event Date</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Event Date</label>
             <input
               type="date"
               name="date"
               value={formData.date}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow text-gray-700"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition appearance-none"
+
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Event Time</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Event Time</label>
             <input
               type="time"
               name="time"
               value={formData.time}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow text-gray-700"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition appearance-none"
+
             />
           </div>
         </div>
@@ -138,13 +162,15 @@ export default function CreateEventPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed shadow-sm"
+            className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white font-semibold py-3 px-4 rounded-lg transition-all hover:shadow-[0_0_20px_rgba(139,92,246,0.6)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
+
           >
             {loading ? "Scheduling Event..." : "Schedule Event"}
           </button>
         </div>
 
       </form>
+    </div>
     </div>
   );
 }

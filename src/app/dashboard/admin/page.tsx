@@ -17,24 +17,46 @@ const ActionCard = ({ title, description, actionType, onClick }: { title: string
   };
 
   return (
-    <div onClick={onClick} className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md flex flex-col gap-2 ${colorMap[actionType]}`}>
-      <h3 className="text-lg font-bold">{title}</h3>
-      <p className="text-sm opacity-80 font-medium">{description}</p>
-    </div>
-  );
+  <div
+    onClick={onClick}
+    className="group relative p-6 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md hover:bg-white/10 hover:scale-[1.02] hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-300 flex flex-col gap-2"
+
+
+  ><div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-indigo-600/10 blur-xl" />
+
+    <h3 className="text-lg font-semibold text-white group-hover:text-purple-300 transition">
+      {title}
+    </h3>
+
+    <p className="text-sm text-gray-300 group-hover:text-gray-200 transition">
+      {description}
+    </p>
+  </div>
+);
+
 };
 
 // 2. Section Wrapper Component
 const DashboardSection = ({ title, children }: { title: string, children: React.ReactNode }) => (
   <section className="mb-12">
-    <h2 className="text-xl font-semibold text-gray-800 mb-6 border-b-2 border-gray-100 pb-2">
-      {title}
-    </h2>
+    
+    <div className="flex items-center gap-4 mb-6">
+      
+      <h2 className="text-xl font-semibold text-white whitespace-nowrap">
+        {title}
+      </h2>
+
+      <div className="flex-1 h-px bg-gradient-to-r from-purple-500/60 to-transparent"></div>
+
+    </div>
+
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {children}
     </div>
+
   </section>
 );
+
 
 // --- MAIN PAGE ---
 
@@ -55,11 +77,25 @@ export default function AdminDashboard() {
   }, [session]);
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans">
+   <div className="relative min-h-screen overflow-hidden font-sans">
+
+  {/* background */}
+  <div className="absolute inset-0 -z-10 bg-gradient-to-br from-[#0b0120] via-[#14032e] to-[#020617]" />
+
+  {/* glow effect */}
+  <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-purple-600/20 blur-[200px] rounded-full -z-10" />
+
+
+
       <Header  />
 
       {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="relative z-10 max-w-6xl mx-auto px-6 py-10 space-y-10">
+
+
+  <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-10 shadow-xl max-w-5xl">
+
+
         
         {/* Applications Section */}
         <DashboardSection title="Applications Management">
@@ -94,7 +130,7 @@ export default function AdminDashboard() {
           <ActionCard actionType="view" title="View Messages" description="Read incoming user messages and inquiries." />
          
         </DashboardSection>
-
+      </div>
       </main>
     </div>
   );

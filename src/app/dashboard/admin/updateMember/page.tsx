@@ -86,29 +86,93 @@ export default function MembersListPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10 font-sans">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Team Members</h1>
-        <span className="bg-blue-100 text-blue-800 text-sm font-semibold px-4 py-1.5 rounded-full">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0118] via-[#12042a] to-[#02010a] text-white">
+  <div className="max-w-7xl mx-auto px-6 py-10 font-sans">
+<div className="flex justify-between items-center mb-10">
+
+
+              <h1 className="
+  text-4xl font-bold
+  bg-gradient-to-r
+  from-purple-400
+  via-cyan-400
+  to-purple-500
+  bg-clip-text
+  text-transparent
+">
+  Team Members
+</h1>
+
+        <span className="
+  bg-purple-500/20
+  text-purple-300
+  border border-purple-500/30
+  text-sm font-semibold
+  px-4 py-1.5
+  rounded-full
+  backdrop-blur-md
+">
+
           Total: {members.length}
         </span>
       </div>
 
       {members.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-          <p className="text-gray-500 font-medium">No members found.</p>
+        <div className="
+relative
+text-center
+py-16
+rounded-2xl
+border border-white/10
+bg-white/5
+backdrop-blur-xl
+overflow-hidden
+">
+          <h3 className="
+      text-xl font-semibold
+      bg-gradient-to-r
+      from-purple-400
+      to-cyan-400
+      bg-clip-text
+      text-transparent
+    ">
+      No Members Yet
+    </h3>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="
+  grid
+  grid-cols-1
+  sm:grid-cols-2
+  lg:grid-cols-3
+  xl:grid-cols-4
+  gap-6
+  mt-8
+">
+
           {members.map((member) => (
             <div
               key={member.id ?? (member as any)._id}
-              className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow flex flex-col h-full"
+              className="
+  bg-white/5
+  backdrop-blur-xl
+  border border-white/10
+  rounded-2xl
+  shadow-lg
+  hover:shadow-purple-500/20
+  hover:scale-[1.02]
+  transition-all
+  duration-300
+  p-6
+  flex flex-col
+  h-full
+"
+
             >
               {/* Card Header: USN & Contact */}
               <div className="mb-4 pb-4 border-b border-gray-100">
-                <h2 className="text-xl font-bold text-gray-800 mb-1">{member.usn}</h2>
-                <div className="flex flex-col gap-1 text-sm text-gray-600">
+                <h2 className="text-xl font-bold text-white mb-1">{member.usn}</h2>
+                <div className="flex flex-col gap-1 text-sm text-gray-300">
                   <span className="flex items-center gap-2">
                     <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     {member.emailId}
@@ -123,10 +187,18 @@ export default function MembersListPage() {
               {/* Card Body: Teams & Roles Tags */}
               <div className="flex-grow space-y-4 mb-4">
                 <div>
-                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-2">Teams</span>
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-2">Teams</span>
                   <div className="flex flex-wrap gap-2">
                     {member.team?.map((t, index) => (
-                      <span key={index} className="bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md text-xs font-medium border border-indigo-100">
+                      <span key={index} className="
+  bg-purple-500/20
+  text-purple-300
+  border border-purple-500/30
+  px-3 py-1
+  rounded-full
+  text-xs font-medium
+"
+>
                         {t}
                       </span>
                     ))}
@@ -134,10 +206,18 @@ export default function MembersListPage() {
                 </div>
 
                 <div>
-                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider block mb-2">Roles</span>
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider block mb-2">Roles</span>
                   <div className="flex flex-wrap gap-2">
                     {member.role?.map((r, index) => (
-                      <span key={index} className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md text-xs font-medium border border-emerald-100">
+                      <span key={index} className="
+  bg-cyan-500/20
+  text-cyan-300
+  border border-cyan-500/30
+  px-3 py-1
+  rounded-full
+  text-xs font-medium
+"
+>
                         {r}
                       </span>
                     ))}
@@ -147,7 +227,8 @@ export default function MembersListPage() {
 
               {/* Admin Info Display */}
               {member.admin && (
-                <div className="mb-4 text-xs text-gray-500 flex items-center gap-1.5 bg-gray-50 p-2 rounded-md">
+                <div className="mb-4 text-xs text-gray-400 flex items-center gap-1.5bg-white/5 border border-white/10 p-2 rounded-md backdrop-blur-md
+">
                    <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                   <span>Managed by: <span className="font-medium">{member.admin.emailId}</span></span>
                 </div>
@@ -157,7 +238,21 @@ export default function MembersListPage() {
               <div className="mt-auto pt-4 border-t border-gray-100 flex gap-3">
                   <Link 
                     href={`/dashboard/admin/updateMember/${member.id ?? (member as any)._id}`}
-                  className="flex-1 flex justify-center items-center gap-2 bg-white hover:bg-blue-50 text-blue-600 font-semibold py-2 px-3 rounded-lg transition-colors border border-blue-200 text-sm"
+                  className="
+  flex-1 flex justify-center items-center gap-2
+  bg-gradient-to-r
+  from-purple-500
+  to-cyan-500
+  hover:from-purple-600
+  hover:to-cyan-600
+  text-white
+  font-semibold
+  py-2 px-3
+  rounded-lg
+  transition-all
+  text-sm
+"
+
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                   Edit
@@ -165,7 +260,19 @@ export default function MembersListPage() {
                 
                 <button 
                   onClick={() => handleDelete(member.id ?? (member as any)._id)}
-                  className="flex-1 flex justify-center items-center gap-2 bg-white hover:bg-red-50 text-red-600 font-semibold py-2 px-3 rounded-lg transition-colors border border-red-200 text-sm"
+                  className="
+  flex-1 flex justify-center items-center gap-2
+  bg-red-500/10
+  text-red-400
+  border border-red-500/30
+  hover:bg-red-500/20
+  hover:border-red-500/50
+  rounded-lg
+  py-2 px-3
+  transition-all
+  duration-300
+"
+
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                   Delete
@@ -175,6 +282,7 @@ export default function MembersListPage() {
           ))}
         </div>
       )}
+    </div>
     </div>
   );
 }
