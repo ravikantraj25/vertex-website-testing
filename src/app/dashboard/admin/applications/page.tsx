@@ -83,19 +83,45 @@ export default function ApplicationsListPage() {
     );
   }
 
-  return (
-    <div className="max-w-7xl mx-auto px-6 py-10 font-sans">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Recruitment Applications</h1>
-        <span className="bg-emerald-100 text-emerald-800 text-sm font-semibold px-4 py-1.5 rounded-full">
-          Total: {applications.length}
-        </span>
-      </div>
+    return (
+  <div className="relative min-h-screen overflow-hidden font-sans">
+
+    {/* background gradient */}
+    <div className="absolute inset-0 -z-10 bg-gradient-to-br from-[#0b0120] via-[#14032e] to-[#020617]" />
+
+    {/* glow effect */}
+    <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-purple-600/20 blur-[200px] rounded-full -z-10" />
+
+    {/* content */}
+    <div className="max-w-7xl mx-auto px-6 py-10">
+
+      <div className="mb-10">
+        
+
+  {/* Title Row */}
+  <div className="flex justify-between items-center mb-6">
+    <h1 className="text-3xl font-bold text-white tracking-tight">
+      Recruitment Applications
+    </h1>
+
+    <div className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-sm font-semibold px-4 py-1.5 rounded-full backdrop-blur-md">
+      Total: {applications.length}
+    </div>
+  </div>
+
+  {/* divider line */}
+  <div className="h-[1px] w-full bg-gradient-to-r from-purple-500/40 via-purple-400/20 to-transparent" />
+
+</div>
+
 
       {applications.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-          <p className="text-gray-500 font-medium">No pending applications found.</p>
-        </div>
+        <div className="text-center py-16 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md shadow-xl">
+  <p className="text-gray-300 font-medium text-lg">
+    No pending applications found.
+  </p>
+</div>
+
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {applications.map((app) => (
@@ -157,6 +183,8 @@ export default function ApplicationsListPage() {
           ))}
         </div>
       )}
-    </div>
-  );
+        </div>
+  </div>
+);
+
 }

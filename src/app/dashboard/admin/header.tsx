@@ -17,18 +17,23 @@ export default function Header() {
         
       }, [session]);
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <header className="sticky top-0 z-50 backdrop-blur-md bg-white/5 border-b border-white/10">
+
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-        <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+        <h1 className="text-2xl font-extrabold text-white tracking-tight">
+
           Admin Dashboard
         </h1>
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-gray-800 text-white flex items-center justify-center font-bold text-sm overflow-hidden" style={{ width: '2.5rem', overflow: 'hidden' }}>
-            {adminName.charAt(0)}
-          </div>
+          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white flex items-center justify-center font-bold text-sm shadow-lg">
+  {adminName.charAt(0)}
+</div>
+
           <div className="flex flex-col">
-            <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Logged in as</span>
-            <span className="text-sm font-bold text-gray-800">{adminName}</span>
+            <span className="text-xs text-white/60 uppercase tracking-wider font-semibold">
+Logged in as</span>
+            <span className="text-sm font-bold text-white">
+{adminName}</span>
           </div>
         </div>
       </div>

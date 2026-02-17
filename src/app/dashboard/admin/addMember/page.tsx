@@ -63,6 +63,7 @@ export default function AddMemberForm() {
 
       if (response.ok) {
         setMessage({ text: "Member added successfully!", type: "success" });
+        
         // Reset form after success
         setFormData({ usn: "", emailId: "", phoneNo: "", team: [], role: [] });
       } else {
@@ -76,9 +77,20 @@ export default function AddMemberForm() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-200 mt-10">
-        <Header/>
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Add New Member</h2>
+  <div className="relative min-h-screen overflow-hidden font-sans">
+
+    {/* background gradient */}
+    <div className="absolute inset-0 -z-10 bg-gradient-to-br from-[#0b0120] via-[#14032e] to-[#020617]" />
+
+    {/* glow effect */}
+    <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-purple-600/20 blur-[200px] rounded-full -z-10" />
+
+    <Header/>
+
+    <div className="max-w-2xl mx-auto mt-10">
+<div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-xl">
+
+      <h2 className="text-2xl font-bold text-white mb-6">Add New Member</h2>
 
       {/* Success/Error Message Display */}
       {message.text && (
@@ -91,7 +103,7 @@ export default function AddMemberForm() {
         
         {/* USN Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">USN</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">USN</label>
           <input
             type="text"
             name="usn"
@@ -106,7 +118,7 @@ export default function AddMemberForm() {
         {/* Email & Phone Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email ID</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Email ID</label>
             <input
               type="email"
               name="emailId"
@@ -118,7 +130,7 @@ export default function AddMemberForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
             <input
               type="tel"
               name="phoneNo"
@@ -133,7 +145,7 @@ export default function AddMemberForm() {
 
         {/* Teams Checkbox Group */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Teams (Select multiple)</label>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Teams (Select multiple)</label>
           <div className="flex flex-wrap gap-4">
             {AVAILABLE_TEAMS.map((teamOption) => (
               <label key={teamOption} className="flex items-center space-x-2 cursor-pointer">
@@ -144,7 +156,7 @@ export default function AddMemberForm() {
                   onChange={(e) => handleArrayChange(e, "team")}
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
-                <span className="text-gray-700 text-sm">{teamOption}</span>
+                <span className="text-gray-300 text-sm">{teamOption}</span>
               </label>
             ))}
           </div>
@@ -152,7 +164,7 @@ export default function AddMemberForm() {
 
         {/* Roles Checkbox Group */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Roles (Select multiple)</label>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Roles (Select multiple)</label>
           <div className="flex flex-wrap gap-4">
             {AVAILABLE_ROLES.map((roleOption) => (
               <label key={roleOption} className="flex items-center space-x-2 cursor-pointer">
@@ -163,7 +175,7 @@ export default function AddMemberForm() {
                   onChange={(e) => handleArrayChange(e, "role")}
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
-                <span className="text-gray-700 text-sm">{roleOption}</span>
+                <span className="text-gray-300 text-sm">{roleOption}</span>
               </label>
             ))}
           </div>
@@ -179,6 +191,8 @@ export default function AddMemberForm() {
         </button>
 
       </form>
+    </div>
+    </div>
     </div>
   );
 }

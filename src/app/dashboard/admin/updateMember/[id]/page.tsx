@@ -124,12 +124,22 @@ export default function UpdateMemberPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-200 mt-10 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0118] via-[#12042a] to-[#02010a] text-white flex items-center justify-center px-4">
+
+  <div className="max-w-2xl w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl p-8 font-sans relative">
+  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/10 to-cyan-500/10 blur-xl opacity-50 pointer-events-none"></div>
+
+
+
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Update Member</h2>
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+  Update Member
+</h2>
+
         <Link 
           href="/members" 
-          className="text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors"
+          className="text-sm font-medium text-purple-400 hover:text-purple-300 transition"
+
         >
           &larr; Back to List
         </Link>
@@ -146,46 +156,49 @@ export default function UpdateMemberPage() {
         
         {/* USN Input */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">USN</label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">USN</label>
           <input
             type="text"
             name="usn"
             value={formData.usn}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+            className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+
           />
         </div>
 
         {/* Email & Phone Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email ID</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Email ID</label>
             <input
               type="email"
               name="emailId"
               value={formData.emailId}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Phone Number</label>
             <input
               type="tel"
               name="phoneNo"
               value={formData.phoneNo}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow"
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+
             />
           </div>
         </div>
 
         {/* Teams Checkbox Group */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Teams (Select multiple)</label>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Teams (Select multiple)</label>
           <div className="flex flex-wrap gap-4">
             {AVAILABLE_TEAMS.map((teamOption) => (
               <label key={teamOption} className="flex items-center space-x-2 cursor-pointer">
@@ -194,9 +207,10 @@ export default function UpdateMemberPage() {
                   value={teamOption}
                   checked={formData.team.includes(teamOption)}
                   onChange={(e) => handleArrayChange(e, "team")}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 accent-purple-500"
+
                 />
-                <span className="text-gray-700 text-sm">{teamOption}</span>
+                <span className="text-gray-300 text-sm">{teamOption}</span>
               </label>
             ))}
           </div>
@@ -204,7 +218,7 @@ export default function UpdateMemberPage() {
 
         {/* Roles Checkbox Group */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Roles (Select multiple)</label>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Roles (Select multiple)</label>
           <div className="flex flex-wrap gap-4">
             {AVAILABLE_ROLES.map((roleOption) => (
               <label key={roleOption} className="flex items-center space-x-2 cursor-pointer">
@@ -213,9 +227,10 @@ export default function UpdateMemberPage() {
                   value={roleOption}
                   checked={formData.role.includes(roleOption)}
                   onChange={(e) => handleArrayChange(e, "role")}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 accent-purple-500"
+
                 />
-                <span className="text-gray-700 text-sm">{roleOption}</span>
+                <span className="text-gray-300 text-sm">{roleOption}</span>
               </label>
             ))}
           </div>
@@ -225,7 +240,24 @@ export default function UpdateMemberPage() {
         <div className="flex gap-4 pt-2">
           <Link 
             href="/dashboard/admin"
-            className="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3 px-4 rounded-lg transition-colors border border-gray-200"
+            className="
+flex-1 text-center
+bg-white/5
+border border-white/10
+text-gray-300
+font-semibold
+py-3 px-4
+rounded-lg
+backdrop-blur-md
+transition-all duration-300
+hover:bg-white/10
+hover:border-purple-400/40
+hover:text-white
+hover:shadow-[0_0_15px_rgba(139,92,246,0.2)]
+active:scale-[0.98]
+"
+
+
           >
             Cancel
           </Link>
@@ -239,6 +271,7 @@ export default function UpdateMemberPage() {
         </div>
 
       </form>
+    </div>
     </div>
   );
 }
