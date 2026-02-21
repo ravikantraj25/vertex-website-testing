@@ -23,17 +23,27 @@ async function main() {
     },
   });
   await prisma.admin.upsert({
-  where: { emailId: "ananyaarya1411@gmail.com" },
-  update: {},
-  create: {
-    usn: "ADMIN002",
-    emailId: "ananyaarya1411@gmail.com",
-    phoneNo: "9999999999",
-  },
-});
+    where: { emailId: "ananyaarya1411@gmail.com" },
+    update: {},
+    create: {
+      usn: "ADMIN002",
+      emailId: "ananyaarya1411@gmail.com",
+      phoneNo: "9999999999",
+    },
+  });
+  await prisma.admin.upsert({
+    where: { emailId: "narayanshyaam188@gmail.com" },
+    update: {},
+    create: {
+      usn: "ADMIN004",
+      emailId: "narayanshyaam188@gmail.com",
+      phoneNo: "1234567890",
+    },
+  });
+
 
   // Seed regular User (goes into User table)
-  
+
   await prisma.user.upsert({
     where: { emailId: "shashankchakraborty712005@gmail.com" },
     update: {},

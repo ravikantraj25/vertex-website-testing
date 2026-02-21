@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
         // Parse request body
         const body = await request.json();
-        const { usn, emailId, phoneNo, team, role } = body;
+        const { usn, emailId, phoneNo, team, role, imageUrl } = body;
 
         // Validate required fields
         if (!usn || !emailId || !phoneNo) {
@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
                 phoneNo,
                 team: team ?? [],
                 role: role ?? [],
+                imageUrl,
                 adminId: admin.id,
             },
         });

@@ -103,7 +103,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 
         // Parse request body
         const body = await request.json();
-        const { venue, date, time } = body;
+        const { venue, date, time, imageUrl } = body;
 
         // Update the event (only provided fields)
         const event = await prisma.event.update({
@@ -112,6 +112,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
                 ...(venue && { venue }),
                 ...(date && { date: new Date(date) }),
                 ...(time && { time }),
+                ...(imageUrl && { imageUrl }),
             },
         });
 

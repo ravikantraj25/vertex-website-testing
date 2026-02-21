@@ -7,7 +7,7 @@ import { ratelimit } from "@/lib/ratelimit";
  * Public: List all events
  */
 export async function GET(request: NextRequest) {
-   
+
     try {
         const events = await prisma.event.findMany({
             orderBy: { date: "asc" },
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
  * Admin Only: Create a new event
  */
 export async function POST(request: NextRequest) {
-    
+
     try {
         // Check admin authorization
         const session = await requireAdmin();
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
         // Parse request body
         const body = await request.json();
-        const { venue, date, time } = body;
+        const { venue, date, time, imageUrl } = body;
 
         // Validate required fields
         if (!venue || !date || !time) {
@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
                 venue,
                 date: new Date(date),
                 time,
+                imageUrl,
                 adminId: admin.id,
             },
         });
