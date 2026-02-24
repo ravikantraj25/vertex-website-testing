@@ -6,6 +6,7 @@ import About from "./components/sections/About";
 import Clubs from './components/sections/Clubs'
 import Members from './components/sections/Members';
 import  Contact from './components/sections/Contact'
+
 export default function Home() {
   return (
     <div>
@@ -16,6 +17,7 @@ export default function Home() {
    <Clubs/>
    <Members/>
    <Contact/>
+  
     </div>
   );
 }
