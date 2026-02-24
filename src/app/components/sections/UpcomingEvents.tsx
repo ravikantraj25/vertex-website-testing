@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { ArrowUpRight, Calendar, MapPin, Brain, Layers, Clapperboard, FileText, Trophy } from "lucide-react";
+import Link from "next/link";
 
 const upcomingEvent = {
   num: "01",
@@ -208,19 +209,20 @@ export default function UpcomingEvents() {
 
           {/* CTA */}
           <div className="relative mt-8 flex items-center justify-between flex-wrap gap-4">
-            <button
+            <Link
+              href="/lumousRegistration"
               className="group/btn flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-widest transition-all duration-300"
               style={{ backgroundColor: accent, color: "#000" }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.boxShadow = `0 0 28px ${accent}55`;
+                (e.currentTarget as HTMLAnchorElement).style.boxShadow = `0 0 28px ${accent}55`;
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.boxShadow = "none";
+                (e.currentTarget as HTMLAnchorElement).style.boxShadow = "none";
               }}
             >
               Register Now
               <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-            </button>
+            </Link>
 
             <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-white/15">
               Vertex Club &mdash; 2025

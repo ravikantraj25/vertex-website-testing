@@ -18,8 +18,8 @@ const events = [
   },
   // Team events
   {
-    slug: "hackathon",
-    name: "Hackathon",
+    slug: "placeholder",
+    name: "Place Holder Event",
     type: EventType.TEAM,
     price: 40000,        // ₹400 in paise — stored for reference
   },
@@ -27,13 +27,13 @@ const events = [
     slug: "ideathon",
     name: "Ideathon",
     type: EventType.TEAM,
-    price: 40000,
+    price: 0,
   },
   {
-    slug: "circuit",
-    name: "Circuit Design",
+    slug: "cooking",
+    name: "Cooking without Fire",
     type: EventType.TEAM,
-    price: 40000,
+    price: 5000,
   },
 ];
 

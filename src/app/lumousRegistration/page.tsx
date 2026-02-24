@@ -83,18 +83,23 @@ interface VerifyOtpResponse {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const SOLO_PRICE_PAISE = 10000; // ₹100
-const TEAM_PRICE_PAISE = 40000; // ₹400 flat
+// each event now has its own price; keep this list in sync with prisma/seed.ts
+interface EventItem {
+  id: string;
+  label: string;
+  icon: string;
+  type: "solo" | "team";
+  price: number; // in paise
+}
 
 const SOLO_EVENTS: EventItem[] = [
-  { id: "coding", label: "Coding Contest",     icon: "⌨️", type: "solo" },
-  { id: "paper",  label: "Paper Presentation", icon: "📄", type: "solo" },
+  { id: "coding", label: "Coding Contest",     icon: "⌨️", type: "solo", price: 10000 },
+  { id: "paper",  label: "Paper Presentation", icon: "📄", type: "solo", price: 10000 },
 ];
 
 const TEAM_EVENTS: EventItem[] = [
-  { id: "hackathon", label: "Hackathon",      icon: "🚀", type: "team" },
-  { id: "ideathon",  label: "Ideathon",       icon: "💡", type: "team" },
-  { id: "circuit",   label: "Circuit Design", icon: "⚡", type: "team" },
+  { id: "ideathon",  label: "Ideathon",       icon: "💡", type: "team", price: 10000 },
+  { id: "cooking",   label: "Cooking without Fire", icon: "🍳", type: "team", price: 5000 },
 ];
 
 const ALL_EVENTS = [...SOLO_EVENTS, ...TEAM_EVENTS];
@@ -120,13 +125,11 @@ const defaultForm: FormState = {
 // ─── Price Helpers ────────────────────────────────────────────────────────────
 
 function calcTotal(selectedEvents: string[]): number {
-  const soloCount = selectedEvents.filter((id) =>
-    SOLO_EVENTS.some((e) => e.id === id)
-  ).length;
-  const hasTeam = selectedEvents.some((id) =>
-    TEAM_EVENTS.some((e) => e.id === id)
-  );
-  return soloCount * SOLO_PRICE_PAISE + (hasTeam ? TEAM_PRICE_PAISE : 0);
+  // sum the price of each selected event by looking it up in ALL_EVENTS
+  return selectedEvents.reduce((acc, id) => {
+    const ev = ALL_EVENTS.find((e) => e.id === id);
+    return acc + (ev ? ev.price : 0);
+  }, 0);
 }
 
 function formatINR(paise: number): string {
@@ -493,7 +496,7 @@ function EventCheckbox({ event, checked, onChange }: EventCheckboxProps) {
         {event.icon} {event.label}
       </span>
       <span className="text-xs font-semibold text-slate-500">
-        {event.type === "solo" ? "₹100" : "₹400"}
+        {formatINR(event.price)}
       </span>
     </motion.label>
   );
@@ -528,18 +531,25 @@ function PriceSummary({ selectedEvents }: { selectedEvents: string[] }) {
               <span className="text-sm text-slate-300">
                 {ev?.icon} {ev?.label}
               </span>
-              <span className="text-sm text-slate-400">₹100</span>
+              <span className="text-sm text-slate-400">
+                {ev ? formatINR(ev.price) : "-"}
+              </span>
             </div>
           );
         })}
-        {teamSelected.length > 0 && (
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-300">
-              👥 Team Events ({teamSelected.length})
-            </span>
-            <span className="text-sm text-slate-400">₹400</span>
-          </div>
-        )}
+        {teamSelected.map((id) => {
+          const ev = TEAM_EVENTS.find((e) => e.id === id);
+          return (
+            <div key={id} className="flex items-center justify-between">
+              <span className="text-sm text-slate-300">
+                {ev?.icon} {ev?.label}
+              </span>
+              <span className="text-sm text-slate-400">
+                {ev ? formatINR(ev.price) : "-"}
+              </span>
+            </div>
+          );
+        })}
       </div>
       <div className="h-px bg-slate-700/60" />
       <div className="flex items-center justify-between">
@@ -548,11 +558,6 @@ function PriceSummary({ selectedEvents }: { selectedEvents: string[] }) {
           {formatINR(total)}
         </span>
       </div>
-      {teamSelected.length > 1 && (
-        <p className="text-xs text-slate-500">
-          * ₹400 covers all team events in one registration
-        </p>
-      )}
     </motion.div>
   );
 }
@@ -834,6 +839,22 @@ function SuccessScreen({ email, onReset }: SuccessScreenProps) {
         </p>
       </div>
 
+      {/* Ideathon upload link notice */}
+      <div className="bg-yellow-900/40 border border-yellow-700/40 rounded-xl px-4 py-3 w-full max-w-xs mt-4">
+        <p className="text-yellow-200 text-xs text-center">
+          If you applied for <strong>Ideathon</strong>, upload your PPT and details{' '}
+          <a
+            href="https://forms.gle/dummy"
+            target="_blank"
+            rel="noreferrer"
+            className="underline font-semibold"
+          >
+            here
+          </a>
+          .
+        </p>
+      </div>
+
       <button
         onClick={onReset}
         className="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm font-semibold rounded-xl transition-colors"
@@ -1082,7 +1103,13 @@ export default function EventRegistrationPage() {
       const data = await apiRegister(form);
       setRegistrationId(data.registrationId);
       setRegistrationAmount(data.amount);
-      setPaymentFlow("awaiting_screenshot");
+      if (data.amount === 0) {
+        // free event(s) only – go straight to success
+        localStorage.removeItem(STORAGE_KEY);
+        setPaymentFlow("success");
+      } else {
+        setPaymentFlow("awaiting_screenshot");
+      }
     } catch (err: unknown) {
       setPaymentError(
         err instanceof Error ? err.message : "Registration failed. Try again."
@@ -1109,7 +1136,9 @@ export default function EventRegistrationPage() {
   const showForm = paymentFlow === "idle";
   const showCreating = paymentFlow === "creating_registration";
   const showQr =
-    paymentFlow === "awaiting_screenshot" && registrationId !== null;
+    paymentFlow === "awaiting_screenshot" &&
+    registrationId !== null &&
+    registrationAmount > 0;
   const showSuccess = paymentFlow === "success";
   const showError = paymentFlow === "error";
 
@@ -1519,7 +1548,7 @@ export default function EventRegistrationPage() {
                       <div>
                         <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 flex items-center gap-2">
                           <span className="w-4 h-px bg-slate-600" />
-                          Solo Events — ₹100 each
+                          Solo Events (prices shown)
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {SOLO_EVENTS.map((ev) => (
@@ -1538,7 +1567,7 @@ export default function EventRegistrationPage() {
                       <div>
                         <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3 flex items-center gap-2">
                           <span className="w-4 h-px bg-slate-600" />
-                          Team Events — ₹400 flat
+                          Team Events (prices shown)
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {TEAM_EVENTS.map((ev) => (
