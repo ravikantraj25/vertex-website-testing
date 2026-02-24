@@ -10,11 +10,7 @@ cloudinary.config({
 });
 
 export async function POST(req: Request) {
-    console.log({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret_exists: !!process.env.CLOUDINARY_API_SECRET,
-});
+ 
   try {
     const formData = await req.formData();
     const file = formData.get("screenshot") as File | null;
@@ -82,7 +78,7 @@ const uploadResult = await new Promise<any>((resolve, reject) => {
 
   stream.end(buffer);
 });
-console.log("Cloudinary upload result:", uploadResult);
+
 // ✅ Validate response before DB update
 if (
   !uploadResult ||
