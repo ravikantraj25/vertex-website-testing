@@ -14,9 +14,7 @@ model User {
   phoneNo      String
   
   application  RecruitmentApplication? 
-  
-  eventIds     String[]                @db.ObjectId
-  events       Event[]                 @relation(fields: [eventIds], references: [id])
+
 }
 
 model Admin {
@@ -29,7 +27,7 @@ model Admin {
   members      Member[]
   applications RecruitmentApplication[]
   contacts     ContactReceiving[]
-  events       Event[]
+  
 }
 
 model RecruitmentApplication {
@@ -61,21 +59,6 @@ model Member {
   admin     Admin?   @relation(fields: [adminId], references: [id])
 }
 
-model Event {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  venue     String
-  date      DateTime
-  time      String
-  // Added image field for Event posters/photos
-  imageUrl  String?
-
-  userIds   String[] @db.ObjectId
-  users     User[]   @relation(fields: [userIds], references: [id])
-
-  adminId   String?  @db.ObjectId
-  admin     Admin?   @relation(fields: [adminId], references: [id])
-}
-
 model Achievement {
   id           String  @id @default(auto()) @map("_id") @db.ObjectId
   participants String
@@ -98,4 +81,105 @@ model ContactReceiving {
 
   adminId String? @db.ObjectId
   admin   Admin?  @relation(fields: [adminId], references: [id])
+}
+
+model Otp {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  otp       String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+enum EventType {
+  SOLO
+  TEAM
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum RegistrationStatus {
+  PAYMENT_PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Participant {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  usn            String          @unique
+  email          String          
+  emailVerified  Boolean         @default(false)
+  participations Participation[]
+  registrations  Registration[]
+  ledTeams       Team[]          @relation("TeamLeader")
+  createdAt      DateTime        @default(now())
+}
+
+model Event {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  slug           String    @unique
+  name           String
+  type           EventType
+  price          Int             // paise: 10000 = ₹100, 40000 = ₹400
+  participations Participation[]
+  teams          Team[]
+  createdAt      DateTime        @default(now())
+}
+
+model Team {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  event        Event           @relation(fields: [eventId], references: [id])
+  eventId      String          @db.ObjectId
+  leader       Participant     @relation("TeamLeader", fields: [leaderId], references: [id])
+  leaderId     String          @db.ObjectId
+  members      Participation[]
+  createdAt    DateTime        @default(now())
+
+  @@unique([name, eventId])
+}
+
+model Participation {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  participant     Participant  @relation(fields: [participantId], references: [id])
+  participantId   String       @db.ObjectId
+  event           Event        @relation(fields: [eventId], references: [id])
+  eventId         String       @db.ObjectId
+  team            Team?        @relation(fields: [teamId], references: [id])
+  teamId          String?      @db.ObjectId
+  registration    Registration @relation(fields: [registrationId], references: [id])
+  registrationId  String       @db.ObjectId
+  createdAt       DateTime     @default(now())
+
+  @@unique([participantId, eventId])
+}
+
+model Registration {
+  id             String             @id @default(auto()) @map("_id") @db.ObjectId
+  participant    Participant        @relation(fields: [participantId], references: [id])
+  participantId  String             @db.ObjectId
+  participations Participation[]
+  payment        Payment?
+  status         RegistrationStatus @default(PAYMENT_PENDING)
+  createdAt      DateTime           @default(now())
+}
+
+model Payment {
+  id                  String        @id @default(auto()) @map("_id") @db.ObjectId
+  registration        Registration  @relation(fields: [registrationId], references: [id])
+  registrationId      String        @unique @db.ObjectId
+  razorpayOrderId     String        @unique
+  razorpayPaymentId   String?
+  razorpaySignature   String?
+  amount              Int           // total in paise
+  currency            String        @default("INR")
+  status              PaymentStatus @default(PENDING)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 }

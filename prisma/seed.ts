@@ -1,67 +1,63 @@
-import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
-const dbUrl = process.env.DATABASE_URL;
+import { PrismaClient, EventType } from "@prisma/client";
 
-if (!dbUrl) {
-  throw new Error("❌ Error: DATABASE_URL is missing from process.env");
-}
+const prisma = new PrismaClient();
 
-
-const prisma = new PrismaClient()
+const events = [
+  // Solo events
+  {
+    slug: "coding",
+    name: "Coding Contest",
+    type: EventType.SOLO,
+    price: 10000,        // ₹100 in paise
+  },
+  {
+    slug: "paper",
+    name: "Paper Presentation",
+    type: EventType.SOLO,
+    price: 10000,
+  },
+  // Team events
+  {
+    slug: "hackathon",
+    name: "Hackathon",
+    type: EventType.TEAM,
+    price: 40000,        // ₹400 in paise — stored for reference
+  },
+  {
+    slug: "ideathon",
+    name: "Ideathon",
+    type: EventType.TEAM,
+    price: 40000,
+  },
+  {
+    slug: "circuit",
+    name: "Circuit Design",
+    type: EventType.TEAM,
+    price: 40000,
+  },
+];
 
 async function main() {
-  console.log("🌱 Seeding database...");
+  console.log("Seeding events...");
 
-  // Seed Admin user (goes into Admin table)
-  await prisma.admin.upsert({
-    where: { emailId: "harshpandey12378@gmail.com" },
-    update: {},
-    create: {
-      usn: "ADMIN001",
-      emailId: "harshpandey12378@gmail.com",
-      phoneNo: "0000000000",
-    },
-  });
-  await prisma.admin.upsert({
-    where: { emailId: "ananyaarya1411@gmail.com" },
-    update: {},
-    create: {
-      usn: "ADMIN002",
-      emailId: "ananyaarya1411@gmail.com",
-      phoneNo: "9999999999",
-    },
-  });
-  await prisma.admin.upsert({
-    where: { emailId: "narayanshyaam188@gmail.com" },
-    update: {},
-    create: {
-      usn: "ADMIN004",
-      emailId: "narayanshyaam188@gmail.com",
-      phoneNo: "1234567890",
-    },
-  });
+  for (const event of events) {
+    await prisma.event.upsert({
+      where: { slug: event.slug },
+      update: {
+        name: event.name,
+        price: event.price,
+      },
+      create: event,
+    });
+    console.log(`✓ ${event.name}`);
+  }
 
-
-  // Seed regular User (goes into User table)
-
-  await prisma.user.upsert({
-    where: { emailId: "shashankchakraborty712005@gmail.com" },
-    update: {},
-    create: {
-      usn: "USER002",
-      emailId: "shashankchakraborty712005@gmail.com",
-      phoneNo: "1234567892",
-    },
-  });
-
-  console.log("✅ Database seeded successfully!");
+  console.log("Done.");
 }
 
 main()
   .catch((e) => {
-    console.error("❌ Seeding failed:", e);
+    console.error(e);
     process.exit(1);
   })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .finally(() => prisma.$disconnect());
