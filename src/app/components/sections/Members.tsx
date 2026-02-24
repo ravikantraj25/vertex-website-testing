@@ -1,146 +1,107 @@
 'use client'
 
-import { ArrowUpRight } from 'lucide-react'
-import { Urbanist, Poppins } from 'next/font/google'
+import { motion } from 'motion/react'
+import Image from 'next/image'
 
-const urbanist = Urbanist({ subsets: ['latin'] })
-const poppins = Poppins({ subsets: ['latin'], weight: '400' })
+const founders = [
+  { id: 1, name: 'Pranjal', role: 'Overall Lead', image: '/founders/pranjal.jpg' },
+  { id: 2, name: 'Darshil', role: 'Technical Lead', image: '/founders/darshil.jpg' },
+  { id: 3, name: 'Amogh', role: 'Media Lead', image: '/founders/amogh.jpg' },
+  { id: 4, name: 'Aryan', role: 'Events Lead', image: '/founders/aryan.jpg' },
+  { id: 5, name: 'Sneha', role: 'Design Lead', image: '/founders/sneha.jpg' },
+]
 
-export default function Founders() {
-  const founders = [
-    {
-      id: 1,
-      name: 'Pranjal',
-      role: 'Overall Lead',
-      image: '/founders/pranjal.jpg',
-    },
-    {
-      id: 2,
-      name: 'Darshil',
-      role: 'Technical Lead',
-      image: '/founders/darshil.jpg',
-    },
-    {
-      id: 3,
-      name: 'Amogh',
-      role: 'Media Lead',
-      image: '/founders/amogh.jpg',
-    },
-    {
-      id: 4,
-      name: 'Aryan',
-      role: 'Events Lead',
-      image: '/founders/aryan.jpg',
-    },
-    {
-      id: 5,
-      name: 'Sneha',
-      role: 'Design Lead',
-      image: '/founders/sneha.jpg',
-    },
-  ]
-
+export default function Members() {
   return (
-    <section
-      id="members"
-      className="relative min-h-screen py-20 px-4 sm:px-6 lg:px-8 overflow-hidden flex items-center"
-      style={{ backgroundColor: '#04041e' }}
-    >
-      {/* Background Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(123,49,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(123,49,255,0.03)_1px,transparent_1px)] bg-[size:80px_80px]" />
-      
-      {/* Gradient Orbs */}
-      <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[120px]" />
+    <section className="relative w-full overflow-hidden bg-[#080808] px-4 py-24 sm:px-6 lg:px-8">
+      {/* Subtle radial glow */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_70%_50%,rgba(139,92,246,0.05),transparent)]" />
 
-      <div className="relative z-10 max-w-7xl w-full mx-auto">
-        {/* Header Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-12 gap-y-8 items-start mb-16">
-          <div className={`animate-fade-in ${urbanist.className}`}>
-            <h2 className="text-[64px] font-semibold text-white leading-[77px]">
-              Meet the<br />Founders
-            </h2>
-          </div>
-          <div className={`animate-fade-in-delay lg:pt-2 ${poppins.className}`}>
-            <p className="text-white text-xl leading-[30px]">
-              A team of passionate visionaries united by creativity, leadership, and a shared mission to shape a vibrant, inclusive community at Vertex.
-            </p>
-          </div>
+      <div className="relative mx-auto max-w-7xl">
+        {/* Header */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-5 text-[10px] font-bold uppercase tracking-[0.35em] text-white/30"
+        >
+          The Team
+        </motion.p>
+
+        <div className="mb-14 grid grid-cols-1 gap-x-12 gap-y-6 lg:grid-cols-2 lg:items-end">
+          <motion.h2
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.85, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+            className="text-4xl font-black leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[3.75rem]"
+          >
+            Meet the{' '}
+            <span className="font-light italic text-white/40">Founders</span>
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            className="text-base leading-relaxed text-white/40 lg:pb-1"
+          >
+            A team of passionate visionaries united by creativity, leadership, and a shared mission to shape a vibrant, inclusive community at Vertex.
+          </motion.p>
         </div>
 
-        {/* Horizontally Scrolling Container - Height increased with py-16 */}
-        <div className="overflow-x-auto overflow-y-hidden py-16 scrollbar-custom">
-          <div className="flex gap-8 min-w-max">
+        {/* Scrollable cards row */}
+        <div className="overflow-x-auto pb-4" style={{ scrollbarWidth: 'thin', scrollbarColor: '#a855f7 rgba(255,255,255,0.05)' }}>
+          <div className="flex gap-4 min-w-max">
             {founders.map((founder, index) => (
-              <div
+              <motion.div
                 key={founder.id}
-                className="group relative w-96 aspect-square rounded-3xl bg-slate-300 overflow-hidden flex-shrink-0 hover:scale-105 transition-transform duration-300 animate-fade-in-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.7, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="group relative w-72 flex-shrink-0 overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02] transition-all duration-500 hover:border-purple-500/25 hover:bg-white/[0.04]"
+                style={{ boxShadow: 'none' }}
+                whileHover={{ y: -4 }}
               >
-                <div className="w-full h-full flex items-center justify-center text-slate-400 text-8xl font-bold opacity-20 select-none">
-                  {founder.name[0]}
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end justify-between">
-                  <div>
-                    <h3 className="text-slate-900 text-2xl font-bold mb-1">
-                      {founder.name}
-                    </h3>
-                    <p className="text-violet-600 text-sm font-medium">
-                      {founder.role}
-                    </p>
+                {/* Top accent line */}
+                <div className="absolute left-0 top-0 h-[1px] w-full origin-left bg-gradient-to-r from-purple-500/60 to-transparent opacity-0 transition-all duration-500 group-hover:opacity-100" />
+
+                {/* Image area */}
+                <div className="relative aspect-[3/4] w-full overflow-hidden bg-white/[0.03]">
+                  <Image
+                    src={founder.image}
+                    alt={founder.name}
+                    fill
+                    className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = 'none'
+                    }}
+                  />
+                  {/* Fallback initial */}
+                  <div className="absolute inset-0 flex items-center justify-center text-7xl font-black text-white/[0.06] select-none">
+                    {founder.name[0]}
                   </div>
-                  <button className="w-12 h-12 rounded-full bg-transparent border border-violet-600 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-45 group-hover:bg-violet-600/10">
-                    <ArrowUpRight className="w-6 h-6 text-violet-600" />
-                  </button>
+                  {/* Bottom gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#080808] via-[#080808]/20 to-transparent" />
                 </div>
-              </div>
+
+                {/* Info */}
+                <div className="p-5">
+                  <h3 className="text-lg font-bold tracking-tight text-white/90">
+                    {founder.name}
+                  </h3>
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-widest text-purple-400/70">
+                    {founder.role}
+                  </p>
+                </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        /* Animations */
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fade-in-up {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out forwards;
-        }
-        .animate-fade-in-delay {
-          animation: fade-in 1s ease-out 0.3s forwards;
-          opacity: 0;
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out forwards;
-          opacity: 0;
-        }
-
-        /* Custom Scrollbar */
-        .scrollbar-custom::-webkit-scrollbar {
-          height: 8px;
-        }
-        .scrollbar-custom::-webkit-scrollbar-track {
-          background: rgba(71, 85, 105, 0.1);
-          border-radius: 10px;
-        }
-        .scrollbar-custom::-webkit-scrollbar-thumb {
-          background: linear-gradient(90deg, #a855f7, #ec4899);
-          border-radius: 10px;
-        }
-        .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(90deg, #9333ea, #db2777);
-        }
-        /* Firefox */
-        .scrollbar-custom {
-          scrollbar-width: thin;
-          scrollbar-color: #a855f7 rgba(71, 85, 105, 0.1);
-        }
-      `}</style>
     </section>
   )
 }

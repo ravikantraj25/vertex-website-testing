@@ -1,7 +1,10 @@
 import Image from "next/image";
-import Navbar from "./components/sections/Navbar";
-import Hero from "./components/sections/Hero";
-import UpcomingEvents from './components/sections/upcoming'
+import Navbar from "./components/Navbar";
+import ChipScroll from "./components/ChipScroll";
+import AboutVertex from "./components/sections/AboutVertex";
+import Domains from "./components/sections/Domains";
+import Journey from "./components/journey";
+import UpcomingEvents from './components/sections/UpcomingEvents'
 import About from "./components/sections/About";
 import Clubs from './components/sections/Clubs'
 import Members from './components/sections/Members';
@@ -11,10 +14,11 @@ export default function Home() {
   return (
     <div>
    <Navbar/>
-   <Hero/>
+   <ChipScroll/>
    <UpcomingEvents/>
-   <About/>
-   <Clubs/>
+   <AboutVertex/>
+   <Domains/>
+   <Journey/>
    <Members/>
    <Contact/>
   
