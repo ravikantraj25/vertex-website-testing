@@ -5,12 +5,14 @@ import { prisma } from "@/lib/prisma";
 interface TeamMember {
   name: string;
   usn: string;
+  phone?: string;
 }
 
 interface RegisterBody {
   fullName: string;
   usn: string;
   email: string;
+  phone?: string;
   soloEvents: string[];
   teamEvents: string[];
   team: {
@@ -57,6 +59,7 @@ export async function POST(req: Request) {
     const allSlugs = [...soloEvents, ...teamEvents];
     const usn = body.usn.trim().toUpperCase(); // Normalize USN to uppercase for consistency
     const email = body.email.trim().toLowerCase(); // Normalize email to lowercase
+    const phone = body.phone?.trim() ?? undefined;
     
     // Normalize team members' USN as well
     const normalizedTeam = {
@@ -64,6 +67,7 @@ export async function POST(req: Request) {
       members: teamData.members.map((m) => ({
         name: m.name,
         usn: m.usn.trim().toUpperCase(),
+        phone: m.phone?.trim() ?? undefined,
       })),
     };
     // Resolve slugs → real Event rows
@@ -94,8 +98,14 @@ export async function POST(req: Request) {
     // Upsert participant
     const participant = await prisma.participant.upsert({
       where: { usn },
-      create: { name: fullName, usn, email, emailVerified: true },
-      update: { name: fullName, email, emailVerified: true },
+      create: {
+        name: fullName,
+        usn,
+        email,
+        emailVerified: true,
+        phoneNo: phone,
+      },
+      update: { name: fullName, email, emailVerified: true, phoneNo: phone },
     });
 
     // Find confirmed registration IDs to protect
@@ -205,8 +215,9 @@ export async function POST(req: Request) {
               usn: member.usn,
               email: `${member.usn}@pending.techfest`,
               emailVerified: false,
+              phoneNo: member.phone ?? undefined,
             },
-            update: { name: member.name },
+            update: { name: member.name, phoneNo: member.phone ?? undefined },
           });
 
           const existing = await tx.participation.findUnique({

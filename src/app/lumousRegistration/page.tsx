@@ -14,12 +14,14 @@ import { motion, AnimatePresence } from "framer-motion";
 interface TeamMember {
   name: string;
   usn: string;
+  phone: string;
 }
 
 interface FormState {
   fullName: string;
   usn: string;
   email: string;
+  phone: string;
   selectedEvents: string[];
   teamName: string;
   teamMembers: TeamMember[];
@@ -28,12 +30,14 @@ interface FormState {
 interface MemberError {
   name: string;
   usn: string;
+  phone: string;
 }
 
 interface FormErrors {
   fullName: string;
   usn: string;
   email: string;
+  phone: string;
 }
 
 type EmailVerificationStatus =
@@ -106,12 +110,13 @@ const OTP_LENGTH = 6;
 const RESEND_COOLDOWN_SECONDS = 30;
 const MAX_SCREENSHOT_SIZE_MB = 5;
 
-const defaultMember = (): TeamMember => ({ name: "", usn: "" });
+const defaultMember = (): TeamMember => ({ name: "", usn: "", phone: "" });
 
 const defaultForm: FormState = {
   fullName: "",
   usn: "",
   email: "",
+  phone: "",
   selectedEvents: [],
   teamName: "",
   teamMembers: [defaultMember(), defaultMember()],
@@ -172,6 +177,7 @@ async function apiRegister(form: FormState): Promise<RegisterApiResponse> {
       fullName: form.fullName,
       usn: form.usn,
       email: form.email,
+        phone: form.phone,
       soloEvents: form.selectedEvents.filter((id) =>
         SOLO_EVENTS.some((e) => e.id === id)
       ),
@@ -224,6 +230,21 @@ const validateName = (v: string): string =>
 const validateEmail = (v: string): string => {
   if (!v) return "Email is required";
   if (!EMAIL_REGEX.test(v)) return "Enter a valid email address";
+  return "";
+};
+
+const validatePhone = (v: string): string => {
+  if (!v || !v.trim()) return "Phone is required";
+  const digits = v.replace(/\D/g, "");
+  if (digits.length !== 10) return "Enter a valid 10-digit phone number";
+  return "";
+};
+
+// For team members: phone now required on frontend
+const validateMemberPhone = (v: string): string => {
+  if (!v || !v.trim()) return "Phone is required";
+  const digits = v.replace(/\D/g, "");
+  if (digits.length !== 10) return "Enter a valid 10-digit phone number";
   return "";
 };
 
@@ -933,23 +954,26 @@ export default function EventRegistrationPage() {
     fullName: validateName(form.fullName),
     usn: validateUSN(form.usn),
     email: validateEmail(form.email),
+    phone: validatePhone(form.phone),
   };
 
   const memberErrors: MemberError[] = form.teamMembers.map((m) => ({
     name: !m.name.trim() ? "Name is required" : "",
     usn: validateUSN(m.usn),
+    phone: validateMemberPhone(m.phone),
   }));
 
   const isFormValid: boolean =
     !errors.fullName &&
     !errors.usn &&
     !errors.email &&
+    !errors.phone &&
     emailVerification.status === "verified" &&
     form.selectedEvents.length > 0 &&
     (!hasTeamEvent ||
       (form.teamName.trim().length > 0 &&
         form.teamMembers.length >= 2 &&
-        memberErrors.every((e) => !e.name && !e.usn)));
+        memberErrors.every((e) => !e.name && !e.usn && !e.phone)));
 
   // ── Email OTP handlers ────────────────────────────────────────────────────
   const handleEmailChange = (v: string) => {
@@ -1284,6 +1308,17 @@ export default function EventRegistrationPage() {
                         maxLength={10}
                       />
                     </InputField>
+
+                      <InputField label="Phone" id="phone" required error={touched.phone ? errors.phone : undefined}>
+                        <StyledInput
+                          id="phone"
+                          type="tel"
+                          placeholder="10-digit phone"
+                          value={form.phone}
+                          onChange={(e) => updateForm({ phone: e.target.value })}
+                          onBlur={() => touch("phone")}
+                        />
+                      </InputField>
                   </Section>
 
                   {/* ── 2. Email OTP Verification ── */}
@@ -1639,7 +1674,7 @@ export default function EventRegistrationPage() {
                                       Remove
                                     </button>
                                   </div>
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                     <InputField
                                       label="Name"
                                       id={`member-name-${i}`}
@@ -1691,6 +1726,16 @@ export default function EventRegistrationPage() {
                                           }))
                                         }
                                         maxLength={10}
+                                      />
+                                    </InputField>
+                                    <InputField label={`Phone`} id={`member-phone-${i}`} required error={touched[`member-${i}`] ? memberErrors[i]?.phone : undefined}>
+                                      <StyledInput
+                                        id={`member-phone-${i}`}
+                                        type="tel"
+                                        placeholder="10-digit phone"
+                                        value={member.phone}
+                                        onChange={(e) => updateMember(i, "phone", e.target.value)}
+                                        onBlur={() => setTouched((p) => ({ ...p, [`member-${i}`]: true }))}
                                       />
                                     </InputField>
                                   </div>
