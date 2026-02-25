@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { ratelimit } from "./lib/ratelimit";
+import path from "path";
 
 function botcheckMiddleware(req: NextRequest): NextResponse | null {
   const userAgent = req.headers.get("user-agent");
@@ -44,8 +45,9 @@ export async function proxy(request: NextRequest) {
   pathname === "/" ||
   pathname === "/lumousRegistration" ||
   pathname.startsWith("/api/lumous-register") ||
-  pathname.startsWith("/logout");
-
+  pathname.startsWith("/logout")||
+  pathname.startsWith("/api/send-otp")|| pathname.startsWith("/api/verify-otp") 
+  ||pathname.startsWith("/api/upload-payment-ss") ;// next-auth routes are public by default
   // ── 4. Auth check for everything else ───────────────────────────────────
   if (!isPublic) {
     const token = await getToken({ req: request });
