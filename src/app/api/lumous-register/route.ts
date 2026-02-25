@@ -14,7 +14,7 @@ interface RegisterBody {
   usn: string;
   email: string;
   phone?: string;
-  eventSlug: string; // Strictly single event
+  eventSlug: string; // Strictly single event 
   team?: {
     name?: string;
     members?: TeamMember[];
