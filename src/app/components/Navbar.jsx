@@ -52,7 +52,7 @@ function Navbar() {
         </div>
 
         <nav className="flex items-center gap-1 justify-end h-16 sm:gap-2">
-          {navItems.map((item) => (
+          {/* {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -60,7 +60,13 @@ function Navbar() {
             >
               {item.label}
             </Link>
-          ))}
+          ))} */}
+          <Link
+            href="/lumousRegistration"
+            className="ml-2 px-4 py-1.5 text-sm font-semibold text-black bg-yellow-400 hover:bg-yellow-300 rounded-lg transition duration-150 ease-in-out"
+          >
+            Register for Lumos
+          </Link>
         </nav>
       </div>
     </header>
