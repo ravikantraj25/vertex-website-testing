@@ -95,6 +95,7 @@ if (
 }
 
 const screenshotUrl = uploadResult.secure_url;
+
 try {
   await prisma.payment.update({
     where: { registrationId },
@@ -129,7 +130,12 @@ if (registration?.participant?.email) {
         
         <p>
           Your payment screenshot has been uploaded and is currently 
+          To ensure a smooth verification process, please avoid registering multiple times.
           <strong>under verification</strong>.
+        </p>
+        <p>
+          
+          <strong>Total Amount Paid:</strong> ₹${payment.amount / 100} <br/>
         </p>
 
         <p style="margin-top:20px;">
@@ -149,6 +155,10 @@ if (registration?.participant?.email) {
         <p>
           <strong>Team Lead 2:</strong> Shefali <br/>
           📞 8867429955
+        </p>
+         <p>
+          <strong>Technical issues? </strong> Harsh <br/>
+          📞 8269273139
         </p>
 
         <p style="margin-top:30px; font-size:12px; color:#777;">
