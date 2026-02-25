@@ -102,10 +102,10 @@ const SOLO_EVENTS: EventItem[] = [
 ];
 
 const TEAM_EVENTS: EventItem[] = [
-  { id: "ideathon",  label: "Ideathon",       icon: "💡", type: "team", price: 10000 },
+  { id: "ideathon",  label: "Ideathon",       icon: "💡", type: "team", price: 0 },
   { id: "cooking",   label: "Cooking without Fire", icon: "🍳", type: "team", price: 5000 },
+  { id: "placeholder",   label: "Place Holder Event", icon: "📦", type: "team", price: 15000 },
 ];
-
 const ALL_EVENTS = [...SOLO_EVENTS, ...TEAM_EVENTS];
 
 const USN_REGEX = /^1ds\d{2}[a-z]{2}\d{3}$/i;
@@ -124,7 +124,7 @@ const defaultForm: FormState = {
   phone: "",
   selectedEvents: [],
   teamName: "",
-  teamMembers: [defaultMember(), defaultMember()],
+  teamMembers: [defaultMember()],
 };
 
 // ─── Price Helpers ────────────────────────────────────────────────────────────
@@ -792,10 +792,6 @@ function QrPaymentScreen({
             Cancel
           </button>
         </div>
-
-        <p className="text-center text-xs text-slate-600">
-          Your registration is reserved while payment is verified
-        </p>
       </div>
     </motion.div>
   );
@@ -971,6 +967,9 @@ export default function EventRegistrationPage() {
 
   const totalPaise = calcTotal(form.selectedEvents);
 
+  // team size includes the main registrant (team lead)
+  const teamSize = 1 + form.teamMembers.length;
+
   const errors: FormErrors = {
     fullName: validateName(form.fullName),
     usn: validateUSN(form.usn),
@@ -993,7 +992,8 @@ export default function EventRegistrationPage() {
     form.selectedEvents.length > 0 &&
     (!hasTeamEvent ||
       (form.teamName.trim().length > 0 &&
-        form.teamMembers.length >= 2 &&
+        teamSize >= 2 &&
+        teamSize <= 3 &&
         memberErrors.every((e) => !e.name && !e.usn && !e.phone)));
 
   // ── Email OTP handlers ────────────────────────────────────────────────────
@@ -1094,12 +1094,12 @@ export default function EventRegistrationPage() {
 
   // ── Team members ──────────────────────────────────────────────────────────
   const addMember = () => {
-    if (form.teamMembers.length >= 4) return;
+    if (form.teamMembers.length >= 2) return;
     updateForm({ teamMembers: [...form.teamMembers, defaultMember()] });
   };
 
   const removeMember = (i: number) => {
-    if (form.teamMembers.length <= 2) return;
+    if (form.teamMembers.length <= 1) return; // keep at least one member
     updateForm({
       teamMembers: form.teamMembers.filter((_, idx) => idx !== i),
     });
@@ -1203,6 +1203,27 @@ export default function EventRegistrationPage() {
             ignite your passion.
           </p>
         </motion.div>
+
+        {/* Top warning: read rules */}
+    <div className="mb-6">
+  <div className="bg-yellow-900/40 border border-yellow-700/40 rounded-xl px-4 py-3 text-yellow-200 text-sm text-center max-w-2xl mx-auto">
+    <ul className="text-left list-none space-y-1">
+      <li><span className="font-semibold"> *</span> Please read all the rules and regulations of all the events before registration.</li>
+      <li><span className="font-semibold"> *</span> Ideathon participants must upload their PPT and details in the provided link after registration.</li>
+      <li><span className="font-semibold"> *</span> Ideathon minimum team size is 2 and maximum team size is 3 (including the team lead).</li>
+      <li><span className="font-semibold"> *</span> PlaceHolder Event should have 2 team members only (including the team lead).</li>
+      <li><span className="font-semibold"> *</span> Cooking without fire event should have maximum 2 team members only (including the team lead).</li>
+      <li><span className="font-semibold"> *</span> Register separately if you want to participate with different team members in different events.</li>
+    </ul>
+    <div className="mt-2 text-left">
+      <span className="font-semibold">For any queries contact:</span>
+      <ul className="mt-1 space-y-1">
+        <li>📞 +91 12345 67890 (John Doe)</li>
+        <li>📞 +91 98765 43210 (Jane Smith)</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
         {/* ── Card ── */}
         <motion.div
@@ -1640,6 +1661,9 @@ export default function EventRegistrationPage() {
                           <p className="text-xs text-slate-500 -mt-2">
                             One team applies to all selected team events.
                           </p>
+                          <p className="text-xs text-yellow-400 mt-1">
+                            You (team lead) + at least 1 and at most 2 teammates.
+                          </p>
 
                           <InputField
                             label="Team Name"
@@ -1666,14 +1690,24 @@ export default function EventRegistrationPage() {
                           <div className="flex flex-col gap-3">
                             <div className="flex items-center justify-between">
                               <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
-                                Team Members{" "}
+                                Team Size (you + others){" "}
                                 <span className="text-indigo-400 normal-case">
-                                  ({form.teamMembers.length}/4)
+                                  ({teamSize}/3)
                                 </span>
                               </p>
+                              {teamSize < 2 && (
+                                <p className="text-xs text-rose-400 mt-1">
+                                  Add at least 1 teammate to meet minimum size.
+                                </p>
+                              )}
+                              {teamSize > 3 && (
+                                <p className="text-xs text-rose-400 mt-1">
+                                  Maximum team size is 3 people including you.
+                                </p>
+                              )}
                               <button
                                 onClick={addMember}
-                                disabled={form.teamMembers.length >= 4}
+                                disabled={teamSize >= 3}
                                 className="flex items-center gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                               >
                                 <span className="text-base leading-none">＋</span>
@@ -1697,7 +1731,7 @@ export default function EventRegistrationPage() {
                                     </span>
                                     <button
                                       onClick={() => removeMember(i)}
-                                      disabled={form.teamMembers.length <= 2}
+                                      disabled={form.teamMembers.length <= 1}
                                       className="text-xs text-rose-500 hover:text-rose-400 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                     >
                                       Remove
@@ -1801,7 +1835,7 @@ export default function EventRegistrationPage() {
                           />
                           <StatusHint
                             ok={
-                              form.teamMembers.length >= 2 &&
+                              form.teamMembers.length+1 >= 2 &&
                               memberErrors.every((e) => !e.name && !e.usn)
                             }
                             label="Team members valid"

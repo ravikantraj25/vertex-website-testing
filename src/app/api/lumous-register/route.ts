@@ -33,8 +33,8 @@ function validateBody(body: Partial<RegisterBody>): string | null {
     return "At least one event must be selected";
   if (body.teamEvents.length > 0) {
     if (!body.team?.name?.trim()) return "Team name is required";
-    if (!Array.isArray(body.team.members) || body.team.members.length < 2)
-      return "Team must have at least 2 members";
+    if (!Array.isArray(body.team.members) || body.team.members.length < 1)
+      return "Team must have at least 1 member and one team leader (you)";
     if (body.team.members.length > 4)
       return "Team cannot have more than 4 members";
     for (const m of body.team.members) {

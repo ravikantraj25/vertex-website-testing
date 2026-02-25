@@ -21,7 +21,7 @@ const events = [
     slug: "placeholder",
     name: "Place Holder Event",
     type: EventType.TEAM,
-    price: 40000,        // ₹400 in paise — stored for reference
+    price: 15000,        // ₹400 in paise — stored for reference
   },
   {
     slug: "ideathon",
