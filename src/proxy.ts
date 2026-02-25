@@ -3,9 +3,6 @@ import { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { ratelimit } from "./lib/ratelimit";
 
-interface UserAgentCheckResult {
-  isBlocked: boolean;
-}
 
 function botcheckMiddleware(req: NextRequest): NextResponse | null {
   const userAgent: string | null = req.headers.get("user-agent");
@@ -54,12 +51,12 @@ export async function proxy(request: NextRequest) {
 
     // Not logged in
     if (!token) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
     // Role check for Admin Dashboard
     if (isAdminDashboard && token.role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
     // Role check for User Dashboard

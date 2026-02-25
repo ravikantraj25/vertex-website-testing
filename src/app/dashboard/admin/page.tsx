@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,15 +8,7 @@ import Header from "./header";
 // --- REUSABLE COMPONENTS ---
 
 // 1. Action Card Component
-const ActionCard = ({ title, description, actionType, onClick }: { title: string, description: string, actionType: 'create' | 'update' | 'delete' | 'view', onClick?: () => void }) => {
-  // Map colors based on the type of operation
-  const colorMap = {
-    create: "bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-50",
-    update: "bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-50",
-    delete: "bg-rose-100 text-rose-700 border-rose-200 hover:bg-rose-50",
-    view: "bg-purple-100 text-purple-700 border-purple-200 hover:bg-purple-50",
-  };
-
+const ActionCard = ({ title, description, onClick }: { title: string, description: string, actionType?: 'create' | 'update' | 'delete' | 'view', onClick?: () => void }) => {
   return (
     <div
       onClick={onClick}
@@ -62,7 +54,6 @@ const DashboardSection = ({ title, children }: { title: string, children: React.
 // --- MAIN PAGE ---
 
 export default function AdminDashboard() {
-  const [adminName, setAdminName] = useState<string>("Loading...");
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -70,17 +61,15 @@ export default function AdminDashboard() {
     if (status === "loading") return;
 
     if (!session || session.user?.role !== "ADMIN") {
-      router.push("/");
+      router.replace("/login");
       return;
     }
-
-    setAdminName(session.user?.name || session.user?.email || "Admin");
   }, [session, status, router]);
 
-  if (status === "loading" || (session && session.user?.role !== "ADMIN")) {
+  if (status === "loading" || !session || session.user?.role !== "ADMIN") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+      <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b0120] via-[#14032e] to-[#020617]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
       </div>
     );
   }

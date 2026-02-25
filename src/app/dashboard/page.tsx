@@ -11,14 +11,14 @@ export default function DashboardPage() {
     if (status === "loading") return;
 
     if (!session) {
-      router.push("/");
+      router.replace("/login");
       return;
     }
 
     if (session.user?.role === "ADMIN") {
-      router.push("/dashboard/admin");
+      router.replace("/dashboard/admin");
     } else {
-      router.push("/");
+      router.replace("/login");
     }
   }, [session, status, router]);
 
