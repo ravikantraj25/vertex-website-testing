@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 
-export default functioHero() {
+export default function Hero() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
