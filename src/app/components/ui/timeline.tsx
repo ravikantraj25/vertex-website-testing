@@ -41,7 +41,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
             </div>
 
             {/* Title */}
-            <h3 className="mt-1.5 shrink-0 whitespace-nowrap text-xl font-semibold text-white">
+            <h3 className="mt-1.5 w-32 md:w-40 shrink-0 text-xl font-semibold text-white">
               {item.title}
             </h3>
 
