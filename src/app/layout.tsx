@@ -11,7 +11,7 @@ const googleSansFlex = Google_Sans_Flex({
 
 export const metadata: Metadata = {
   title: "Vertex",
-  description: "This is built by students of ETE dept.",
+  description: "This is built by students of ETE dept, DSCE.",
 };
 
 export default function RootLayout({
