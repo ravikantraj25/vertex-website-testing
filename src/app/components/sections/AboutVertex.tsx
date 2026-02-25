@@ -36,14 +36,14 @@ export default function AboutVertex() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-          className="flex flex-col items-start justify-between gap-10 md:flex-row md:items-center"
+          className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-center"
         >
           <p className="max-w-2xl text-base leading-relaxed text-[#777]">
             A student-led club from the ETE Department at DSCE — where innovation meets
             expression and students grow through <span className="font-semibold text-white">technical excellence, cultural vibrance, and social impact.</span>
           </p>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 w-full justify-start lg:justify-end">
             <div className="flex min-w-[120px] flex-col items-center justify-center rounded-2xl border border-white/5 bg-[#111] px-6 py-5">
               <span className="text-lg font-bold text-white">ETE Dept</span>
               <span className="mt-1 text-[10px] font-bold tracking-widest text-[#555]">DSCE</span>

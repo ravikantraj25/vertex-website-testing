@@ -45,7 +45,7 @@ function DomainCard({ domain }) {
   const { num, emoji, name, description } = domain
 
   return (
-    <div className="group relative flex h-[320px] w-[300px] shrink-0 flex-col justify-between overflow-hidden rounded-[2rem] border border-white/[0.04] bg-[#111111] p-8 transition-all duration-300 hover:scale-[1.02] hover:bg-[#161616] group-hover/marquee:opacity-30 hover:!opacity-100 hover:shadow-2xl">
+    <div className="group relative flex h-[320px] w-[260px] sm:w-[300px] shrink-0 flex-col justify-between overflow-hidden rounded-[2rem] border border-white/[0.04] bg-[#111111] p-6 sm:p-8 transition-all duration-300 hover:scale-[1.02] hover:bg-[#161616] group-hover/marquee:opacity-30 hover:!opacity-100 hover:shadow-2xl">
       <div className="flex items-start justify-between">
         <span className="text-[40px] leading-none transition-transform duration-300 group-hover:scale-110">{emoji}</span>
         <span className="font-mono text-[11px] font-bold tracking-widest text-[#444]">
@@ -67,7 +67,7 @@ function DomainCard({ domain }) {
 
 function Domains() {
   return (
-    <section className="relative w-full overflow-hidden bg-[#080808] pb-24 pt-8">
+    <section className="relative w-full overflow-hidden bg-[#080808] pb-16 pt-8 sm:pb-24">
       {/* Left and Right fade masks to blend the marquee smoothly */}
       <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#080808] to-transparent md:w-48" />
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[#080808] to-transparent md:w-48" />
