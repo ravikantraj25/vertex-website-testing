@@ -1,16 +1,18 @@
 // app/api/register/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-
+import { transporter } from "@/lib/mailer";
 interface TeamMember {
   name: string;
   usn: string;
+  phone?: string;
 }
 
 interface RegisterBody {
   fullName: string;
   usn: string;
   email: string;
+  phone?: string;
   soloEvents: string[];
   teamEvents: string[];
   team: {
@@ -31,8 +33,8 @@ function validateBody(body: Partial<RegisterBody>): string | null {
     return "At least one event must be selected";
   if (body.teamEvents.length > 0) {
     if (!body.team?.name?.trim()) return "Team name is required";
-    if (!Array.isArray(body.team.members) || body.team.members.length < 2)
-      return "Team must have at least 2 members";
+    if (!Array.isArray(body.team.members) || body.team.members.length < 1)
+      return "Team must have at least 1 member and one team leader (you)";
     if (body.team.members.length > 4)
       return "Team cannot have more than 4 members";
     for (const m of body.team.members) {
@@ -57,6 +59,7 @@ export async function POST(req: Request) {
     const allSlugs = [...soloEvents, ...teamEvents];
     const usn = body.usn.trim().toUpperCase(); // Normalize USN to uppercase for consistency
     const email = body.email.trim().toLowerCase(); // Normalize email to lowercase
+    const phone = body.phone?.trim() ?? undefined;
     
     // Normalize team members' USN as well
     const normalizedTeam = {
@@ -64,6 +67,7 @@ export async function POST(req: Request) {
       members: teamData.members.map((m) => ({
         name: m.name,
         usn: m.usn.trim().toUpperCase(),
+        phone: m.phone?.trim() ?? undefined,
       })),
     };
     // Resolve slugs → real Event rows
@@ -88,14 +92,23 @@ export async function POST(req: Request) {
       (sum, slug) => sum + eventMap[slug].price,
       0
     );
-    const teamTotal = teamEvents.length > 0 ? 40000 : 0;
+    const teamTotal = teamEvents.reduce(
+      (sum, slug) => sum + (eventMap[slug]?.price ?? 0),
+      0
+    );
     const totalAmount = soloTotal + teamTotal;
 
     // Upsert participant
     const participant = await prisma.participant.upsert({
       where: { usn },
-      create: { name: fullName, usn, email, emailVerified: true },
-      update: { name: fullName, email, emailVerified: true },
+      create: {
+        name: fullName,
+        usn,
+        email,
+        emailVerified: true,
+        phoneNo: phone,
+      },
+      update: { name: fullName, email, emailVerified: true, phoneNo: phone },
     });
 
     // Find confirmed registration IDs to protect
@@ -160,7 +173,7 @@ export async function POST(req: Request) {
       const registration = await tx.registration.create({
         data: {
           participantId: participant.id,
-          status: "PAYMENT_PENDING",
+          status: totalAmount === 0 ? "CONFIRMED" : "PAYMENT_PENDING",
         },
       });
 
@@ -205,8 +218,9 @@ export async function POST(req: Request) {
               usn: member.usn,
               email: `${member.usn}@pending.techfest`,
               emailVerified: false,
+              phoneNo: member.phone ?? undefined,
             },
-            update: { name: member.name },
+            update: { name: member.name, phoneNo: member.phone ?? undefined },
           });
 
           const existing = await tx.participation.findUnique({
@@ -242,12 +256,52 @@ export async function POST(req: Request) {
           razorpaySignature: null,
           amount: totalAmount,
           currency: "INR",
-          status: "PENDING",  // stays PENDING until admin manually confirms
+          status: totalAmount === 0 ? "SUCCESS" : "PENDING",
         },
       });
 
       return registration;
     });
+
+    // Fetch registration with participant for post-transaction work
+    const fullRegistration = await prisma.registration.findUnique({
+      where: { id: registration.id },
+      include: { participant: true },
+    });
+
+    // If this was a free registration (amount === 0) send immediate email
+    if (totalAmount === 0 && fullRegistration?.participant?.email) {
+      await transporter.sendMail({
+        from: `"Vertex - Lumous 2026" <${process.env.SMTP_USER}>`,
+        to: fullRegistration.participant.email,
+        subject: "Lumous 2026 Registration Confirmed ✅",
+        html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; background:#f4f6f8;">
+          <div style="max-width: 500px; margin:auto; background:white; padding:30px; border-radius:10px;">
+            <h2 style="color:#4f46e5;">Hello from Vertex 🚀</h2>
+            <p>Your registration for <strong>Lumous 2026</strong> has been received and confirmed.</p>
+            <p>This event was free of charge, so no payment is required.</p>
+            <p style="margin-top:20px;">
+              ⚠️ Please do <strong>not register multiple times</strong>.  We will notify you if any further action is needed.
+            </p>
+            <hr style="margin:25px 0;" />
+            <p>If you have any queries, please contact:</p>
+            <p>
+              <strong>Team Lead 1:</strong> Harsh Pandey<br/>
+              📞 9876543210
+            </p>
+            <p>
+              <strong>Team Lead 2:</strong> Aditya Sharma<br/>
+              📞 9123456780
+            </p>
+            <p style="margin-top:30px; font-size:12px; color:#777;">
+              — Team Vertex | Lumous 2026
+            </p>
+          </div>
+        </div>
+        `,
+      });
+    }
 
     return NextResponse.json({
       registrationId: registration.id,

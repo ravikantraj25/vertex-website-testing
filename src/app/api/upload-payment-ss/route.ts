@@ -142,13 +142,13 @@ if (registration?.participant?.email) {
         <p>If you have any queries, please contact:</p>
 
         <p>
-          <strong>Team Lead 1:</strong> Harsh Pandey<br/>
-          📞 9876543210
+          <strong>Team Lead 1:</strong> Naman singh<br/>
+          📞 8334072002
         </p>
 
         <p>
-          <strong>Team Lead 2:</strong> Aditya Sharma<br/>
-          📞 9123456780
+          <strong>Team Lead 2:</strong> Shefali <br/>
+          📞 8867429955
         </p>
 
         <p style="margin-top:30px; font-size:12px; color:#777;">
