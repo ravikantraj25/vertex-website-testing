@@ -113,6 +113,7 @@ model Participant {
   id             String          @id @default(auto()) @map("_id") @db.ObjectId
   name           String
   usn            String          @unique
+  phoneNo        String?
   email          String          
   emailVerified  Boolean         @default(false)
   participations Participation[]
