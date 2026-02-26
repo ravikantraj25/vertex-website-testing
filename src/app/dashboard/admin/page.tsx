@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Header from "./header";
-
+import { signOut } from "next-auth/react";
 // --- REUSABLE COMPONENTS ---
 
 // 1. Action Card Component
@@ -48,7 +48,7 @@ const DashboardSection = ({ title, children }: { title: string, children: React.
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-
+  const adminName = session?.user?.name || "Admin"; 
   useEffect(() => {
     if (status === "loading") return;
 
