@@ -87,7 +87,7 @@ const EVENTS: EventItem[] = [
     slug: "ideathon", label: "Ideathon", icon: "🎯",
     category: "Technical / Fun",
     feeType: "free", fee: 0,
-    min: 2, max: 4,
+    min: 2, max: 3,
     note: "2–3 members · Free",
   },
   {
