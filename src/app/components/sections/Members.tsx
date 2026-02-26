@@ -71,9 +71,9 @@ export default function Members() {
               <h3 className="mb-3 text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl">
                 Dr. Iffath Fawad
               </h3>
-              <p className="max-w-md text-sm leading-relaxed text-white/50 md:text-base">
+              {/* <p className="max-w-md text-sm leading-relaxed text-white/50 md:text-base">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
-              </p>
+              </p> */}
             </div>
           </motion.div>
 
@@ -159,7 +159,7 @@ export default function Members() {
               </div>
               <div className="flex flex-col justify-center px-5">
                 <h3 className="mb-1.5 text-lg font-bold tracking-tight text-white md:text-xl lg:text-xl">
-                  Devansh Chandra
+                  Devesh Chandra
                 </h3>
                 <p className="text-[10px] font-bold tracking-widest text-white/40 uppercase">
                   Founding Member

@@ -1,20 +1,30 @@
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
-//  const searchParams = useSearchParams();
-//  const role = searchParams.get("role") || "guest";
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (!session) {
+      router.replace("/login");
+      return;
+    }
+
+    if (session.user?.role === "ADMIN") {
+      router.replace("/dashboard/admin");
+    } else {
+      router.replace("/login");
+    }
+  }, [session, status, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-semibold text-gray-900">
-          Hello from Vertex
-        </h1>
-        <p className="text-lg text-gray-600">
-          Role: <span className="font-medium text-gray-900"></span>
-        </p>
-      </div>
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
     </div>
   );
 }

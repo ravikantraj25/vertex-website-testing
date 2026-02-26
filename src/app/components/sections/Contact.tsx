@@ -120,7 +120,7 @@ const Contact = () => {
 
           {/* Copyright */}
           <p className="mt-8 text-center text-[10px] font-bold uppercase tracking-[0.3em] text-white/15">
-            Made with ♥ by Vertex · {new Date().getFullYear()}
+            Made with ♥ by Team Vertex · {new Date().getFullYear()}
           </p>
         </div>
       </div>
