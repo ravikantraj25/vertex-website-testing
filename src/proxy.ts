@@ -40,7 +40,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // ── 3. Explicitly public routes (exact match or prefix) ─────────────────
+  // ── 3. Explicitly public routes (exact match or prefix)  ─────────────────
   const isPublic =
   pathname === "/" ||
   pathname === "/lumousRegistration" ||
