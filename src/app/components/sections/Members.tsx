@@ -71,9 +71,9 @@ export default function Members() {
               <h3 className="mb-3 text-3xl font-bold tracking-tight text-white md:text-4xl lg:text-5xl">
                 Dr. Iffath Fawad
               </h3>
-              <p className="max-w-md text-sm leading-relaxed text-white/50 md:text-base">
+              {/* <p className="max-w-md text-sm leading-relaxed text-white/50 md:text-base">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
-              </p>
+              </p> */}
             </div>
           </motion.div>
 
