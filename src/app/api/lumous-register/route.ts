@@ -28,7 +28,7 @@ const eventRules: Record<
   string,
   { min?: number; max?: number; exact?: number; feeType: string; fee?: number }
 > = {
-    ideathon: { min: 1, max: 4, feeType: "free" },
+    ideathon: { min: 1, max: 3, feeType: "free" },
   bgmi: { min: 1, max: 4, feeType: "per_person", fee: 50 },
   igp: { min: 1, max: 2, feeType: "free" },
   reel: { min: 1, max: 4, feeType: "free" },

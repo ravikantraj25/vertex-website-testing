@@ -88,7 +88,7 @@ const EVENTS: EventItem[] = [
     slug: "ideathon", label: "Ideathon", icon: "🎯",
     category: "Technical / Fun",
     feeType: "free", fee: 0,
-    min: 2, max: 4,
+    min: 2, max: 3,
     note: "2–3 members · Free",
   },
   {
@@ -726,6 +726,7 @@ export default function LumousRegistrationPage() {
             <li>→ <strong>One registration = one event.</strong> If you want to register for multiple events, please register separately for each event.</li>
             <li>→ Read all rules before registering. Team size limits are strictly enforced.</li>
             <li>→ Ideathon participants must upload PPT separately after registration.</li>
+            <li>→ <strong>Make sure your name is visible in payment screenshot</strong></li>
           </ul>
           <div className="mt-3 pt-3 border-t border-amber-800/30 text-amber-400/60 text-xs">
             Queries: 📞 Naman Singh — 8334072002 &nbsp;|&nbsp; Shefali — 8867429955
