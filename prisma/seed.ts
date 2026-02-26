@@ -1,58 +1,21 @@
-import { PrismaClient, EventType } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const events = [
-  // Solo events
-  {
-    slug: "coding",
-    name: "Coding Contest",
-    type: EventType.SOLO,
-    price: 10000,        // ₹100 in paise
-  },
-  {
-    slug: "paper",
-    name: "Paper Presentation",
-    type: EventType.SOLO,
-    price: 10000,
-  },
-  // Team events
-  {
-    slug: "placeholder",
-    name: "Place Holder Event",
-    type: EventType.TEAM,
-    price: 15000,        // ₹400 in paise — stored for reference
-  },
-  {
-    slug: "ideathon",
-    name: "Ideathon",
-    type: EventType.TEAM,
-    price: 0,
-  },
-  {
-    slug: "cooking",
-    name: "Cooking without Fire",
-    type: EventType.TEAM,
-    price: 5000,
-  },
-];
-
 async function main() {
-  console.log("Seeding events...");
+  const admin = await prisma.admin.upsert({
+    where: {
+      emailId: "harshpandey12378@gmail.com", // change to your real email
+    },
+    update: {},
+    create: {
+      usn: "1ds23et045",        // change this
+      emailId: "harshpandey12378@gmail.com", // change this
+      phoneNo: "9876543210",        // change this
+    },
+  });
 
-  for (const event of events) {
-    await prisma.event.upsert({
-      where: { slug: event.slug },
-      update: {
-        name: event.name,
-        price: event.price,
-      },
-      create: event,
-    });
-    console.log(`✓ ${event.name}`);
-  }
-
-  console.log("Done.");
+  console.log("✅ Admin seeded:", admin);
 }
 
 main()
@@ -60,4 +23,6 @@ main()
     console.error(e);
     process.exit(1);
   })
-  .finally(() => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

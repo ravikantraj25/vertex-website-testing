@@ -2,15 +2,13 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { ratelimit } from "./lib/ratelimit";
-
+import path from "path";
 
 function botcheckMiddleware(req: NextRequest): NextResponse | null {
-  const userAgent: string | null = req.headers.get("user-agent");
-
+  const userAgent = req.headers.get("user-agent");
   if (!userAgent || userAgent.includes("bot")) {
     return new NextResponse("Blocked", { status: 403 });
   }
-
   return null;
 }
 
@@ -19,64 +17,69 @@ async function ratelimitMiddleware(request: NextRequest): Promise<NextResponse |
     request.headers.get("x-forwarded-for") ||
     request.headers.get("x-real-ip") ||
     "unknown";
-
   if (ip !== "unknown") {
     const { success } = await ratelimit.limit(ip);
-
-    if (!success) {
-      return new NextResponse("Too many requests", { status: 429 });
-    }
+    if (!success) return new NextResponse("Too many requests", { status: 429 });
   }
-
   return null;
 }
 
 export async function proxy(request: NextRequest) {
-  // 1. Run bot check for ALL requests
-  const botCheckResult = botcheckMiddleware(request);
-  if (botCheckResult) {
-    return botCheckResult;
+  const { pathname } = request.nextUrl;
+
+  // ── 1. Bot check ────────────────────────────────────────────────────────
+  const botResult = botcheckMiddleware(request);
+  if (botResult) return botResult;
+
+  // ── 2. Always allow Next.js internals & static files ────────────────────
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/api/auth")        // next-auth callbacks must be public
+  ) {
+    return NextResponse.next();
   }
 
-  // 2. Auth & RBAC Checks
-  const path = request.nextUrl.pathname;
-  const isAdminDashboard = path.startsWith("/dashboard/admin");
-  const isUserDashboard = path.startsWith("/dashboard/user");
-  const isProtectedApi = path.startsWith("/api/applications") ||
-    path.startsWith("/api/members") ||
-    path.startsWith("/api/apply");
-
-  if (isAdminDashboard || isUserDashboard || isProtectedApi) {
+  // ── 3. Explicitly public routes (exact match or prefix) ─────────────────
+  const isPublic =
+  pathname === "/" ||
+  pathname === "/lumousRegistration" ||
+  pathname.startsWith("/api/lumous-register") ||
+  pathname.startsWith("/logout")||
+  pathname.startsWith("/api/send-otp")|| pathname.startsWith("/api/verify-otp") 
+  ||pathname.startsWith("/api/upload-payment-ss") ;// next-auth routes are public by default
+  // ── 4. Auth check for everything else ───────────────────────────────────
+  if (!isPublic) {
     const token = await getToken({ req: request });
 
-    // Not logged in
     if (!token) {
-      return NextResponse.redirect(new URL("/login", request.url));
+      // Preserve the intended destination so you can redirect back after login
+      const loginUrl = new URL("/", request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
     }
 
-    // Role check for Admin Dashboard
-    if (isAdminDashboard && token.role !== "ADMIN") {
-      return NextResponse.redirect(new URL("/login", request.url));
+    // ── Role-based guards ──────────────────────────────────────────────────
+    if (pathname.startsWith("/dashboard/admin") && token.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", request.url));
     }
 
-    // Role check for User Dashboard
-    if (isUserDashboard && token.role !== "USER") {
+    if (pathname.startsWith("/dashboard/user") && token.role !== "USER") {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }
 
-  // 3. Run rate limit check only for auth routes (POST requests)
+  // ── 5. Rate limit all POST requests ─────────────────────────────────────
   if (request.method === "POST") {
     const rateLimitResult = await ratelimitMiddleware(request);
-    if (rateLimitResult) {
-      return rateLimitResult;
-    }
+    if (rateLimitResult) return rateLimitResult;
   }
-
 
   return NextResponse.next();
 }
-
 export const config = {
-  matcher: ["/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/api/:path*"
+  ],
 };
