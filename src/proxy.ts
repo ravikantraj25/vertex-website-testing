@@ -12,7 +12,7 @@ function botcheckMiddleware(req: NextRequest): NextResponse | null {
   return null;
 }
 
-async function ratelimitMiddleware(request: NextRequest): Promise<NextResponse | null> {
+async function ratelimitMiddleware(request: NextRequest):  Promise<NextResponse | null> {
   const ip =
     request.headers.get("x-forwarded-for") ||
     request.headers.get("x-real-ip") ||
@@ -40,7 +40,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // ── 3. Explicitly public routes (exact match or prefix) ─────────────────
+  // ── 3. Explicitly public routes (exact match or prefix)  ─────────────────
   const isPublic =
   pathname === "/" ||
   pathname === "/lumousRegistration" ||
