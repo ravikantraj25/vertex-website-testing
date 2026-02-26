@@ -159,7 +159,7 @@ export default function Members() {
               </div>
               <div className="flex flex-col justify-center px-5">
                 <h3 className="mb-1.5 text-lg font-bold tracking-tight text-white md:text-xl lg:text-xl">
-                  Devansh Chandra
+                  Devesh Chandra
                 </h3>
                 <p className="text-[10px] font-bold tracking-widest text-white/40 uppercase">
                   Founding Member
