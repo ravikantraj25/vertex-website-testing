@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { ArrowUpRight, Calendar, MapPin, Brain, Layers, Clapperboard, FileText, Trophy } from "lucide-react";
+import { ArrowUpRight, Calendar, MapPin, Brain, Gamepad2, CircuitBoard, Clapperboard, Plus } from "lucide-react";
 import Link from "next/link";
 
 const upcomingEvent = {
@@ -12,14 +12,14 @@ const upcomingEvent = {
   description:
     "A multi-event inter-departmental showdown — where ideas spark, creativity roars, and every department brings its A-game.",
   accent: "#fbbf24",
-  date: "Coming Soon",
-  venue: "Main Campus",
+  date: "11th & 12th March 2026",
+  venue: "Dept of ETE",
   subEvents: [
-    { label: "Ideathon", Icon: Brain },
-    { label: "Design Competition", Icon: Layers },
-    { label: "Reel Creation", Icon: Clapperboard },
-    { label: "Content Writing", Icon: FileText },
-    { label: "Volleyball", Icon: Trophy },
+    { label: "Inspire (Ideathon)", Icon: Brain },
+    { label: "BGMI", Icon: Gamepad2 },
+    { label: "Hardware Escape Room", Icon: CircuitBoard },
+    { label: "Reeluminati", Icon: Clapperboard },
+    { label: "More", Icon: Plus },
   ],
 };
 

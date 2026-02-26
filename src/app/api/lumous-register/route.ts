@@ -77,6 +77,7 @@ export async function POST(req: Request) {
           phone: m.phone?.trim() ?? undefined,
         }))
       : [];
+      
 
     const totalMembers = 1 + normalizedMembers.length; // 1 (Leader) + explicit members
     const isTeamRegistration = totalMembers > 1;
@@ -95,6 +96,18 @@ export async function POST(req: Request) {
     if (!rule) {
       return NextResponse.json({ message: "Rules for this event are not configured." }, { status: 500 });
     }
+     const allUsns = [usn, ...normalizedMembers.map(m => m.usn)];
+
+    const uniqueUsns = new Set(allUsns);
+
+ if (uniqueUsns.size !== allUsns.length) {
+  return NextResponse.json(
+    { message: "Duplicate USNs are not allowed in the same team." },
+    { status: 400 }
+  );
+ };
+
+  if (rule.exact && totalMembers !== rule.exact) {
 
     if (rule.exact && totalMembers !== rule.exact) {
       return NextResponse.json(
