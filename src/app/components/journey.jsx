@@ -42,7 +42,7 @@ function Journey() {
       ),
     },
     {
-      title: "Early 2023",
+      title: "Early 2024",
       content: (
         <div>
           <p className="mb-8 text-xs font-normal text-white/70 md:text-sm">
