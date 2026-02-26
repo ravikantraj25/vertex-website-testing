@@ -49,7 +49,7 @@ export default function AdminDashboard() {
   const { data: session, status } = useSession();
   console.log("Session data:", session); // Debugging line to check session contents
   const router = useRouter();
-  const adminName = session?.user?.name || "Admin";
+  const adminName = session?.user?.name || "Admin"; 
   useEffect(() => {
     if (status === "loading") return;
 

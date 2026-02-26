@@ -14,7 +14,7 @@ interface RegisterBody {
   usn: string;
   email: string;
   phone?: string;
-  eventSlug: string; // Strictly single event 
+  eventSlug: string;
   team?: {
     name?: string;
     members?: TeamMember[];
@@ -23,7 +23,6 @@ interface RegisterBody {
 
 const USN_REGEX = /^1ds\d{2}[a-z]{2}\d{3}$/i;
 
-// Rule map defining team sizes and pricing logic
 const eventRules: Record<
   string,
   { min?: number; max?: number; exact?: number; feeType: string; fee?: number }
@@ -40,19 +39,18 @@ const eventRules: Record<
 };
 
 function validateBody(body: Partial<RegisterBody>): string | null {
-  if (!body.fullName?.trim()) return "Full name is required";
+  if (!body.fullName?.trim())       return "Full name is required";
   if (!body.usn || !USN_REGEX.test(body.usn)) return "Invalid USN format";
-  if (!body.email?.includes("@")) return "Invalid email";
-  if (!body.eventSlug?.trim()) return "An event must be selected";
+  if (!body.email?.includes("@"))   return "Invalid email";
+  if (!body.eventSlug?.trim())      return "An event must be selected";
 
   const members = body.team?.members;
   if (members && Array.isArray(members)) {
     for (const m of members) {
-      if (!m.name?.trim()) return "All team members must have a name";
-      if (!USN_REGEX.test(m.usn)) return `Invalid USN for member: ${m.name}`;
+      if (!m.name?.trim())          return "All team members must have a name";
+      if (!USN_REGEX.test(m.usn))   return `Invalid USN for member: ${m.name}`;
     }
   }
-
   return null;
 }
 
@@ -60,111 +58,135 @@ export async function POST(req: Request) {
   try {
     const body: RegisterBody = await req.json();
 
+    // ── 1. Basic field validation ────────────────────────────────────────────
     const validationError = validateBody(body);
     if (validationError) {
       return NextResponse.json({ message: validationError }, { status: 400 });
     }
 
     const { fullName, eventSlug, team: teamData } = body;
-    const usn = body.usn.trim().toUpperCase();
+    const usn   = body.usn.trim().toUpperCase();
     const email = body.email.trim().toLowerCase();
     const phone = body.phone?.trim() ?? undefined;
 
     const normalizedMembers: TeamMember[] = Array.isArray(teamData?.members)
       ? teamData!.members.map((m) => ({
-          name: m.name.trim(),
-          usn: m.usn.trim().toUpperCase(),
+          name:  m.name.trim(),
+          usn:   m.usn.trim().toUpperCase(),
           phone: m.phone?.trim() ?? undefined,
         }))
       : [];
 
-    const totalMembers = 1 + normalizedMembers.length; // 1 (Leader) + explicit members
+    const totalMembers     = 1 + normalizedMembers.length; // leader + extra members
     const isTeamRegistration = totalMembers > 1;
 
-    // 1. Resolve event
-    const event = await prisma.event.findUnique({
-      where: { slug: eventSlug },
-    });
-
+    // ── 2. Resolve event ─────────────────────────────────────────────────────
+    const event = await prisma.event.findUnique({ where: { slug: eventSlug } });
     if (!event) {
       return NextResponse.json({ message: "Event not found." }, { status: 404 });
     }
 
-    // 2. Enforce Event Rules
+    // ── 3. Resolve & enforce event rules ─────────────────────────────────────
     const rule = eventRules[eventSlug.toLowerCase()];
     if (!rule) {
-      return NextResponse.json({ message: "Rules for this event are not configured." }, { status: 500 });
-    }
-
-    if (rule.exact && totalMembers !== rule.exact) {
       return NextResponse.json(
-        { message: `Invalid team size. ${event.name} requires exactly ${rule.exact} members.` },
-        { status: 400 }
-      );
-    } else if (rule.min && rule.max && (totalMembers < rule.min || totalMembers > rule.max)) {
-      return NextResponse.json(
-        { message: `Invalid team size. ${event.name} requires between ${rule.min} and ${rule.max} members.` },
-        { status: 400 }
+        { message: "Rules for this event are not configured." },
+        { status: 500 }
       );
     }
 
+    // Duplicate USN check
+    const allUsns    = [usn, ...normalizedMembers.map((m) => m.usn)];
+    const uniqueUsns = new Set(allUsns);
+    if (uniqueUsns.size !== allUsns.length) {
+      return NextResponse.json(
+        { message: "Duplicate USNs are not allowed in the same team." },
+        { status: 400 }
+      );
+    }
+
+    // Team-size check — exact takes priority; otherwise min/max range
+    if (rule.exact !== undefined) {
+      if (totalMembers !== rule.exact) {
+        return NextResponse.json(
+          {
+            message: `Invalid team size. ${event.name} requires exactly ${rule.exact} member(s).`,
+          },
+          { status: 400 }
+        );
+      }
+    } else if (rule.min !== undefined && rule.max !== undefined) {
+      if (totalMembers < rule.min || totalMembers > rule.max) {
+        return NextResponse.json(
+          {
+            message: `Invalid team size. ${event.name} requires between ${rule.min} and ${rule.max} member(s).`,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Team name is required whenever there is more than one member
     if (isTeamRegistration && !teamData?.name?.trim()) {
-      return NextResponse.json({ message: "Team name is required." }, { status: 400 });
+      return NextResponse.json(
+        { message: "Team name is required for team events." },
+        { status: 400 }
+      );
     }
 
-    // 3. Calculate Amount
+    // ── 4. Calculate amount ──────────────────────────────────────────────────
     let amountINR = 0;
     if (rule.feeType === "per_person" && rule.fee) {
       amountINR = rule.fee * totalMembers;
     } else if (rule.feeType === "per_team" && rule.fee) {
       amountINR = rule.fee;
     }
-    const totalAmount = amountINR * 100; // Convert to paise for DB
+    const totalAmount = amountINR * 100; // paise
 
-    // 4. Upsert participant (Leader)
+    // ── 5. Upsert leader participant ─────────────────────────────────────────
     const participant = await prisma.participant.upsert({
-      where: { usn },
+      where:  { usn },
       create: { name: fullName, usn, email, emailVerified: true, phoneNo: phone },
       update: { name: fullName, email, emailVerified: true, phoneNo: phone },
     });
 
-    // 5. Block duplicates for confirmed registrations
+    // ── 6. Block duplicate confirmed registrations ───────────────────────────
     const confirmedRegistrationIds = await prisma.registration
       .findMany({
-        where: { participantId: participant.id, status: "CONFIRMED" },
+        where:  { participantId: participant.id, status: "CONFIRMED" },
         select: { id: true },
       })
       .then((r) => r.map((x) => x.id));
 
     const confirmedParticipation = await prisma.participation.findFirst({
       where: {
-        participantId: participant.id,
-        eventId: event.id,
+        participantId:  participant.id,
+        eventId:        event.id,
         registrationId: { in: confirmedRegistrationIds },
       },
     });
 
     if (confirmedParticipation) {
       return NextResponse.json(
-        { message: `Already registered for ${event.name}.` },
+        { message: `You are already registered for ${event.name}.` },
         { status: 409 }
       );
     }
 
-    // 6. Delete stale non-confirmed participations for this specific event
+    // ── 7. Delete stale non-confirmed participations for this event ───────────
     await prisma.participation.deleteMany({
       where: {
         participantId: participant.id,
-        eventId: event.id,
+        eventId:       event.id,
         ...(confirmedRegistrationIds.length > 0 && {
           registrationId: { notIn: confirmedRegistrationIds },
         }),
       },
     });
 
-    // 7. Cancel orphaned PAYMENT_PENDING registrations
+    // ── 8. Cancel orphaned PAYMENT_PENDING registrations ────────────────────
     const orphaned = await prisma.registration.findMany({
-      where: { participantId: participant.id, status: "PAYMENT_PENDING" },
+      where:  { participantId: participant.id, status: "PAYMENT_PENDING" },
       select: { id: true },
     });
 
@@ -173,130 +195,164 @@ export async function POST(req: Request) {
       await prisma.$transaction([
         prisma.payment.updateMany({
           where: { registrationId: { in: orphanedIds } },
-          data: { status: "FAILED" },
+          data:  { status: "FAILED" },
         }),
         prisma.registration.updateMany({
           where: { id: { in: orphanedIds } },
-          data: { status: "CANCELLED" },
+          data:  { status: "CANCELLED" },
         }),
       ]);
     }
 
-    // 8. Create DB records in transaction
+    // ── 9. Create registration + participation records ───────────────────────
     const registration = await prisma.$transaction(async (tx) => {
       const reg = await tx.registration.create({
         data: {
           participantId: participant.id,
-          // Paid events default to PAYMENT_PENDING to wait for the screenshot upload
           status: totalAmount === 0 ? "CONFIRMED" : "PAYMENT_PENDING",
         },
       });
 
-      let teamId = null;
+      let teamId: string | null = null;
 
-      // Handle Team Creation if multiple members
       if (isTeamRegistration) {
         const teamRecord = await tx.team.create({
           data: {
-            name: teamData!.name!.trim(),
-            eventId: event.id,
+            name:     teamData!.name!.trim(),
+            eventId:  event.id,
             leaderId: participant.id,
           },
         });
         teamId = teamRecord.id;
 
-        // Process other members
         for (const member of normalizedMembers) {
           const memberParticipant = await tx.participant.upsert({
-            where: { usn: member.usn },
+            where:  { usn: member.usn },
             create: {
-              name: member.name,
-              usn: member.usn,
-              email: `${member.usn.toLowerCase()}@pending.techfest`,
+              name:          member.name,
+              usn:           member.usn,
+              email:         `${member.usn.toLowerCase()}@pending.techfest`,
               emailVerified: false,
-              phoneNo: member.phone ?? undefined,
+              phoneNo:       member.phone ?? undefined,
             },
             update: { name: member.name, phoneNo: member.phone ?? undefined },
           });
 
-          // Create participation for member
           await tx.participation.create({
             data: {
-              participantId: memberParticipant.id,
-              eventId: event.id,
-              teamId: teamId,
+              participantId:  memberParticipant.id,
+              eventId:        event.id,
+              teamId,
               registrationId: reg.id,
             },
           });
         }
       }
 
-      // Create participation for the Leader
+      // Leader participation
       await tx.participation.create({
         data: {
-          participantId: participant.id,
-          eventId: event.id,
-          teamId: teamId,
+          participantId:  participant.id,
+          eventId:        event.id,
+          teamId,
           registrationId: reg.id,
         },
       });
 
-      // --- PAYMENT RECORD ---
+      // Payment record
       await tx.payment.create({
         data: {
-          registrationId: reg.id,
-          razorpayOrderId: `MANUAL_${Date.now()}_${reg.id}`,
-          razorpayPaymentId: null, // Left null. Will be populated by /api/upload-payment-ss
-          amount: totalAmount,
-          currency: "INR",
-          status: totalAmount === 0 ? "SUCCESS" : "PENDING",
+          registrationId:    reg.id,
+          razorpayOrderId:   `MANUAL_${Date.now()}_${reg.id}`,
+          razorpayPaymentId: null,
+          amount:            totalAmount,
+          currency:          "INR",
+          status:            totalAmount === 0 ? "SUCCESS" : "PENDING",
         },
       });
 
       return reg;
     });
 
-    // 9. Send confirmation email for FREE registrations only
+    // ── 10. Confirmation email for FREE events ───────────────────────────────
     if (totalAmount === 0 && email) {
+      // Build a readable participants list
+      const allParticipants = [
+        { name: fullName, usn },
+        ...normalizedMembers.map((m) => ({ name: m.name, usn: m.usn })),
+      ];
+
+      const participantRows = allParticipants
+        .map(
+          (p, i) =>
+            `<tr style="background:${i % 2 === 0 ? "#f9f9f9" : "#ffffff"}">
+               <td style="padding:6px 12px">${i === 0 ? "👑 Leader" : `Member ${i}`}</td>
+               <td style="padding:6px 12px">${p.name}</td>
+               <td style="padding:6px 12px">${p.usn}</td>
+             </tr>`
+        )
+        .join("");
+
+      const teamSection = isTeamRegistration
+        ? `<p><strong>Team Name:</strong> ${teamData!.name!.trim()}</p>`
+        : "";
+
       await transporter.sendMail({
-        from: `"Vertex - Lumous 2026" <${process.env.SMTP_USER}>`,
-        to: email,
-        subject: "Lumous 2026 Registration Confirmed ✅",
+        from:    `"Vertex - Lumous 2026" <${process.env.SMTP_USER}>`,
+        to:      email,
+        subject: `Lumous 2026 — ${event.name} Registration Confirmed ✅`,
         html: `
-        <div style="font-family: Arial, sans-serif; padding: 20px; background:#f4f6f8;">
-          <div style="max-width: 500px; margin:auto; background:white; padding:30px; border-radius:10px;">
-            <h2 style="color:#4f46e5;">Hello from Vertex 🚀</h2>
-            <p>Your registration for <strong>${event.name} (Lumous 2026)</strong> has been received and confirmed.</p>
-            <p>This event was free of charge, so no payment is required.</p>
-            <p style="margin-top:20px;">
-              ⚠️ Please do <strong>not register multiple times</strong>.
+          <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;color:#222">
+            <h2 style="color:#4f46e5">Hello from Vertex 🚀</h2>
+            <p>Your registration for <strong>${event.name}</strong> (Lumous 2026) has been
+               <strong style="color:green">confirmed</strong>.</p>
+            <p>This event is <strong>free of charge</strong> — no payment required.</p>
+
+            ${teamSection}
+
+            <h3 style="margin-top:24px">Registered Participant(s)</h3>
+            <table style="border-collapse:collapse;width:100%;font-size:14px">
+              <thead>
+                <tr style="background:#4f46e5;color:#fff">
+                  <th style="padding:8px 12px;text-align:left">Role</th>
+                  <th style="padding:8px 12px;text-align:left">Name</th>
+                  <th style="padding:8px 12px;text-align:left">USN</th>
+                </tr>
+              </thead>
+              <tbody>${participantRows}</tbody>
+            </table>
+
+            <p style="margin-top:20px;color:#c0392b">
+              ⚠️ Please <strong>do not register multiple times</strong>.
             </p>
-            <hr style="margin:25px 0;" />
-            <p>If you have any queries, please contact:</p>
-            <p><strong>Team Lead 1:</strong> Naman Singh<br/>📞 8334072002</p>
-            <p><strong>Team Lead 2:</strong> Shefali<br/>📞 8867429955</p>
-              <p>
-             <strong>Technical issues? </strong> Harsh <br/>
-             📞 8269273139
+
+            <h3>Need Help?</h3>
+            <p>
+              Team Lead 1 — Naman Singh: 📞 8334072002<br/>
+              Team Lead 2 — Shefali: 📞 8867429955<br/>
+              Technical Issues — Harsh: 📞 8269273139
             </p>
-            <p style="margin-top:30px; font-size:12px; color:#777;">— Team Vertex | Lumous 2026</p>
+
+            <p style="margin-top:24px;font-size:12px;color:#888">
+              — Team Vertex | Lumous 2026
+            </p>
           </div>
-        </div>
         `,
       });
     }
 
-    // Return exact signature expected by your frontend apiRegister function
-    return NextResponse.json({
-      registrationId: registration.id,
-      amount: totalAmount, 
-      eventName: event.name 
-    });
-
+    // ── 11. Response ─────────────────────────────────────────────────────────
+    return NextResponse.json(
+      {
+        registrationId: registration.id,
+        amount:         totalAmount,
+        eventName:      event.name,
+      },
+      { status: 201 }
+    );
   } catch (error: unknown) {
     console.error("[POST /api/lumous-register]", error);
 
-    // Handle Prisma Unique Constraint Violations (Duplicate Team Name or USN for Event)
     if (
       typeof error === "object" &&
       error !== null &&
@@ -304,7 +360,7 @@ export async function POST(req: Request) {
       (error as { code: string }).code === "P2002"
     ) {
       return NextResponse.json(
-        { message: "A participant or team name is already registered for this event." },
+        { message: "A participant or team with that name is already registered for this event." },
         { status: 409 }
       );
     }
