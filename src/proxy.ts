@@ -12,7 +12,7 @@ function botcheckMiddleware(req: NextRequest): NextResponse | null {
   return null;
 }
 
-async function ratelimitMiddleware(request: NextRequest): Promise<NextResponse | null> {
+async function ratelimitMiddleware(request: NextRequest):  Promise<NextResponse | null> {
   const ip =
     request.headers.get("x-forwarded-for") ||
     request.headers.get("x-real-ip") ||
