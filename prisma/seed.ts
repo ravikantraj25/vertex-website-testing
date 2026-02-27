@@ -1,28 +1,31 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, EventType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const admin = await prisma.admin.upsert({
-    where: {
-      emailId: "darshilmahraur3@gmail.com", // change to your real email
-    },
+  console.log("🌱 Seeding events...");
+
+  await prisma.event.upsert({
+    where: { slug: "reeluminati" },
     update: {},
     create: {
-      usn: "1ds23et043",        // change this
-      emailId: "darshilmahraur3@gmail.com", // change this
-      phoneNo: "9876543210",        // change this
+      slug: "reeluminati",
+      name: "Reeluminati",
+      type: EventType.TEAM,
+      price: 0, // ₹150
     },
   });
 
-  console.log("✅ Admin seeded:", admin);
+
+  console.log("✅ Seeding completed!");
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
+  .then(async () => {
     await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
   });

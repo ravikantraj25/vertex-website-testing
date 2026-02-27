@@ -33,22 +33,20 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
         className="relative mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8"
       >
         {data.map((item, index) => (
-          <div key={index} className="flex flex-col md:flex-row md:items-start gap-4 pt-8 md:gap-6 md:pt-12 relative">
+          <div key={index} className="flex flex-wrap items-start gap-x-4 gap-y-3 pt-8 md:flex-nowrap md:gap-6 md:pt-12">
 
-            <div className="flex items-center gap-4 md:contents">
-              {/* Dot */}
-              <div className="relative z-40 mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.05]">
-                <div className="h-2.5 w-2.5 rounded-full bg-white/50" />
-              </div>
-
-              {/* Title */}
-              <h3 className="mt-1.5 w-auto md:w-40 shrink-0 text-xl font-semibold text-white">
-                {item.title}
-              </h3>
+            {/* Dot */}
+            <div className="relative z-40 mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.05]">
+              <div className="h-2.5 w-2.5 rounded-full bg-white/50" />
             </div>
 
+            {/* Title */}
+            <h3 className="mt-1.5 shrink-0 text-xl font-semibold text-white md:w-40">
+              {item.title}
+            </h3>
+
             {/* Content card */}
-            <div className="w-full pb-8 md:pl-0 pl-12 sm:pl-16">
+            <div className="w-full pb-8 pl-14 md:flex-1 md:pl-0">
               <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
                 {item.content}
               </div>
@@ -60,10 +58,10 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
         {/* Vertical line — positioned at dot center per breakpoint */}
         <div
           style={{ height }}
-          className="absolute left-[34px] top-0 w-[2px] overflow-hidden
+          className="absolute left-9 top-0 w-[2px] overflow-hidden
             bg-gradient-to-b from-transparent via-white/10 to-transparent
             [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_90%,transparent_100%)]
-            sm:left-11 md:left-11 lg:left-[52px]"
+            sm:left-11 lg:left-[52px]"
         >
           <motion.div
             style={{ height: heightTransform, opacity: opacityTransform }}
