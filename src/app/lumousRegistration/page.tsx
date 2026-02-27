@@ -454,7 +454,7 @@ function QrScreen({
       <div className="flex flex-col items-center gap-4">
         <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">Scan & Pay via UPI</p>
         <div className="bg-white p-4 rounded-2xl shadow-2xl shadow-black/60">
-          <img src="/dsce_qr.png" alt="UPI QR" className="w-52 h-52 object-contain"/>
+          <img src="/dsce_qr_final.png" alt="UPI QR" className="w-52 h-52 object-contain"/>
         </div>
         <p className="text-xs text-zinc-500 text-center max-w-xs leading-relaxed">
           GPay · PhonePe · Paytm. After paying, upload your screenshot below.

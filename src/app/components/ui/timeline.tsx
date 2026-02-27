@@ -33,7 +33,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
         className="relative mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8"
       >
         {data.map((item, index) => (
-          <div key={index} className="flex items-start gap-4 pt-8 md:gap-6 md:pt-12">
+          <div key={index} className="flex flex-wrap items-start gap-x-4 gap-y-3 pt-8 md:flex-nowrap md:gap-6 md:pt-12">
 
             {/* Dot */}
             <div className="relative z-40 mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.05]">
@@ -41,12 +41,12 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
             </div>
 
             {/* Title */}
-            <h3 className="mt-1.5 w-32 md:w-40 shrink-0 text-xl font-semibold text-white">
+            <h3 className="mt-1.5 shrink-0 text-xl font-semibold text-white md:w-40">
               {item.title}
             </h3>
 
             {/* Content card */}
-            <div className="w-full pb-8">
+            <div className="w-full pb-8 pl-14 md:flex-1 md:pl-0">
               <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 sm:p-6">
                 {item.content}
               </div>
