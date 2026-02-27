@@ -8,7 +8,7 @@ import {
   ChangeEvent,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
- 
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface TeamMember {
@@ -145,7 +145,7 @@ const EVENTS: EventItem[] = [
     feeType: "per_team", fee: 50,
     exact: 2,
     note: "Exactly 2 members · ₹50 per team",
-  },{
+  }, {
     slug: "trapezoid", label: "Trap E Zoid (Hardware escape room )", icon: "🎮",
     category: "Technical / Fun",
     feeType: "per_team", fee: 150,
@@ -158,22 +158,22 @@ const CATEGORIES = [...new Set(EVENTS.map((e) => e.category))];
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const USN_REGEX   = /^1ds\d{2}[a-z]{2}\d{3}$/i;
+const USN_REGEX = /^1ds\d{2}[a-z]{2}\d{3}$/i;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const STORAGE_KEY = "lumos_reg_form_v2";
-const OTP_LENGTH  = 6;
+const OTP_LENGTH = 6;
 const RESEND_SECS = 30;
-const MAX_SS_MB   = 5;
+const MAX_SS_MB = 5;
 
 const defaultMember = (): TeamMember => ({ name: "", usn: "", phone: "" });
 
 const defaultForm: FormState = {
-  fullName:    "",
-  usn:         "",
-  email:       "",
-  phone:       "",
-  eventSlug:   "",
-  teamName:    "",
+  fullName: "",
+  usn: "",
+  email: "",
+  phone: "",
+  eventSlug: "",
+  teamName: "",
   teamMembers: [],
 };
 
@@ -235,8 +235,8 @@ function requiresTeam(ev: EventItem | undefined): boolean {
 
 // ─── Validation ───────────────────────────────────────────────────────────────
 
-const validateUSN   = (v: string) => !v ? "USN is required" : !/^1ds/i.test(v) ? "Must start with '1DS'" : !USN_REGEX.test(v) ? "e.g. 1DS23ET045" : "";
-const validateName  = (v: string) => !v.trim() ? "Required" : "";
+const validateUSN = (v: string) => !v ? "USN is required" : !/^1ds/i.test(v) ? "Must start with '1DS'" : !USN_REGEX.test(v) ? "e.g. 1DS23ET045" : "";
+const validateName = (v: string) => !v.trim() ? "Required" : "";
 const validateEmail = (v: string) => !v ? "Required" : !EMAIL_REGEX.test(v) ? "Invalid email" : "";
 const validatePhone = (v: string) => !v?.trim() ? "Required" : v.replace(/\D/g, "").length !== 10 ? "10 digits required" : "";
 
@@ -260,16 +260,16 @@ async function apiVerifyOtp(email: string, otp: string) {
 
 async function apiRegister(form: FormState): Promise<RegisterApiResponse> {
   const body: Record<string, unknown> = {
-    fullName:  form.fullName,
-    usn:       form.usn,
-    email:     form.email,
-    phone:     form.phone,
+    fullName: form.fullName,
+    usn: form.usn,
+    email: form.email,
+    phone: form.phone,
     eventSlug: form.eventSlug,
   };
 
   if (form.teamMembers.length > 0 && form.teamName.trim()) {
     body.team = {
-      name:    form.teamName.trim(),
+      name: form.teamName.trim(),
       members: form.teamMembers.map((m) => ({ name: m.name, usn: m.usn, phone: m.phone })),
     };
   }
@@ -296,8 +296,8 @@ function Spinner({ size = "md" }: { size?: "sm" | "md" }) {
   const s = size === "sm" ? "w-3.5 h-3.5" : "w-5 h-5";
   return (
     <svg className={`${s} animate-spin`} fill="none" viewBox="0 0 24 24">
-      <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-      <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+      <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
     </svg>
   );
 }
@@ -344,7 +344,7 @@ function Block({ title, icon, children }: { title: string; icon: string; childre
       <div className="flex items-center gap-3">
         <span className="text-2xl">{icon}</span>
         <h2 className="text-sm font-bold tracking-[0.15em] uppercase text-zinc-300">{title}</h2>
-        <div className="flex-1 h-px bg-zinc-800"/>
+        <div className="flex-1 h-px bg-zinc-800" />
       </div>
       {children}
     </div>
@@ -402,13 +402,13 @@ function QrScreen({
   amount: number; registrationId: string; eventName: string; email: string;
   onSuccess: () => void; onReset: () => void;
 }) {
-  const [file, setFile]       = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [busy, setBusy]       = useState(false);
-  const [err, setErr]         = useState("");
-  const ref                   = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const ref = useRef<HTMLInputElement>(null);
   // FIX: track preview URL for cleanup on unmount
-  const previewUrl            = useRef<string | null>(null);
+  const previewUrl = useRef<string | null>(null);
 
   // FIX: revoke object URL on unmount to prevent memory leak
   useEffect(() => {
@@ -454,7 +454,7 @@ function QrScreen({
       <div className="flex flex-col items-center gap-4">
         <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">Scan & Pay via UPI</p>
         <div className="bg-white p-4 rounded-2xl shadow-2xl shadow-black/60">
-          <img src="/dsce_qr_final.png" alt="UPI QR" className="w-52 h-52 object-contain"/>
+          <img src="/dsce_qr_final.png" alt="UPI QR" className="w-52 h-52 object-contain" />
         </div>
         <p className="text-xs text-zinc-500 text-center max-w-xs leading-relaxed">
           GPay · PhonePe · Paytm. After paying, upload your screenshot below.
@@ -462,7 +462,7 @@ function QrScreen({
         <p className="text-xs text-amber-400 font-semibold">⚠ Do not close this page</p>
       </div>
 
-      <div className="h-px bg-zinc-800"/>
+      <div className="h-px bg-zinc-800" />
 
       <div className="flex flex-col gap-3">
         <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">Upload Screenshot</p>
@@ -471,11 +471,11 @@ function QrScreen({
           className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center gap-3 cursor-pointer transition-all ${file ? "border-amber-500/50 bg-amber-950/10" : "border-zinc-700 hover:border-zinc-600 bg-zinc-900/40"}`}
         >
           {preview
-            ? <><img src={preview} className="max-h-40 rounded-lg object-contain"/><p className="text-xs text-amber-400">{file?.name}</p></>
+            ? <><img src={preview} className="max-h-40 rounded-lg object-contain" /><p className="text-xs text-amber-400">{file?.name}</p></>
             : <><div className="text-3xl">📎</div><p className="text-sm text-zinc-400">Click to select</p><p className="text-xs text-zinc-600">JPG · PNG · WebP · Max {MAX_SS_MB}MB</p></>
           }
         </div>
-        <input ref={ref} type="file" accept="image/*" className="sr-only" onChange={onFile}/>
+        <input ref={ref} type="file" accept="image/*" className="sr-only" onChange={onFile} />
 
         {err && <p className="text-xs text-red-400">✗ {err}</p>}
 
@@ -484,7 +484,7 @@ function QrScreen({
             onClick={submit} disabled={!file || busy}
             className={`flex-1 py-3.5 rounded-xl text-sm font-bold tracking-wide flex items-center justify-center gap-2 transition-all ${file && !busy ? "bg-amber-500 hover:bg-amber-400 text-black" : "bg-zinc-800 text-zinc-600 cursor-not-allowed"}`}
           >
-            {busy ? <><Spinner size="sm"/> Uploading…</> : "Submit for Verification"}
+            {busy ? <><Spinner size="sm" /> Uploading…</> : "Submit for Verification"}
           </button>
           <button onClick={onReset} disabled={busy} className="px-4 text-xs text-zinc-600 hover:text-zinc-400 transition-colors">Cancel</button>
         </div>
@@ -549,59 +549,59 @@ function SuccessScreen({ email, eventName, onReset }: { email: string; eventName
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function LumousRegistrationPage() {
-  const [form, setForm]       = useState<FormState>(defaultForm);
+  const [form, setForm] = useState<FormState>(defaultForm);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   // FIX: renamed from `ev` to `emailVerif` to avoid collision with event loop vars
   const [emailVerif, setEmailVerif] = useState<EmailVerificationState>({ status: "idle", message: "", resendCooldown: 0 });
-  const [otp, setOtp]       = useState("");
+  const [otp, setOtp] = useState("");
   const [otpErr, setOtpErr] = useState("");
 
-  const [flow, setFlow]                 = useState<PaymentFlowStatus>("idle");
-  const [flowErr, setFlowErr]           = useState("");
-  const [regId, setRegId]               = useState<string | null>(null);
-  const [regAmount, setRegAmount]       = useState(0);
+  const [flow, setFlow] = useState<PaymentFlowStatus>("idle");
+  const [flowErr, setFlowErr] = useState("");
+  const [regId, setRegId] = useState<string | null>(null);
+  const [regAmount, setRegAmount] = useState(0);
   const [regEventName, setRegEventName] = useState("");
 
   const cooldown = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ── Restore ──────────────────────────────────────────────────────────────
   useEffect(() => {
-    try { const s = localStorage.getItem(STORAGE_KEY); if (s) setForm(p => ({ ...p, ...JSON.parse(s) })); } catch (_) {}
+    try { const s = localStorage.getItem(STORAGE_KEY); if (s) setForm(p => ({ ...p, ...JSON.parse(s) })); } catch (_) { }
   }, []);
 
   useEffect(() => {
-    if (flow !== "success") try { localStorage.setItem(STORAGE_KEY, JSON.stringify(form)); } catch (_) {}
+    if (flow !== "success") try { localStorage.setItem(STORAGE_KEY, JSON.stringify(form)); } catch (_) { }
   }, [form, flow]);
 
   // ── Derived ───────────────────────────────────────────────────────────────
-  const selectedEvent  = EVENTS.find(e => e.slug === form.eventSlug);
-  const totalMembers   = 1 + form.teamMembers.length;
-  const totalPaise     = calcAmount(selectedEvent, totalMembers);
-  const sizeErr        = selectedEvent ? teamSizeError(selectedEvent, totalMembers) : "";
-  const minTm          = minTeammates(selectedEvent);
-  const maxTm          = maxTeammates(selectedEvent);
+  const selectedEvent = EVENTS.find(e => e.slug === form.eventSlug);
+  const totalMembers = 1 + form.teamMembers.length;
+  const totalPaise = calcAmount(selectedEvent, totalMembers);
+  const sizeErr = selectedEvent ? teamSizeError(selectedEvent, totalMembers) : "";
+  const minTm = minTeammates(selectedEvent);
+  const maxTm = maxTeammates(selectedEvent);
 
   // FIX: team section only shown when event requires multiple members OR user has
   // explicitly added at least one teammate. Not shown just because event *can* have them.
-  const hasTeammates        = form.teamMembers.length > 0;
-  const eventRequiresTeam   = requiresTeam(selectedEvent);
-  const eventCanHaveTeam    = canHaveTeam(selectedEvent);
-  const showTeamSection     = eventRequiresTeam || hasTeammates;
+  const hasTeammates = form.teamMembers.length > 0;
+  const eventRequiresTeam = requiresTeam(selectedEvent);
+  const eventCanHaveTeam = canHaveTeam(selectedEvent);
+  const showTeamSection = eventRequiresTeam || hasTeammates;
 
   // FIX: team name only required when there are actual teammates present
   const teamNameErr = showTeamSection && hasTeammates && !form.teamName.trim() ? "Team name required" : "";
 
   const errors: FormErrors = {
     fullName: validateName(form.fullName),
-    usn:      validateUSN(form.usn),
-    email:    validateEmail(form.email),
-    phone:    validatePhone(form.phone),
+    usn: validateUSN(form.usn),
+    email: validateEmail(form.email),
+    phone: validatePhone(form.phone),
   };
 
   const memberErrors: MemberError[] = form.teamMembers.map(m => ({
-    name:  validateName(m.name),
-    usn:   validateUSN(m.usn),
+    name: validateName(m.name),
+    usn: validateUSN(m.usn),
     phone: validatePhone(m.phone),
   }));
 
@@ -619,7 +619,7 @@ export default function LumousRegistrationPage() {
 
   const handleEventChange = (slug: string) => {
     const next = EVENTS.find(e => e.slug === slug);
-    const min  = minTeammates(next);
+    const min = minTeammates(next);
     // Pre-fill with minimum required teammates only
     const members = Array.from({ length: min }, defaultMember);
     patch({ eventSlug: slug, teamName: "", teamMembers: members });
@@ -729,7 +729,7 @@ export default function LumousRegistrationPage() {
         {/* ── Header ── */}
         <motion.div initial={{ opacity: 0, y: -24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="text-center mb-10">
           <div className="inline-flex items-center gap-2 border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-bold uppercase tracking-[0.2em] px-4 py-2 rounded-full mb-5">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"/>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
             Registrations Open
           </div>
           <h1 className="font-display text-6xl sm:text-7xl text-white mb-2 leading-none">
@@ -749,7 +749,7 @@ export default function LumousRegistrationPage() {
           </div>
 
           <a
-            href="https://drive.google.com/file/d/1TiMMGZVdh4mP8EzItxk8454pyJR4WBJh/view?usp=sharing"
+            href="https://drive.google.com/file/d/1HAujdGlUDSMKCaTVjhlrY-lr_As0NC0u/view?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-between w-full px-4 py-3 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 rounded-xl transition-all duration-200 group"
@@ -765,6 +765,7 @@ export default function LumousRegistrationPage() {
             <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span><strong className="text-amber-200/90">One registration = one event.</strong> If you want to register for multiple events, please register separately for each event.</span></li>
             <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span>Read all rules before registering. Team size limits are strictly enforced.</span></li>
             <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span>Ideathon participants must upload PPT separately after registration.</span></li>
+            <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span>Prize pool for Non-technical Events will be informed later via website and social media.</span></li>
           </ul>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-3 border-t border-amber-800/20 text-[12px] text-amber-400/50">
@@ -780,7 +781,7 @@ export default function LumousRegistrationPage() {
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
           className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl shadow-black/60"
         >
-          <div className="h-0.5 bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600"/>
+          <div className="h-0.5 bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600" />
 
           <div className="p-6 sm:p-8">
             <AnimatePresence mode="wait">
@@ -789,7 +790,7 @@ export default function LumousRegistrationPage() {
               {flow === "creating_registration" && (
                 <motion.div key="loading" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   className="flex flex-col items-center gap-4 py-20">
-                  <Spinner/><p className="text-zinc-500 text-sm">Setting up your registration…</p>
+                  <Spinner /><p className="text-zinc-500 text-sm">Setting up your registration…</p>
                 </motion.div>
               )}
 
@@ -807,7 +808,7 @@ export default function LumousRegistrationPage() {
               {/* Success */}
               {flow === "success" && (
                 <motion.div key="success" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                  <SuccessScreen email={form.email} eventName={regEventName} onReset={reset}/>
+                  <SuccessScreen email={form.email} eventName={regEventName} onReset={reset} />
                 </motion.div>
               )}
 
@@ -835,17 +836,17 @@ export default function LumousRegistrationPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Field label="Full Name" id="fullName" required error={touched.fullName ? errors.fullName : ""}>
                         <Input id="fullName" type="text" placeholder="Your full name" value={form.fullName}
-                          onChange={e => patch({ fullName: e.target.value })} onBlur={() => touch("fullName")}/>
+                          onChange={e => patch({ fullName: e.target.value })} onBlur={() => touch("fullName")} />
                       </Field>
                       <Field label="USN" id="usn" required error={touched.usn ? errors.usn : ""}>
                         <Input id="usn" type="text" placeholder="1DS23ET045" value={form.usn}
-                          onChange={e => patch({ usn: e.target.value })} onBlur={() => touch("usn")} maxLength={10}/>
+                          onChange={e => patch({ usn: e.target.value })} onBlur={() => touch("usn")} maxLength={10} />
                       </Field>
                     </div>
                     {/* FIX: phone field now shows in readiness checklist and errors are visible */}
                     <Field label="Phone" id="phone" required error={touched.phone ? errors.phone : ""}>
                       <Input id="phone" type="tel" placeholder="10-digit number" value={form.phone}
-                        onChange={e => patch({ phone: e.target.value })} onBlur={() => touch("phone")}/>
+                        onChange={e => patch({ phone: e.target.value })} onBlur={() => touch("phone")} />
                     </Field>
                   </Block>
 
@@ -857,11 +858,11 @@ export default function LumousRegistrationPage() {
                           onChange={e => { patch({ email: e.target.value }); if (emailVerif.status !== "idle") resetEmailFlow(); }}
                           onBlur={() => touch("email")}
                           disabled={["otp_sent", "verifying", "verified", "sending"].includes(emailVerif.status)}
-                          className="flex-1"/>
+                          className="flex-1" />
                         {!["verified", "otp_sent", "verifying"].includes(emailVerif.status) && (
                           <button onClick={sendOtp} disabled={emailVerif.status === "sending" || !!errors.email}
                             className="px-4 py-3 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-black text-sm font-bold rounded-lg transition-colors whitespace-nowrap flex items-center gap-2">
-                            {emailVerif.status === "sending" ? <><Spinner size="sm"/> …</> : "Send OTP"}
+                            {emailVerif.status === "sending" ? <><Spinner size="sm" /> …</> : "Send OTP"}
                           </button>
                         )}
                       </div>
@@ -872,12 +873,12 @@ export default function LumousRegistrationPage() {
                         <motion.div key="otp" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
                           <div className="bg-zinc-800/60 border border-zinc-700 rounded-xl p-5 flex flex-col gap-4">
                             <p className="text-xs text-zinc-400">OTP sent to <span className="text-amber-400 font-semibold">{form.email}</span></p>
-                            <OtpInput value={otp} onChange={v => { setOtp(v); if (otpErr) setOtpErr(""); }} disabled={emailVerif.status === "verifying"}/>
+                            <OtpInput value={otp} onChange={v => { setOtp(v); if (otpErr) setOtpErr(""); }} disabled={emailVerif.status === "verifying"} />
                             {otpErr && <p className="text-xs text-red-400">✗ {otpErr}</p>}
                             <div className="flex flex-wrap gap-3 items-center">
                               <button onClick={verifyOtp} disabled={emailVerif.status === "verifying" || otp.length !== OTP_LENGTH}
                                 className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-black text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
-                                {emailVerif.status === "verifying" ? <><Spinner size="sm"/> Verifying…</> : "Verify"}
+                                {emailVerif.status === "verifying" ? <><Spinner size="sm" /> Verifying…</> : "Verify"}
                               </button>
                               <button onClick={resendOtp} disabled={emailVerif.resendCooldown > 0 || emailVerif.status === "verifying"}
                                 className="text-xs text-zinc-500 hover:text-amber-400 disabled:opacity-40 transition-colors">
@@ -923,9 +924,9 @@ export default function LumousRegistrationPage() {
                                   key={eventItem.slug} whileTap={{ scale: 0.98 }}
                                   className={`relative flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all duration-200 ${sel ? "bg-amber-500/10 border-amber-500/40 shadow-[0_0_20px_-4px_rgba(245,158,11,0.15)]" : "bg-zinc-800/30 border-zinc-800/60 hover:bg-zinc-800/50 hover:border-zinc-700/80"}`}
                                 >
-                                  <input type="radio" name="event" className="sr-only" checked={sel} onChange={() => handleEventChange(eventItem.slug)}/>
+                                  <input type="radio" name="event" className="sr-only" checked={sel} onChange={() => handleEventChange(eventItem.slug)} />
                                   <div className={`mt-0.5 w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 ${sel ? "border-amber-400 bg-amber-400" : "border-zinc-600"}`}>
-                                    {sel && <div className="w-2 h-2 rounded-full bg-black"/>}
+                                    {sel && <div className="w-2 h-2 rounded-full bg-black" />}
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-1">
@@ -994,7 +995,7 @@ export default function LumousRegistrationPage() {
                           {hasTeammates && (
                             <Field label="Team Name" id="teamName" required error={touched.teamName ? teamNameErr : undefined}>
                               <Input id="teamName" type="text" placeholder="Your team name" value={form.teamName}
-                                onChange={e => patch({ teamName: e.target.value })} onBlur={() => touch("teamName")}/>
+                                onChange={e => patch({ teamName: e.target.value })} onBlur={() => touch("teamName")} />
                             </Field>
                           )}
 
@@ -1045,17 +1046,17 @@ export default function LumousRegistrationPage() {
                                     <Field label="Name" id={`mn-${i}`} required error={touched[`m${i}`] ? memberErrors[i]?.name : undefined}>
                                       <Input id={`mn-${i}`} type="text" placeholder="Full name" value={m.name}
                                         onChange={e => updateMember(i, "name", e.target.value)}
-                                        onBlur={() => setTouched(p => ({ ...p, [`m${i}`]: true }))}/>
+                                        onBlur={() => setTouched(p => ({ ...p, [`m${i}`]: true }))} />
                                     </Field>
                                     <Field label="USN" id={`mu-${i}`} required error={touched[`m${i}`] ? memberErrors[i]?.usn : undefined}>
                                       <Input id={`mu-${i}`} type="text" placeholder="1DS23ET045" value={m.usn}
                                         onChange={e => updateMember(i, "usn", e.target.value)}
-                                        onBlur={() => setTouched(p => ({ ...p, [`m${i}`]: true }))} maxLength={10}/>
+                                        onBlur={() => setTouched(p => ({ ...p, [`m${i}`]: true }))} maxLength={10} />
                                     </Field>
                                     <Field label="Phone" id={`mp-${i}`} required error={touched[`m${i}`] ? memberErrors[i]?.phone : undefined}>
                                       <Input id={`mp-${i}`} type="tel" placeholder="10-digit" value={m.phone}
                                         onChange={e => updateMember(i, "phone", e.target.value)}
-                                        onBlur={() => setTouched(p => ({ ...p, [`m${i}`]: true }))}/>
+                                        onBlur={() => setTouched(p => ({ ...p, [`m${i}`]: true }))} />
                                     </Field>
                                   </div>
                                 </motion.div>
@@ -1111,11 +1112,10 @@ export default function LumousRegistrationPage() {
                       whileHover={isFormValid ? { scale: 1.015 } : {}}
                       whileTap={isFormValid ? { scale: 0.985 } : {}}
                       onClick={submit}
-                      className={`w-full py-4 rounded-xl text-base font-black font-display tracking-wider transition-all flex items-center justify-center gap-2 ${
-                        isFormValid
-                          ? "bg-amber-500 hover:bg-amber-400 text-black shadow-lg shadow-amber-500/20"
-                          : "bg-zinc-800 text-zinc-600 cursor-not-allowed"
-                      }`}
+                      className={`w-full py-4 rounded-xl text-base font-black font-display tracking-wider transition-all flex items-center justify-center gap-2 ${isFormValid
+                        ? "bg-amber-500 hover:bg-amber-400 text-black shadow-lg shadow-amber-500/20"
+                        : "bg-zinc-800 text-zinc-600 cursor-not-allowed"
+                        }`}
                     >
                       {isFormValid
                         ? <>{totalPaise === 0 ? "REGISTER FREE" : `PROCEED TO PAY ${formatINR(totalPaise)}`}</>
