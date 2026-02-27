@@ -8,7 +8,7 @@ Thank you for your interest in contributing to this project. Please follow the s
 - Git installed locally
 
 ## Getting Started
-1. Clone the repository
+1. Clone the repository 
    - git clone https://github.com/your-org/your-nextjs-project.git
    -  cd your-nextjs-project
 
