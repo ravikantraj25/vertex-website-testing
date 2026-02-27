@@ -8,7 +8,7 @@ import { ratelimit } from "@/lib/ratelimit";
  * Any logged-in user can submit an application
  */
 export async function POST(request: NextRequest) {
-       
+        
     try {
         // Check if user is authenticated (any role)
         const session = await getSession();
