@@ -28,9 +28,10 @@ const eventRules: Record<
   { min?: number; max?: number; exact?: number; feeType: string; fee?: number }
 > = {
     ideathon: { min: 1, max: 3, feeType: "free" },
-  bgmi: { min: 1, max: 4, feeType: "per_person", fee: 50 },
+  bgmi: { min: 1, max: 4, feeType: "per_team", fee: 50 },
   igp: { min: 1, max: 2, feeType: "free" },
   reel: { min: 1, max: 4, feeType: "free" },
+  trapezoid: { min: 1, max: 2, feeType: "per_team", fee: 150 },
   cricket: { min: 8, max: 11, feeType: "per_team", fee: 150 },
   volleyball: { min: 6, max: 9, feeType: "per_team", fee: 100 },
   lagori: { exact: 6, feeType: "free" },

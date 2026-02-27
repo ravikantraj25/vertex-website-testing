@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { ArrowUpRight, Calendar, MapPin, Brain, Gamepad2, CircuitBoard, Clapperboard, Plus } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const upcomingEvent = {
   num: "01",
@@ -12,7 +13,7 @@ const upcomingEvent = {
   description:
     "A multi-event inter-departmental showdown — where ideas spark, creativity roars, and every department brings its A-game.",
   accent: "#fbbf24",
-  date: "11th & 12th March 2026",
+  date: "11th & 15th March 2026",
   venue: "Dept of ETE",
   subEvents: [
     { label: "Inspire (Ideathon)", Icon: Brain },
@@ -27,7 +28,7 @@ export default function UpcomingEvents() {
   const { accent } = upcomingEvent;
 
   return (
-    <section className="relative w-full bg-black px-6 py-20 sm:px-10 lg:px-20 overflow-hidden">
+    <section className="relative w-full bg-black px-4 py-20 sm:px-6 lg:px-8 overflow-hidden">
       {/* Grain texture */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.045]"
@@ -53,6 +54,7 @@ export default function UpcomingEvents() {
         }}
       />
 
+      <div className="mx-auto max-w-7xl">
       {/* Top rule */}
       <div className="mb-10 flex items-center gap-4 border-t border-white/[0.07] pt-5">
         <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.35em] text-white/20">
@@ -122,7 +124,7 @@ export default function UpcomingEvents() {
             style={{ background: `linear-gradient(to bottom, transparent, ${accent}, transparent)` }}
           />
 
-          {/* Top row: number + category + badge */}
+          {/* Top row: number + category + badge + logo */}
           <div className="relative flex items-center justify-between mb-6 flex-wrap gap-3">
             <span
               className="font-mono text-[11px] font-bold tracking-[0.3em] uppercase"
@@ -130,16 +132,25 @@ export default function UpcomingEvents() {
             >
               {upcomingEvent.num} &mdash; {upcomingEvent.category}
             </span>
-            <span
-              className="rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-widest"
-              style={{
-                borderColor: accent + "44",
-                color: accent + "cc",
-                backgroundColor: accent + "0d",
-              }}
-            >
-              Registration Open
-            </span>
+            <div className="flex items-center gap-3">
+              <span
+                className="rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-widest"
+                style={{
+                  borderColor: accent + "44",
+                  color: accent + "cc",
+                  backgroundColor: accent + "0d",
+                }}
+              >
+                Registration Open
+              </span>
+              <Image
+                src="/dsceete.png"
+                alt="Dept of ETE, DSCE"
+                width={48}
+                height={48}
+                className="rounded-full opacity-80"
+              />
+            </div>
           </div>
 
           {/* Titles */}
@@ -225,7 +236,7 @@ export default function UpcomingEvents() {
             </Link>
 
             <span className="text-[10px] font-bold uppercase tracking-[0.35em] text-white/15">
-              Vertex Club &mdash; 2025
+              Vertex Club
             </span>
           </div>
         </div>
@@ -233,6 +244,7 @@ export default function UpcomingEvents() {
 
       {/* Bottom rule */}
       <div className="mt-12 h-px bg-white/[0.06]" />
+      </div>
     </section>
   );
 }
