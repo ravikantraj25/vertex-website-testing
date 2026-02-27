@@ -8,7 +8,7 @@ import {
   ChangeEvent,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
+ 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface TeamMember {
