@@ -54,6 +54,12 @@ export async function proxy(request: NextRequest) {
 
     if (!token) {
       // Preserve the intended destination so you can redirect back after login
+       if (pathname.startsWith("/api")) {
+      return new NextResponse(
+        JSON.stringify({ message: "Unauthorized" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
+      );
+    }
       const loginUrl = new URL("/", request.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
