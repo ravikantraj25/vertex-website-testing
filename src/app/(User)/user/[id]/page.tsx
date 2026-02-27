@@ -5,4 +5,4 @@ export default async function UserProfilePage({
 }) { 
   const { id } = await params
   return <div>User Profile: {id}</div>
-}
+} 
