@@ -10,7 +10,7 @@ Thank you for your interest in contributing to this project. Please follow the s
 ## Getting Started
 1. Clone the repository
    - git clone https://github.com/your-org/your-nextjs-project.git
-   - cd your-nextjs-project
+   -  cd your-nextjs-project
 
 2. Install dependencies (choose one)
    - npm install

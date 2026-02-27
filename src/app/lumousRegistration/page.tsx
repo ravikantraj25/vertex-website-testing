@@ -259,35 +259,42 @@ async function apiVerifyOtp(email: string, otp: string) {
 }
 
 async function apiRegister(form: FormState): Promise<RegisterApiResponse> {
+  const hasMembers = form.teamMembers.length > 0;
+  const hasTeamName = form.teamName.trim().length > 0;
+
   const body: Record<string, unknown> = {
-    fullName: form.fullName,
-    usn: form.usn,
-    email: form.email,
-    phone: form.phone,
+    fullName:  form.fullName,
+    usn:       form.usn,
+    email:     form.email,
+    phone:     form.phone,
     eventSlug: form.eventSlug,
   };
 
-// FIXED
-const hasMembers = form.teamMembers.length > 0;
-const hasTeamName = form.teamName.trim().length > 0;
-
-if (hasMembers) {
-  body.team = {
-    // Fall back to a generated name if somehow empty (shouldn't happen but safety net)
-    name: hasTeamName ? form.teamName.trim() : `Team-${form.usn}`,
-    members: form.teamMembers.map((m) => ({
-      name:  m.name,
-      usn:   m.usn,
-      phone: m.phone,
-    })),
-  };
-}
+  if (hasMembers) {
+    body.team = {
+      name: hasTeamName ? form.teamName.trim() : `Team-${form.usn}`,
+      members: form.teamMembers.map((m) => ({
+        name:  m.name,
+        usn:   m.usn,
+        phone: m.phone,
+      })),
+    };
+  }
 
   const res = await fetch("/api/lumous-register", {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(body),
   });
-  if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d?.message ?? "Registration failed"); }
+
+  if (!res.ok) {
+    const d = await res.json().catch(() => ({}));
+    // Attach conflicts to error so submit handler can store them
+    const err = new Error(d?.message ?? "Registration failed") as any;
+    err.conflicts = d?.conflicts ?? [];
+    throw err;
+  }
+
   return res.json();
 }
 
@@ -571,7 +578,7 @@ export default function LumousRegistrationPage() {
   const [regId, setRegId] = useState<string | null>(null);
   const [regAmount, setRegAmount] = useState(0);
   const [regEventName, setRegEventName] = useState("");
-
+  const [conflicts, setConflicts] = useState<{ name: string; usn: string; phone: string; teamName: string }[]>([]);
   const cooldown = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // ── Restore ──────────────────────────────────────────────────────────────
@@ -708,12 +715,14 @@ export default function LumousRegistrationPage() {
       if (data.amount === 0) { localStorage.removeItem(STORAGE_KEY); setFlow("success"); }
       else setFlow("awaiting_screenshot");
     } catch (e: unknown) {
-      setFlowErr(e instanceof Error ? e.message : "Registration failed");
-      setFlow("error");
-    }
+  setFlowErr(e instanceof Error ? e.message : "Registration failed");
+  setConflicts((e as any)?.conflicts ?? []);
+  setFlow("error");
+}
   };
 
   const reset = () => {
+    setConflicts([]);
     setForm(defaultForm); setTouched({});
     setEmailVerif({ status: "idle", message: "", resendCooldown: 0 }); setOtp(""); setOtpErr("");
     setFlow("idle"); setFlowErr(""); setRegId(null); setRegAmount(0); setRegEventName("");
@@ -822,19 +831,61 @@ export default function LumousRegistrationPage() {
               )}
 
               {/* Error */}
-              {flow === "error" && (
-                <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="flex flex-col items-center gap-5 py-14 text-center">
-                  <div className="text-6xl">❌</div>
-                  <div>
-                    <h2 className="text-xl font-black text-white font-display mb-2">Registration Failed</h2>
-                    <p className="text-zinc-400 text-sm max-w-xs leading-relaxed">{flowErr}</p>
-                  </div>
-                  <button onClick={() => setFlow("idle")} className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-bold rounded-xl transition-colors">
-                    Try Again
-                  </button>
-                </motion.div>
-              )}
+            // REPLACE the flow === "error" block with this
+{flow === "error" && (
+  <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+    className="flex flex-col items-center gap-5 py-10 text-center">
+    <div className="text-6xl">❌</div>
+    <div>
+      <h2 className="text-xl font-black text-white font-display mb-2">Registration Failed</h2>
+      <p className="text-zinc-400 text-sm max-w-sm leading-relaxed">{flowErr}</p>
+    </div>
+
+    {/* Conflict table — only shown when specific members are already registered */}
+    {conflicts.length > 0 && (
+      <motion.div
+        initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+        className="w-full bg-red-950/30 border border-red-700/40 rounded-xl overflow-hidden"
+      >
+        <div className="px-4 py-3 border-b border-red-800/30 flex items-center gap-2">
+          <span className="text-red-400 text-xs font-bold uppercase tracking-widest">
+            Already Registered Members
+          </span>
+        </div>
+        <div className="divide-y divide-red-900/30">
+          {conflicts.map((c, i) => (
+            <div key={i} className="px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-left">
+              <div>
+                <p className="text-sm font-semibold text-red-200">{c.name}</p>
+                <p className="text-xs text-red-400 font-mono">{c.usn}</p>
+              </div>
+              <div className="text-right">
+                {c.teamName !== "Solo" && (
+                  <p className="text-xs text-zinc-500">
+                    Team: <span className="text-zinc-400">{c.teamName}</span>
+                  </p>
+                )}
+                <p className="text-xs text-zinc-600">{c.phone}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="px-4 py-3 bg-red-950/20 border-t border-red-800/30">
+          <p className="text-xs text-red-400/80 text-left leading-relaxed">
+            Remove the above member(s) from your team and try again, or contact them directly.
+          </p>
+        </div>
+      </motion.div>
+    )}
+
+    <button
+      onClick={() => { setFlow("idle"); setConflicts([]); }}
+      className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-bold rounded-xl transition-colors"
+    >
+      Go Back & Fix
+    </button>
+  </motion.div>
+)}
 
               {/* ── Main Form ── */}
               {flow === "idle" && (

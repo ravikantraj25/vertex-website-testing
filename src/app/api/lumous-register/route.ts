@@ -27,17 +27,19 @@ const eventRules: Record<
   string,
   { min?: number; max?: number; exact?: number; feeType: string; fee?: number }
 > = {
-  ideathon:   { min: 2, max: 3,  feeType: "free" },           // FIX: was min:1, frontend says 2
-  bgmi:       { min: 1, max: 4,  feeType: "per_team", fee: 50 },
-  igp:        { min: 1, max: 2,  feeType: "free" },
-  reeluminati:{ min: 1, max: 4,  feeType: "free" },
-  cricket:    { min: 8, max: 11, feeType: "per_team", fee: 150 },
-  volleyball: { min: 6, max: 9,  feeType: "per_team", fee: 100 },
-  lagori:     { exact: 6,        feeType: "free" },
-  dodgeball:  { exact: 6,        feeType: "free" },
-  cooking:    { exact: 2,        feeType: "per_team", fee: 50 },
-  trapezoid:  { exact: 2,        feeType: "per_team", fee: 150 },
+  ideathon:    { min: 2, max: 3,  feeType: "free" },
+  bgmi:        { min: 1, max: 4,  feeType: "per_team", fee: 50 },
+  igp:         { min: 1, max: 2,  feeType: "free" },
+  reeluminati: { min: 1, max: 4,  feeType: "free" },
+  cricket:     { min: 8, max: 11, feeType: "per_team", fee: 150 },
+  volleyball:  { min: 6, max: 9,  feeType: "per_team", fee: 100 },
+  lagori:      { exact: 6,        feeType: "free" },
+  dodgeball:   { exact: 6,        feeType: "free" },
+  cooking:     { exact: 2,        feeType: "per_team", fee: 50 },
+  trapezoid:   { exact: 2,        feeType: "per_team", fee: 150 },
 };
+
+// ─── Validation ───────────────────────────────────────────────────────────────
 
 function validateBody(body: Partial<RegisterBody>): string | null {
   if (!body.fullName?.trim())                    return "Full name is required";
@@ -55,17 +57,40 @@ function validateBody(body: Partial<RegisterBody>): string | null {
   return null;
 }
 
-// ─── Structured error logger ──────────────────────────────────────────────────
+// ─── Logger ───────────────────────────────────────────────────────────────────
+
 function logError(tag: string, error: unknown) {
   const err = error as any;
   console.error(`\n========== [${tag}] ERROR ==========`);
-  console.error("Prisma Code  :", err?.code       ?? "N/A");
-  console.error("Message      :", err?.message     ?? "N/A");
-  console.error("Meta         :", JSON.stringify(err?.meta ?? {}));
-  console.error("Name         :", err?.name        ?? "N/A");
-  console.error("Full JSON    :", JSON.stringify(error, null, 2));
+  console.error("Prisma Code :", err?.code    ?? "N/A");
+  console.error("Message     :", err?.message ?? "N/A");
+  console.error("Meta        :", JSON.stringify(err?.meta ?? {}));
+  console.error("Name        :", err?.name    ?? "N/A");
+  console.error("Full JSON   :", JSON.stringify(error, null, 2));
   console.error("=====================================\n");
 }
+
+// ─── Manual rollback helper ───────────────────────────────────────────────────
+// $transaction is NOT used anywhere in this file.
+// MongoDB standalone instances do not support Prisma interactive transactions —
+// they require a replica set. Using $transaction throws P2028/P2034 on standalone.
+// Instead we do sequential awaits and call this helper to undo on failure.
+
+async function rollbackRegistration(registrationId: string) {
+  console.warn(`[lumous-register] Rolling back registration: ${registrationId}`);
+  await prisma.participation.deleteMany({ where: { registrationId } }).catch((e) =>
+    logError("rollback/participation", e)
+  );
+  await prisma.payment.deleteMany({ where: { registrationId } }).catch((e) =>
+    logError("rollback/payment", e)
+  );
+  await prisma.registration.delete({ where: { id: registrationId } }).catch((e) =>
+    logError("rollback/registration", e)
+  );
+  console.warn(`[lumous-register] Rollback complete for: ${registrationId}`);
+}
+
+// ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function POST(req: Request) {
   try {
@@ -94,7 +119,9 @@ export async function POST(req: Request) {
     const totalMembers       = 1 + normalizedMembers.length;
     const isTeamRegistration = totalMembers > 1;
 
-    console.log(`[lumous-register] Attempt | USN: ${usn} | Event: ${eventSlug} | Members: ${totalMembers}`);
+    console.log(
+      `[lumous-register] Attempt | USN: ${usn} | Event: ${eventSlug} | Members: ${totalMembers}`
+    );
 
     // ── 2. Resolve event ─────────────────────────────────────────────────────
     const event = await prisma.event.findUnique({ where: { slug: eventSlug } });
@@ -127,7 +154,9 @@ export async function POST(req: Request) {
     // Team-size check
     if (rule.exact !== undefined) {
       if (totalMembers !== rule.exact) {
-        console.warn(`[lumous-register] Team size mismatch. Required: ${rule.exact}, Got: ${totalMembers}`);
+        console.warn(
+          `[lumous-register] Size mismatch. Required: ${rule.exact}, Got: ${totalMembers}`
+        );
         return NextResponse.json(
           {
             message: `Invalid team size. ${event.name} requires exactly ${rule.exact} member(s). You submitted ${totalMembers}.`,
@@ -137,7 +166,9 @@ export async function POST(req: Request) {
       }
     } else if (rule.min !== undefined && rule.max !== undefined) {
       if (totalMembers < rule.min || totalMembers > rule.max) {
-        console.warn(`[lumous-register] Team size out of range. Allowed: ${rule.min}-${rule.max}, Got: ${totalMembers}`);
+        console.warn(
+          `[lumous-register] Size out of range. Allowed: ${rule.min}–${rule.max}, Got: ${totalMembers}`
+        );
         return NextResponse.json(
           {
             message: `Invalid team size. ${event.name} requires between ${rule.min} and ${rule.max} member(s). You submitted ${totalMembers}.`,
@@ -149,7 +180,7 @@ export async function POST(req: Request) {
 
     // Team name required for multi-member registrations
     if (isTeamRegistration && !teamData?.name?.trim()) {
-      console.warn(`[lumous-register] Team name missing for team event: ${eventSlug}`);
+      console.warn(`[lumous-register] Team name missing for: ${eventSlug}`);
       return NextResponse.json(
         { message: "Team name is required for team events." },
         { status: 400 }
@@ -163,9 +194,11 @@ export async function POST(req: Request) {
     } else if (rule.feeType === "per_team" && rule.fee) {
       amountINR = rule.fee;
     }
-    const totalAmount = amountINR * 100; // convert to paise
+    const totalAmount = amountINR * 100; // paise
 
-    console.log(`[lumous-register] Amount: ₹${amountINR} (${totalAmount} paise) | Free: ${totalAmount === 0}`);
+    console.log(
+      `[lumous-register] Amount: ₹${amountINR} (${totalAmount} paise) | Free: ${totalAmount === 0}`
+    );
 
     // ── 5. Upsert leader participant ─────────────────────────────────────────
     let participant;
@@ -202,7 +235,9 @@ export async function POST(req: Request) {
     });
 
     if (confirmedParticipation) {
-      console.warn(`[lumous-register] Leader already confirmed for event: ${eventSlug} | participantId: ${participant.id}`);
+      console.warn(
+        `[lumous-register] Leader already confirmed | participantId: ${participant.id} | event: ${eventSlug}`
+      );
       return NextResponse.json(
         { message: `You are already registered for ${event.name}.` },
         { status: 409 }
@@ -211,7 +246,7 @@ export async function POST(req: Request) {
 
     // ── 7. Delete stale non-confirmed participations for LEADER ──────────────
     try {
-      const leaderDeleteResult = await prisma.participation.deleteMany({
+      const leaderDelete = await prisma.participation.deleteMany({
         where: {
           participantId: participant.id,
           eventId:       event.id,
@@ -220,20 +255,21 @@ export async function POST(req: Request) {
           }),
         },
       });
-      console.log(`[lumous-register] Deleted ${leaderDeleteResult.count} stale leader participation(s)`);
+      console.log(
+        `[lumous-register] Deleted ${leaderDelete.count} stale leader participation(s)`
+      );
     } catch (err) {
       logError("lumous-register / delete stale leader participations", err);
       return NextResponse.json(
-        { message: "Failed to clean up previous registration attempt. Please try again." },
+        { message: "Failed to clean up your previous registration attempt. Please try again." },
         { status: 500 }
       );
     }
 
     // ── 7b. Delete stale non-confirmed participations for TEAM MEMBERS ────────
-    // FIX: Previously only the leader's stale participations were cleaned.
-    // If any member had a leftover Participation row from a prior failed/cancelled
-    // attempt, the tx.participation.create inside the transaction would hit the
-    // @@unique([participantId, eventId]) constraint and throw — causing the 500.
+    // PRIMARY BUG FIX: the original code never cleaned up member participations.
+    // Any leftover Participation row from a prior failed/cancelled attempt would
+    // hit the @@unique([participantId, eventId]) constraint and cause a 500.
     if (normalizedMembers.length > 0) {
       let memberParticipants: { id: string }[] = [];
 
@@ -253,40 +289,61 @@ export async function POST(req: Request) {
       if (memberParticipants.length > 0) {
         const memberIds = memberParticipants.map((p) => p.id);
 
-        // Check if any member is already CONFIRMED for this event — block if so
-        const confirmedMemberParticipation = await prisma.participation.findFirst({
-          where: {
-            participantId: { in: memberIds },
-            eventId:       event.id,
-            registration:  { status: "CONFIRMED" },
-          },
-          include: { participant: { select: { name: true, usn: true } } },
-        });
+        // Block if any member already has a CONFIRMED participation for this event
+          // REPLACE WITH THIS
+const confirmedMemberParticipations = await prisma.participation.findMany({
+  where: {
+    participantId: { in: memberIds },
+    eventId:       event.id,
+    registration:  { status: "CONFIRMED" },
+  },
+  include: {
+    participant: { select: { name: true, usn: true, phoneNo: true } },
+    team:        { select: { name: true } },
+  },
+});
 
-        if (confirmedMemberParticipation) {
-          const who = confirmedMemberParticipation.participant;
-          console.warn(`[lumous-register] Member already confirmed: ${who.usn} for event: ${eventSlug}`);
-          return NextResponse.json(
-            {
-              message: `Team member ${who.name} (${who.usn}) is already confirmed for ${event.name}. They cannot be in two teams for the same event.`,
-            },
-            { status: 409 }
-          );
-        }
+if (confirmedMemberParticipations.length > 0) {
+  const conflicting = confirmedMemberParticipations.map((p) => ({
+    name:     p.participant.name,
+    usn:      p.participant.usn,
+    phone:    p.participant.phoneNo ?? "N/A",
+    teamName: p.team?.name ?? "Solo",
+  }));
 
-        // Safe to wipe their stale (non-confirmed) participations for this event
+  console.warn(
+    `[lumous-register] ${conflicting.length} member(s) already confirmed for ${eventSlug}:`,
+    conflicting
+  );
+
+  const names = conflicting.map((c) => `${c.name} (${c.usn})`).join(", ");
+
+  return NextResponse.json(
+    {
+      message: `${conflicting.length} team member(s) are already confirmed for ${event.name}: ${names}. They cannot join another team for the same event.`,
+      conflicts: conflicting,
+    },
+    { status: 409 }
+  );
+}
+        // Safe to wipe all their stale (non-confirmed) participations for this event
         try {
-          const memberDeleteResult = await prisma.participation.deleteMany({
+          const memberDelete = await prisma.participation.deleteMany({
             where: {
               participantId: { in: memberIds },
               eventId:       event.id,
             },
           });
-          console.log(`[lumous-register] Deleted ${memberDeleteResult.count} stale member participation(s)`);
+          console.log(
+            `[lumous-register] Deleted ${memberDelete.count} stale member participation(s)`
+          );
         } catch (err) {
           logError("lumous-register / delete stale member participations", err);
           return NextResponse.json(
-            { message: "Failed to clean up previous team member registration. Please try again." },
+            {
+              message:
+                "Failed to clean up a previous team member registration. Please try again.",
+            },
             { status: 500 }
           );
         }
@@ -294,6 +351,8 @@ export async function POST(req: Request) {
     }
 
     // ── 8. Cancel orphaned PAYMENT_PENDING registrations for leader ──────────
+    // FIX: was previously wrapped in $transaction which throws P2028/P2034 on
+    // MongoDB standalone. Now done as two sequential awaits.
     try {
       const orphaned = await prisma.registration.findMany({
         where:  { participantId: participant.id, status: "PAYMENT_PENDING" },
@@ -302,157 +361,166 @@ export async function POST(req: Request) {
 
       if (orphaned.length > 0) {
         const orphanedIds = orphaned.map((r) => r.id);
-        console.log(`[lumous-register] Cancelling ${orphaned.length} orphaned PAYMENT_PENDING registration(s): ${orphanedIds}`);
+        console.log(
+          `[lumous-register] Cancelling ${orphaned.length} orphaned PAYMENT_PENDING registration(s): ${orphanedIds}`
+        );
 
-        await prisma.$transaction([
-          prisma.payment.updateMany({
-            where: { registrationId: { in: orphanedIds } },
-            data:  { status: "FAILED" },
-          }),
-          prisma.registration.updateMany({
-            where: { id: { in: orphanedIds } },
-            data:  { status: "CANCELLED" },
-          }),
-        ]);
+        await prisma.payment.updateMany({
+          where: { registrationId: { in: orphanedIds } },
+          data:  { status: "FAILED" },
+        });
+
+        await prisma.registration.updateMany({
+          where: { id: { in: orphanedIds } },
+          data:  { status: "CANCELLED" },
+        });
       }
     } catch (err) {
       logError("lumous-register / cancel orphaned registrations", err);
       return NextResponse.json(
-        { message: "Failed to clean up a previous pending registration. Please try again." },
+        {
+          message:
+            "Failed to clean up a previous pending registration. Please try again.",
+        },
         { status: 500 }
       );
     }
 
-    // ── 8b. Safety guard before transaction ──────────────────────────────────
+    // ── 8b. Final safety guard before write ──────────────────────────────────
     if (isTeamRegistration && !teamData?.name?.trim()) {
-      console.error(`[lumous-register] teamData.name missing right before transaction — should not happen`);
+      console.error(
+        "[lumous-register] teamData.name missing before write — should not happen"
+      );
       return NextResponse.json(
         { message: "Team name is required for team events." },
         { status: 400 }
       );
     }
 
-    // ── 9. Create registration + participation records ───────────────────────
+    // ── 9. Create registration + all related records ──────────────────────────
+    // NO $transaction — see rollbackRegistration() above for why.
+    // All writes are sequential. On any failure we manually undo via rollback.
     let registration;
+
     try {
-      registration = await prisma.$transaction(async (tx) => {
-        const reg = await tx.registration.create({
-          data: {
-            participantId: participant.id,
-            status: totalAmount === 0 ? "CONFIRMED" : "PAYMENT_PENDING",
+      // 9a. Registration
+      registration = await prisma.registration.create({
+        data: {
+          participantId: participant.id,
+          status:        totalAmount === 0 ? "CONFIRMED" : "PAYMENT_PENDING",
+        },
+      });
+
+      console.log(
+        `[lumous-register] Registration created: ${registration.id} | Status: ${registration.status}`
+      );
+
+      let teamId: string | null = null;
+
+      // 9b. Team record (if team event)
+      if (isTeamRegistration) {
+        const teamName = teamData!.name!.trim();
+
+        // upsert avoids @@unique([name, eventId]) collision from prior cancelled attempts
+        const teamRecord = await prisma.team.upsert({
+          where: {
+            name_eventId: { name: teamName, eventId: event.id },
+          },
+          create: {
+            name:     teamName,
+            eventId:  event.id,
+            leaderId: participant.id,
+          },
+          update: {
+            leaderId: participant.id,
           },
         });
 
-        console.log(`[lumous-register] Created registration: ${reg.id} | Status: ${reg.status}`);
+        teamId = teamRecord.id;
+        console.log(`[lumous-register] Team upserted: "${teamName}" | ID: ${teamId}`);
 
-        let teamId: string | null = null;
-
-        if (isTeamRegistration) {
-          const teamName = teamData!.name!.trim();
-
-          // FIX: Use upsert instead of create to avoid @@unique([name, eventId])
-          // collision when the same team name was used in a prior cancelled attempt.
-          const teamRecord = await tx.team.upsert({
-            where: {
-              name_eventId: {
-                name:    teamName,
-                eventId: event.id,
-              },
-            },
+        // 9c. Member participants + participations
+        for (const member of normalizedMembers) {
+          const memberParticipant = await prisma.participant.upsert({
+            where:  { usn: member.usn },
             create: {
-              name:     teamName,
-              eventId:  event.id,
-              leaderId: participant.id,
+              name:          member.name,
+              usn:           member.usn,
+              email:         `${member.usn.toLowerCase()}@pending.techfest`,
+              emailVerified: false,
+              phoneNo:       member.phone ?? undefined,
             },
             update: {
-              // Re-assign leader in case a different person re-registers with same name
-              leaderId: participant.id,
+              name:    member.name,
+              phoneNo: member.phone ?? undefined,
             },
           });
 
-          teamId = teamRecord.id;
-          console.log(`[lumous-register] Team upserted: "${teamName}" | ID: ${teamId}`);
+          await prisma.participation.create({
+            data: {
+              participantId:  memberParticipant.id,
+              eventId:        event.id,
+              teamId,
+              registrationId: registration.id,
+            },
+          });
 
-          for (const member of normalizedMembers) {
-            const memberParticipant = await tx.participant.upsert({
-              where:  { usn: member.usn },
-              create: {
-                name:          member.name,
-                usn:           member.usn,
-                email:         `${member.usn.toLowerCase()}@pending.techfest`,
-                emailVerified: false,
-                phoneNo:       member.phone ?? undefined,
-              },
-              update: { name: member.name, phoneNo: member.phone ?? undefined },
-            });
-
-            await tx.participation.create({
-              data: {
-                participantId:  memberParticipant.id,
-                eventId:        event.id,
-                teamId,
-                registrationId: reg.id,
-              },
-            });
-
-            console.log(`[lumous-register] Member participation created: ${member.usn}`);
-          }
+          console.log(`[lumous-register] Member participation created: ${member.usn}`);
         }
+      }
 
-        // Leader participation
-        await tx.participation.create({
-          data: {
-            participantId:  participant.id,
-            eventId:        event.id,
-            teamId,
-            registrationId: reg.id,
-          },
-        });
-
-        console.log(`[lumous-register] Leader participation created: ${usn}`);
-
-        // Payment record
-        await tx.payment.create({
-          data: {
-            registrationId:    reg.id,
-            razorpayOrderId:   `MANUAL_${Date.now()}_${reg.id}`,
-            razorpayPaymentId: null,
-            amount:            totalAmount,
-            currency:          "INR",
-            status:            totalAmount === 0 ? "SUCCESS" : "PENDING",
-          },
-        });
-
-        return reg;
+      // 9d. Leader participation
+      await prisma.participation.create({
+        data: {
+          participantId:  participant.id,
+          eventId:        event.id,
+          teamId,
+          registrationId: registration.id,
+        },
       });
+
+      console.log(`[lumous-register] Leader participation created: ${usn}`);
+
+      // 9e. Payment record
+      await prisma.payment.create({
+        data: {
+          registrationId:    registration.id,
+          razorpayOrderId:   `MANUAL_${Date.now()}_${registration.id}`,
+          razorpayPaymentId: null,
+          amount:            totalAmount,
+          currency:          "INR",
+          status:            totalAmount === 0 ? "SUCCESS" : "PENDING",
+        },
+      });
+
+      console.log(
+        `[lumous-register] Payment record created for registration: ${registration.id}`
+      );
     } catch (err) {
-      logError("lumous-register / main transaction", err);
+      logError("lumous-register / create records", err);
+
+      // Manual rollback — undo everything written before the failure point
+      if (registration?.id) {
+        await rollbackRegistration(registration.id);
+      }
 
       const code = (err as any)?.code as string | undefined;
-      const meta  = (err as any)?.meta as any;
 
       if (code === "P2002") {
-        // Unique constraint — tell the user what conflicted if possible
-        const target = meta?.target ? ` (conflict on: ${JSON.stringify(meta.target)})` : "";
+        const target = (err as any)?.meta?.target
+          ? ` (conflict on: ${JSON.stringify((err as any).meta.target)})`
+          : "";
         console.error(`[lumous-register] P2002 unique constraint${target}`);
         return NextResponse.json(
           {
-            message: `A registration conflict occurred${target}. This usually means a team member is already registered. Please check USNs and try again.`,
+            message: `A registration conflict occurred. A team member may already be registered for this event. Please check all USNs and try again.`,
           },
-          { status: 409 }
-        );
-      }
-
-      if (code === "P2034" || code === "P2028") {
-        // MongoDB write conflict / transaction timeout
-        return NextResponse.json(
-          { message: "A temporary conflict occurred. Please try submitting again." },
           { status: 409 }
         );
       }
 
       return NextResponse.json(
-        { message: "Registration failed during save. Please try again." },
+        { message: "Registration failed while saving. Please try again." },
         { status: 500 }
       );
     }
@@ -524,14 +592,18 @@ export async function POST(req: Request) {
         });
         console.log(`[lumous-register] Confirmation email sent to: ${email}`);
       } catch (mailErr) {
-        // Email failure should NOT fail the registration — just log it
+        // Email failure must NOT fail the registration — just log and continue
         logError("lumous-register / send confirmation email", mailErr);
-        console.warn(`[lumous-register] Email failed but registration succeeded: ${registration.id}`);
+        console.warn(
+          `[lumous-register] Email failed but registration succeeded: ${registration.id}`
+        );
       }
     }
 
-    // ── 11. Response ─────────────────────────────────────────────────────────
-    console.log(`[lumous-register] SUCCESS | registrationId: ${registration.id} | amount: ${totalAmount}`);
+    // ── 11. Success ──────────────────────────────────────────────────────────
+    console.log(
+      `[lumous-register] SUCCESS | registrationId: ${registration.id} | amount: ${totalAmount}`
+    );
 
     return NextResponse.json(
       {
@@ -541,23 +613,18 @@ export async function POST(req: Request) {
       },
       { status: 201 }
     );
-
   } catch (error: unknown) {
-    // Outermost catch — should only be hit by unexpected errors (e.g. req.json() failure)
+    // Outermost catch — only unexpected errors reach here (e.g. malformed JSON)
     logError("lumous-register / outer catch", error);
 
     const code = (error as any)?.code as string | undefined;
 
     if (code === "P2002") {
       return NextResponse.json(
-        { message: "A participant or team with that name is already registered for this event." },
-        { status: 409 }
-      );
-    }
-
-    if (code === "P2034" || code === "P2028") {
-      return NextResponse.json(
-        { message: "A temporary conflict occurred. Please try again." },
+        {
+          message:
+            "A participant or team with that name is already registered for this event.",
+        },
         { status: 409 }
       );
     }
