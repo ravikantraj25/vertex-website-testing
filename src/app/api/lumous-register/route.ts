@@ -37,6 +37,7 @@ const eventRules: Record<
   lagori: { exact: 6, feeType: "free" },
   dodgeball: { exact: 6, feeType: "free" },
   cooking: { exact: 2, feeType: "per_team", fee: 50 },
+  trapezoid: { exact: 2, feeType: "per_team", fee: 150 }
 };
 
 function validateBody(body: Partial<RegisterBody>): string | null {

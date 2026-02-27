@@ -145,6 +145,12 @@ const EVENTS: EventItem[] = [
     feeType: "per_team", fee: 50,
     exact: 2,
     note: "Exactly 2 members · ₹50 per team",
+  },{
+    slug: "trapezoid", label: "Trap E Zoid (Hardware escape room )", icon: "🎮",
+    category: "Technical / Fun",
+    feeType: "per_team", fee: 150,
+    exact: 2,
+    note: "Exactly 2 members · ₹150 per team",
   },
 ];
 
@@ -737,29 +743,11 @@ export default function LumousRegistrationPage() {
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="mb-6 bg-amber-950/20 border border-amber-700/20 rounded-2xl px-5 py-5 space-y-4"
         >
-          <div className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/20 text-[10px]">ℹ</span>
-            <p className="text-amber-300 text-[11px] font-semibold uppercase tracking-widest">Important</p>
-          </div>
-
-          <a
-            href="https://drive.google.com/file/d/1TiMMGZVdh4mP8EzItxk8454pyJR4WBJh/view?usp=sharing"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between w-full px-4 py-3 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 rounded-xl transition-all duration-200 group"
-          >
-            <span className="flex items-center gap-2.5 text-amber-200 text-sm font-medium">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15 text-base">📄</span>
-              View Event Brochure
-            </span>
-            <span className="text-amber-400/70 group-hover:text-amber-300 group-hover:translate-x-0.5 transition-all duration-200 text-sm">↗</span>
-          </a>
-
-          <ul className="text-amber-200/70 text-[13px] space-y-2.5 list-none leading-relaxed">
-            <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span><strong className="text-amber-200/90">One registration = one event.</strong> Register separately for each event you wish to participate in.</span></li>
-            <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span>Read all rules before registering. Team size limits are strictly enforced.</span></li>
-            <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span>Inspire (Ideathon) participants must upload PPT separately after registration.</span></li>
-            <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span><strong className="text-amber-200/90">Ensure your Name and Transaction ID appear in the payment screenshot.</strong></span></li>
+          <p className="text-amber-300 text-xs font-semibold mb-2 uppercase tracking-widest">ℹ Important</p>
+          <ul className="text-amber-200/80 text-xs space-y-1.5 list-none">
+            <li>→ <strong>One registration = one event.</strong> If you want to register for multiple events, please register separately for each event.</li>
+            <li>→ Read all rules before registering. Team size limits are strictly enforced.</li>
+            <li>→ Ideathon participants must upload PPT separately after registration.</li>
           </ul>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-3 border-t border-amber-800/20 text-[12px] text-amber-400/50">
