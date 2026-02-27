@@ -105,7 +105,7 @@ const EVENTS: EventItem[] = [
     note: "1–2 members · Free",
   },
   {
-    slug: "reel", label: "Reel", icon: "🎬",
+    slug: "reel", label: "Reeluminati", icon: "🎬",
     category: "Technical / Fun",
     feeType: "free", fee: 0,
     min: 1, max: 4,
@@ -145,6 +145,12 @@ const EVENTS: EventItem[] = [
     feeType: "per_team", fee: 50,
     exact: 2,
     note: "Exactly 2 members · ₹50 per team",
+  },{
+    slug: "trapezoid", label: "Trap E Zoid (Hardware escape room )", icon: "🎮",
+    category: "Technical / Fun",
+    feeType: "per_team", fee: 150,
+    exact: 2,
+    note: "Exactly 2 members · ₹150 per team",
   },
 ];
 
