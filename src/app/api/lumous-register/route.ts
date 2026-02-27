@@ -290,30 +290,42 @@ export async function POST(req: Request) {
         const memberIds = memberParticipants.map((p) => p.id);
 
         // Block if any member already has a CONFIRMED participation for this event
-        const confirmedMemberParticipation = await prisma.participation.findFirst({
-          where: {
-            participantId: { in: memberIds },
-            eventId:       event.id,
-            registration:  { status: "CONFIRMED" },
-          },
-          include: {
-            participant: { select: { name: true, usn: true } },
-          },
-        });
+          // REPLACE WITH THIS
+const confirmedMemberParticipations = await prisma.participation.findMany({
+  where: {
+    participantId: { in: memberIds },
+    eventId:       event.id,
+    registration:  { status: "CONFIRMED" },
+  },
+  include: {
+    participant: { select: { name: true, usn: true, phoneNo: true } },
+    team:        { select: { name: true } },
+  },
+});
 
-        if (confirmedMemberParticipation) {
-          const who = confirmedMemberParticipation.participant;
-          console.warn(
-            `[lumous-register] Member already confirmed: ${who.usn} | event: ${eventSlug}`
-          );
-          return NextResponse.json(
-            {
-              message: `Team member ${who.name} (${who.usn}) is already confirmed for ${event.name}. They cannot join another team for the same event.`,
-            },
-            { status: 409 }
-          );
-        }
+if (confirmedMemberParticipations.length > 0) {
+  const conflicting = confirmedMemberParticipations.map((p) => ({
+    name:     p.participant.name,
+    usn:      p.participant.usn,
+    phone:    p.participant.phoneNo ?? "N/A",
+    teamName: p.team?.name ?? "Solo",
+  }));
 
+  console.warn(
+    `[lumous-register] ${conflicting.length} member(s) already confirmed for ${eventSlug}:`,
+    conflicting
+  );
+
+  const names = conflicting.map((c) => `${c.name} (${c.usn})`).join(", ");
+
+  return NextResponse.json(
+    {
+      message: `${conflicting.length} team member(s) are already confirmed for ${event.name}: ${names}. They cannot join another team for the same event.`,
+      conflicts: conflicting,
+    },
+    { status: 409 }
+  );
+}
         // Safe to wipe all their stale (non-confirmed) participations for this event
         try {
           const memberDelete = await prisma.participation.deleteMany({
