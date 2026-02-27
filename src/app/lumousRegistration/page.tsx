@@ -105,7 +105,7 @@ const EVENTS: EventItem[] = [
     note: "1–2 members · Free",
   },
   {
-    slug: "reel", label: "Reeluminati", icon: "🎬",
+    slug: "reeluminati", label: "Reeluminati", icon: "🎬",
     category: "Technical / Fun",
     feeType: "free", fee: 0,
     min: 1, max: 4,
