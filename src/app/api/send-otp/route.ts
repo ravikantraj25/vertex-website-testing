@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Vertex | Lumous 2026 OTP</title>
+    <title>Vertex | Lumos 2026 OTP</title>
   </head>
   <body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f4f6f8;">
     <table width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 0;">

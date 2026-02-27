@@ -99,7 +99,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Lumous Section (NEW) */}
-          <DashboardSection title="Lumous 2026">
+          <DashboardSection title="Lumos 2026">
             <Link href="/dashboard/admin/lumous">
               <ActionCard 
                 actionType="view" 
