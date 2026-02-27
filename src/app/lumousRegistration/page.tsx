@@ -84,28 +84,28 @@ interface RegisterApiResponse {
 
 const EVENTS: EventItem[] = [
   {
-    slug: "ideathon", label: "Ideathon", icon: "🎯",
+    slug: "Inspire (Ideathon)", label: "Inspire (Ideathon)", icon: "🎯",
     category: "Technical / Fun",
     feeType: "free", fee: 0,
     min: 2, max: 3,
-    note: "2–3 members · Free",
+    note: "2–3 members · ₹100 per team if shortlisted",
   },
   {
-    slug: "bgmi", label: "BGMI", icon: "🎮",
+    slug: "BGMI", label: "BGMI", icon: "🎮",
     category: "Technical / Fun",
-    feeType: "per_person", fee: 50,
+    feeType: "per_team", fee: 50,
     min: 1, max: 4,
-    note: "₹50 per participant · Max 4 members",
+    note: "₹50 per team · Max 4 members",
   },
   {
-    slug: "igp", label: "IGP", icon: "🎯",
+    slug: "IGT", label: "India's Got Patent", icon: "🎯",
     category: "Technical / Fun",
     feeType: "free", fee: 0,
     min: 1, max: 2,
     note: "1–2 members · Free",
   },
   {
-    slug: "reel", label: "Reel", icon: "🎬",
+    slug: "reeluminati", label: "Reeluminati", icon: "🎬",
     category: "Technical / Fun",
     feeType: "free", fee: 0,
     min: 1, max: 4,
@@ -116,14 +116,14 @@ const EVENTS: EventItem[] = [
     category: "Sports",
     feeType: "per_team", fee: 150,
     min: 8, max: 11,
-    note: "8–11 members · ₹150 per team",
+    note: "8(Playing)+3(Optional Substitutes) members · ₹150 per team · Upto 8 teams only (First Come First Serve)",
   },
   {
     slug: "volleyball", label: "Volleyball (Girls)", icon: "🏐",
     category: "Sports",
     feeType: "per_team", fee: 100,
     min: 6, max: 9,
-    note: "6–9 members · ₹100 per team",
+    note: "6(Playing)+3(Optional Substitutes) members · ₹100 per team · Upto 8 teams only (First Come First Serve)",
   },
   {
     slug: "lagori", label: "Lagori", icon: "🪨",
@@ -140,7 +140,7 @@ const EVENTS: EventItem[] = [
     note: "Exactly 6 members (3 boys + 3 girls) · Free",
   },
   {
-    slug: "cooking", label: "Cooking Without Fire", icon: "🍳",
+    slug: "cooking", label: "Creative Bites: No Fire Edition", icon: "🍳",
     category: "Fun Activity",
     feeType: "per_team", fee: 50,
     exact: 2,
@@ -735,17 +735,38 @@ export default function LumousRegistrationPage() {
         {/* ── Notice ── */}
         <motion.div
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="mb-6 bg-amber-950/30 border border-amber-700/30 rounded-xl px-4 py-4"
+          className="mb-6 bg-amber-950/20 border border-amber-700/20 rounded-2xl px-5 py-5 space-y-4"
         >
-          <p className="text-amber-300 text-xs font-semibold mb-2 uppercase tracking-widest">ℹ Important</p>
-          <ul className="text-amber-200/80 text-xs space-y-1.5 list-none">
-            <li>→ <strong>One registration = one event.</strong> If you want to register for multiple events, please register separately for each event.</li>
-            <li>→ Read all rules before registering. Team size limits are strictly enforced.</li>
-            <li>→ Ideathon participants must upload PPT separately after registration.</li>
-            <li>→ <strong> Make sure your Name and Trasaction Id appears in Payment screenshot.</strong> </li>
+          <div className="flex items-center gap-2">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500/20 text-[10px]">ℹ</span>
+            <p className="text-amber-300 text-[11px] font-semibold uppercase tracking-widest">Important</p>
+          </div>
+
+          <a
+            href="https://drive.google.com/file/d/1TiMMGZVdh4mP8EzItxk8454pyJR4WBJh/view?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between w-full px-4 py-3 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 rounded-xl transition-all duration-200 group"
+          >
+            <span className="flex items-center gap-2.5 text-amber-200 text-sm font-medium">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15 text-base">📄</span>
+              View Event Brochure
+            </span>
+            <span className="text-amber-400/70 group-hover:text-amber-300 group-hover:translate-x-0.5 transition-all duration-200 text-sm">↗</span>
+          </a>
+
+          <ul className="text-amber-200/70 text-[13px] space-y-2.5 list-none leading-relaxed">
+            <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span><strong className="text-amber-200/90">One registration = one event.</strong> Register separately for each event you wish to participate in.</span></li>
+            <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span>Read all rules before registering. Team size limits are strictly enforced.</span></li>
+            <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span>Inspire (Ideathon) participants must upload PPT separately after registration.</span></li>
+            <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span><strong className="text-amber-200/90">Ensure your Name and Transaction ID appear in the payment screenshot.</strong></span></li>
           </ul>
-          <div className="mt-3 pt-3 border-t border-amber-800/30 text-amber-400/60 text-xs">
-            Queries: 📞 Naman Singh — 8334072002 &nbsp;|&nbsp; Shefali — 8867429955
+
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-3 border-t border-amber-800/20 text-[12px] text-amber-400/50">
+            <span className="text-amber-400/70 font-medium">Queries</span>
+            <a href="tel:8334072002" className="hover:text-amber-300 transition-colors">📞 Naman Singh — 8334072002</a>
+            <span className="hidden sm:inline text-amber-800/40">|</span>
+            <a href="tel:8867429955" className="hover:text-amber-300 transition-colors">📞 Shefali — 8867429955</a>
           </div>
         </motion.div>
 
@@ -884,26 +905,36 @@ export default function LumousRegistrationPage() {
                   <Block title="Select Event" icon="🎯">
                     <p className="text-xs text-zinc-600 -mt-2">Choose one event to register for.</p>
 
-                    <div className="flex flex-col gap-5">
+                    <div className="flex flex-col gap-6">
                       {grouped.map(({ cat, events }) => (
                         <div key={cat}>
-                          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-600 mb-2">{cat}</p>
-                          <div className="flex flex-col gap-1.5">
-                            {/* FIX: renamed loop variable from `ev` to `eventItem` to avoid collision with emailVerif state */}
+                          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-600 mb-3">{cat}</p>
+                          <div className="flex flex-col gap-2">
                             {events.map(eventItem => {
                               const sel = form.eventSlug === eventItem.slug;
+                              const isFree = eventItem.feeType === "free" || eventItem.fee === 0;
                               return (
                                 <motion.label
-                                  key={eventItem.slug} whileHover={{ x: 2 }} whileTap={{ scale: 0.99 }}
-                                  className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${sel ? "bg-amber-500/10 border-amber-500/50 text-amber-300" : "bg-zinc-800/40 border-zinc-700/50 text-zinc-400 hover:border-zinc-600"}`}
+                                  key={eventItem.slug} whileTap={{ scale: 0.98 }}
+                                  className={`relative flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all duration-200 ${sel ? "bg-amber-500/10 border-amber-500/40 shadow-[0_0_20px_-4px_rgba(245,158,11,0.15)]" : "bg-zinc-800/30 border-zinc-800/60 hover:bg-zinc-800/50 hover:border-zinc-700/80"}`}
                                 >
                                   <input type="radio" name="event" className="sr-only" checked={sel} onChange={() => handleEventChange(eventItem.slug)}/>
-                                  <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${sel ? "border-amber-400 bg-amber-400" : "border-zinc-600"}`}>
-                                    {sel && <div className="w-1.5 h-1.5 rounded-full bg-black"/>}
+                                  <div className={`mt-0.5 w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 ${sel ? "border-amber-400 bg-amber-400" : "border-zinc-600"}`}>
+                                    {sel && <div className="w-2 h-2 rounded-full bg-black"/>}
                                   </div>
-                                  <span className="text-lg">{eventItem.icon}</span>
-                                  <span className="text-sm font-medium flex-1">{eventItem.label}</span>
-                                  <span className="text-xs font-mono-dm text-zinc-500">{eventItem.note}</span>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <span className="text-base">{eventItem.icon}</span>
+                                      <span className={`text-sm font-semibold ${sel ? "text-amber-200" : "text-zinc-300"}`}>{eventItem.label}</span>
+                                      {isFree && (
+                                        <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">Free</span>
+                                      )}
+                                      {!isFree && (
+                                        <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-amber-500/15 text-amber-400 border border-amber-500/20">₹{eventItem.fee}</span>
+                                      )}
+                                    </div>
+                                    <p className={`text-xs leading-relaxed ${sel ? "text-amber-300/60" : "text-zinc-500"}`}>{eventItem.note}</p>
+                                  </div>
                                 </motion.label>
                               );
                             })}
