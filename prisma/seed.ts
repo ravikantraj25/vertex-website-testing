@@ -6,13 +6,13 @@ async function main() {
   console.log("🌱 Seeding events...");
 
   await prisma.event.upsert({
-    where: { slug: "trapezoid" },
+    where: { slug: "reeluminati" },
     update: {},
     create: {
-      slug: "trapezoid",
-      name: "Trap E Zoid (Hardware escape room)",
+      slug: "reeluminati",
+      name: "Reeluminati",
       type: EventType.TEAM,
-      price: 15000, // ₹150
+      price: 0, // ₹150
     },
   });
 
