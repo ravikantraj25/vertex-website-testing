@@ -267,12 +267,21 @@ async function apiRegister(form: FormState): Promise<RegisterApiResponse> {
     eventSlug: form.eventSlug,
   };
 
-  if (form.teamMembers.length > 0 && form.teamName.trim()) {
-    body.team = {
-      name: form.teamName.trim(),
-      members: form.teamMembers.map((m) => ({ name: m.name, usn: m.usn, phone: m.phone })),
-    };
-  }
+// FIXED
+const hasMembers = form.teamMembers.length > 0;
+const hasTeamName = form.teamName.trim().length > 0;
+
+if (hasMembers) {
+  body.team = {
+    // Fall back to a generated name if somehow empty (shouldn't happen but safety net)
+    name: hasTeamName ? form.teamName.trim() : `Team-${form.usn}`,
+    members: form.teamMembers.map((m) => ({
+      name:  m.name,
+      usn:   m.usn,
+      phone: m.phone,
+    })),
+  };
+}
 
   const res = await fetch("/api/lumous-register", {
     method: "POST", headers: { "Content-Type": "application/json" },
@@ -529,7 +538,7 @@ function SuccessScreen({ email, eventName, onReset }: { email: string; eventName
       <div className="bg-yellow-950/40 border border-yellow-700/30 rounded-xl px-4 py-3 w-full max-w-xs">
         <p className="text-yellow-300 text-xs">
           Registered for <strong>Ideathon</strong>? Upload your PPT{" "}
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSeru3IZGPncZVjcM7tEoDUd7-rfWW5uuJ_hO1_pxVU-n2qrAg/viewform?usp=publish-editor" target="_blank" rel="noreferrer" className="underline font-semibold">here</a>.
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSdd2YvB151Kp81pyx8saAp9AXmv31r07wahv6fQdZKzbi7GXg/viewform?usp=publish-editor" target="_blank" rel="noreferrer" className="underline font-semibold">here</a>.
         </p>
       </div>
 
