@@ -22,7 +22,7 @@ interface FormState {
   usn: string;
   email: string;
   phone: string;
-  eventSlug: string;       // single event
+  eventSlug: string;
   teamName: string;
   teamMembers: TeamMember[];
 }
@@ -67,11 +67,11 @@ interface EventItem {
   icon: string;
   category: string;
   feeType: "free" | "per_person" | "per_team";
-  fee: number;       // rupees
+  fee: number;
   min?: number;
   max?: number;
   exact?: number;
-  note?: string;     // extra rule shown in UI
+  note?: string;
 }
 
 interface RegisterApiResponse {
@@ -83,7 +83,6 @@ interface RegisterApiResponse {
 // ─── Event Catalogue ──────────────────────────────────────────────────────────
 
 const EVENTS: EventItem[] = [
-  // Technical / Fun
   {
     slug: "ideathon", label: "Ideathon", icon: "🎯",
     category: "Technical / Fun",
@@ -105,7 +104,6 @@ const EVENTS: EventItem[] = [
     min: 1, max: 2,
     note: "1–2 members · Free",
   },
-  
   {
     slug: "reel", label: "Reel", icon: "🎬",
     category: "Technical / Fun",
@@ -113,8 +111,6 @@ const EVENTS: EventItem[] = [
     min: 1, max: 4,
     note: "Max 4 members · Free",
   },
-
-  // Sports
   {
     slug: "cricket", label: "Cricket (Boys)", icon: "🏏",
     category: "Sports",
@@ -129,8 +125,6 @@ const EVENTS: EventItem[] = [
     min: 6, max: 9,
     note: "6–9 members · ₹100 per team",
   },
-
-  // 90's Playground
   {
     slug: "lagori", label: "Lagori", icon: "🪨",
     category: "90's Playground Classics",
@@ -145,8 +139,6 @@ const EVENTS: EventItem[] = [
     exact: 6,
     note: "Exactly 6 members (3 boys + 3 girls) · Free",
   },
-
-  // Fun Activity
   {
     slug: "cooking", label: "Cooking Without Fire", icon: "🍳",
     category: "Fun Activity",
@@ -160,12 +152,12 @@ const CATEGORIES = [...new Set(EVENTS.map((e) => e.category))];
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const USN_REGEX    = /^1ds\d{2}[a-z]{2}\d{3}$/i;
-const EMAIL_REGEX  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const STORAGE_KEY  = "lumos_reg_form_v2";
-const OTP_LENGTH   = 6;
-const RESEND_SECS  = 30;
-const MAX_SS_MB    = 5;
+const USN_REGEX   = /^1ds\d{2}[a-z]{2}\d{3}$/i;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const STORAGE_KEY = "lumos_reg_form_v2";
+const OTP_LENGTH  = 6;
+const RESEND_SECS = 30;
+const MAX_SS_MB   = 5;
 
 const defaultMember = (): TeamMember => ({ name: "", usn: "", phone: "" });
 
@@ -192,12 +184,11 @@ function formatINR(paise: number): string {
   return `₹${(paise / 100).toLocaleString("en-IN")}`;
 }
 
-// ─── Team size validation (mirrors backend) ───────────────────────────────────
+// ─── Team size validation ─────────────────────────────────────────────────────
 
 function teamSizeError(ev: EventItem | undefined, totalMembers: number): string {
   if (!ev) return "";
-  if (totalMembers === 0) return ""; // nothing to validate until event chosen
-
+  if (totalMembers === 0) return "";
   if (ev.exact !== undefined) {
     if (totalMembers !== ev.exact)
       return `Exactly ${ev.exact} members required (including you). Currently: ${totalMembers}.`;
@@ -212,7 +203,6 @@ function teamSizeError(ev: EventItem | undefined, totalMembers: number): string 
   return "";
 }
 
-// How many teammates are needed at minimum (for UI guidance)
 function minTeammates(ev: EventItem | undefined): number {
   if (!ev) return 0;
   if (ev.exact !== undefined) return ev.exact - 1;
@@ -225,9 +215,16 @@ function maxTeammates(ev: EventItem | undefined): number {
   return (ev.max ?? 1) - 1;
 }
 
-function needsTeam(ev: EventItem | undefined): boolean {
+// Whether an event CAN have teammates at all
+function canHaveTeam(ev: EventItem | undefined): boolean {
   if (!ev) return false;
   return maxTeammates(ev) > 0;
+}
+
+// Whether the event REQUIRES teammates (min > 1)
+function requiresTeam(ev: EventItem | undefined): boolean {
+  if (!ev) return false;
+  return minTeammates(ev) > 0;
 }
 
 // ─── Validation ───────────────────────────────────────────────────────────────
@@ -235,7 +232,7 @@ function needsTeam(ev: EventItem | undefined): boolean {
 const validateUSN   = (v: string) => !v ? "USN is required" : !/^1ds/i.test(v) ? "Must start with '1DS'" : !USN_REGEX.test(v) ? "e.g. 1DS23ET045" : "";
 const validateName  = (v: string) => !v.trim() ? "Required" : "";
 const validateEmail = (v: string) => !v ? "Required" : !EMAIL_REGEX.test(v) ? "Invalid email" : "";
-const validatePhone = (v: string) => !v?.trim() ? "Required" : v.replace(/\D/g,"").length !== 10 ? "10 digits required" : "";
+const validatePhone = (v: string) => !v?.trim() ? "Required" : v.replace(/\D/g, "").length !== 10 ? "10 digits required" : "";
 
 // ─── API ──────────────────────────────────────────────────────────────────────
 
@@ -357,24 +354,24 @@ function OtpInput({ value, onChange, disabled }: { value: string; onChange: (v: 
   const commit = (d: string[]) => onChange(d.join(""));
 
   const onCh = (i: number, raw: string) => {
-    const s = raw.replace(/\D/g,"").slice(-1);
+    const s = raw.replace(/\D/g, "").slice(-1);
     const d = [...digits]; d[i] = s; commit(d);
-    if (s && i < OTP_LENGTH - 1) refs.current[i+1]?.focus();
+    if (s && i < OTP_LENGTH - 1) refs.current[i + 1]?.focus();
   };
   const onKd = (i: number, e: React.KeyboardEvent) => {
     if (e.key === "Backspace") {
       e.preventDefault();
       const d = [...digits];
-      if (d[i]) { d[i]=""; commit(d); } else if (i > 0) { d[i-1]=""; commit(d); refs.current[i-1]?.focus(); }
+      if (d[i]) { d[i] = ""; commit(d); } else if (i > 0) { d[i - 1] = ""; commit(d); refs.current[i - 1]?.focus(); }
     }
-    if (e.key === "ArrowLeft" && i > 0) refs.current[i-1]?.focus();
-    if (e.key === "ArrowRight" && i < OTP_LENGTH-1) refs.current[i+1]?.focus();
+    if (e.key === "ArrowLeft" && i > 0) refs.current[i - 1]?.focus();
+    if (e.key === "ArrowRight" && i < OTP_LENGTH - 1) refs.current[i + 1]?.focus();
   };
   const onPaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const p = e.clipboardData.getData("text").replace(/\D/g,"").slice(0,OTP_LENGTH);
+    const p = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH);
     commit(Array.from({ length: OTP_LENGTH }, (_, i) => p[i] ?? ""));
-    refs.current[Math.min(p.length, OTP_LENGTH-1)]?.focus();
+    refs.current[Math.min(p.length, OTP_LENGTH - 1)]?.focus();
   };
 
   return (
@@ -404,14 +401,26 @@ function QrScreen({
   const [busy, setBusy]       = useState(false);
   const [err, setErr]         = useState("");
   const ref                   = useRef<HTMLInputElement>(null);
+  // FIX: track preview URL for cleanup on unmount
+  const previewUrl            = useRef<string | null>(null);
+
+  // FIX: revoke object URL on unmount to prevent memory leak
+  useEffect(() => {
+    return () => {
+      if (previewUrl.current) URL.revokeObjectURL(previewUrl.current);
+    };
+  }, []);
 
   const onFile = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]; if (!f) return;
     if (!f.type.startsWith("image/")) { setErr("Image files only."); return; }
     if (f.size > MAX_SS_MB * 1024 * 1024) { setErr(`Max ${MAX_SS_MB}MB.`); return; }
     setErr(""); setFile(f);
-    if (preview) URL.revokeObjectURL(preview);
-    setPreview(URL.createObjectURL(f));
+    // FIX: revoke previous URL before creating new one
+    if (previewUrl.current) URL.revokeObjectURL(previewUrl.current);
+    const url = URL.createObjectURL(f);
+    previewUrl.current = url;
+    setPreview(url);
   };
 
   const submit = async () => {
@@ -424,7 +433,6 @@ function QrScreen({
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-6">
-      {/* Amount banner */}
       <div className="bg-amber-950/30 border border-amber-700/40 rounded-xl p-5 flex items-center justify-between">
         <div>
           <p className="text-xs text-amber-500 font-bold uppercase tracking-widest mb-1">Amount Due</p>
@@ -437,11 +445,10 @@ function QrScreen({
         </div>
       </div>
 
-      {/* QR */}
       <div className="flex flex-col items-center gap-4">
         <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">Scan & Pay via UPI</p>
         <div className="bg-white p-4 rounded-2xl shadow-2xl shadow-black/60">
-          <img src="/qr.jpeg" alt="UPI QR" className="w-52 h-52 object-contain"/>
+          <img src="/dsce_qr.png" alt="UPI QR" className="w-52 h-52 object-contain"/>
         </div>
         <p className="text-xs text-zinc-500 text-center max-w-xs leading-relaxed">
           GPay · PhonePe · Paytm. After paying, upload your screenshot below.
@@ -451,7 +458,6 @@ function QrScreen({
 
       <div className="h-px bg-zinc-800"/>
 
-      {/* Upload */}
       <div className="flex flex-col gap-3">
         <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">Upload Screenshot</p>
         <div
@@ -508,17 +514,16 @@ function SuccessScreen({ email, eventName, onReset }: { email: string; eventName
         <p className="text-xs font-bold uppercase tracking-widest text-zinc-600">What's Next</p>
         {["Our team reviews your payment", "Confirmation email within 24hrs", "Your spot is reserved"].map((s, i) => (
           <div key={i} className="flex items-start gap-3">
-            <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs flex items-center justify-center flex-shrink-0 font-bold mt-0.5">{i+1}</span>
+            <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 text-xs flex items-center justify-center flex-shrink-0 font-bold mt-0.5">{i + 1}</span>
             <p className="text-xs text-zinc-400 leading-relaxed">{s}</p>
           </div>
         ))}
       </div>
 
-      {/* Ideathon notice */}
       <div className="bg-yellow-950/40 border border-yellow-700/30 rounded-xl px-4 py-3 w-full max-w-xs">
         <p className="text-yellow-300 text-xs">
           Registered for <strong>Ideathon</strong>? Upload your PPT{" "}
-          <a href="https://forms.gle/dummy" target="_blank" rel="noreferrer" className="underline font-semibold">here</a>.
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSeru3IZGPncZVjcM7tEoDUd7-rfWW5uuJ_hO1_pxVU-n2qrAg/viewform?usp=publish-editor" target="_blank" rel="noreferrer" className="underline font-semibold">here</a>.
         </p>
       </div>
 
@@ -538,17 +543,18 @@ function SuccessScreen({ email, eventName, onReset }: { email: string; eventName
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function LumousRegistrationPage() {
-  const [form, setForm]     = useState<FormState>(defaultForm);
+  const [form, setForm]       = useState<FormState>(defaultForm);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const [ev, setEv] = useState<EmailVerificationState>({ status: "idle", message: "", resendCooldown: 0 });
+  // FIX: renamed from `ev` to `emailVerif` to avoid collision with event loop vars
+  const [emailVerif, setEmailVerif] = useState<EmailVerificationState>({ status: "idle", message: "", resendCooldown: 0 });
   const [otp, setOtp]       = useState("");
   const [otpErr, setOtpErr] = useState("");
 
-  const [flow, setFlow]               = useState<PaymentFlowStatus>("idle");
-  const [flowErr, setFlowErr]         = useState("");
-  const [regId, setRegId]             = useState<string | null>(null);
-  const [regAmount, setRegAmount]     = useState(0);
+  const [flow, setFlow]                 = useState<PaymentFlowStatus>("idle");
+  const [flowErr, setFlowErr]           = useState("");
+  const [regId, setRegId]               = useState<string | null>(null);
+  const [regAmount, setRegAmount]       = useState(0);
   const [regEventName, setRegEventName] = useState("");
 
   const cooldown = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -563,13 +569,22 @@ export default function LumousRegistrationPage() {
   }, [form, flow]);
 
   // ── Derived ───────────────────────────────────────────────────────────────
-  const selectedEv     = EVENTS.find(e => e.slug === form.eventSlug);
+  const selectedEvent  = EVENTS.find(e => e.slug === form.eventSlug);
   const totalMembers   = 1 + form.teamMembers.length;
-  const totalPaise     = calcAmount(selectedEv, totalMembers);
-  const sizeErr        = selectedEv ? teamSizeError(selectedEv, totalMembers) : "";
-  const minTm          = minTeammates(selectedEv);
-  const maxTm          = maxTeammates(selectedEv);
-  const needsTeamInput = needsTeam(selectedEv);
+  const totalPaise     = calcAmount(selectedEvent, totalMembers);
+  const sizeErr        = selectedEvent ? teamSizeError(selectedEvent, totalMembers) : "";
+  const minTm          = minTeammates(selectedEvent);
+  const maxTm          = maxTeammates(selectedEvent);
+
+  // FIX: team section only shown when event requires multiple members OR user has
+  // explicitly added at least one teammate. Not shown just because event *can* have them.
+  const hasTeammates        = form.teamMembers.length > 0;
+  const eventRequiresTeam   = requiresTeam(selectedEvent);
+  const eventCanHaveTeam    = canHaveTeam(selectedEvent);
+  const showTeamSection     = eventRequiresTeam || hasTeammates;
+
+  // FIX: team name only required when there are actual teammates present
+  const teamNameErr = showTeamSection && hasTeammates && !form.teamName.trim() ? "Team name required" : "";
 
   const errors: FormErrors = {
     fullName: validateName(form.fullName),
@@ -584,47 +599,38 @@ export default function LumousRegistrationPage() {
     phone: validatePhone(m.phone),
   }));
 
-  const teamNameErr = needsTeamInput && !form.teamName.trim() ? "Team name required" : "";
-
   const isFormValid =
     !errors.fullName && !errors.usn && !errors.email && !errors.phone &&
-    ev.status === "verified" &&
+    emailVerif.status === "verified" &&
     !!form.eventSlug &&
     !sizeErr &&
-    (!needsTeamInput || !teamNameErr) &&
+    !teamNameErr &&
     memberErrors.every(e => !e.name && !e.usn && !e.phone);
 
   // ── Helpers ───────────────────────────────────────────────────────────────
-  const patch  = useCallback((p: Partial<FormState>) => setForm(f => ({ ...f, ...p })), []);
-  const touch  = (f: string) => setTouched(p => ({ ...p, [f]: true }));
+  const patch = useCallback((p: Partial<FormState>) => setForm(f => ({ ...f, ...p })), []);
+  const touch = (f: string) => setTouched(p => ({ ...p, [f]: true }));
 
-  // Auto-sync member count when event changes
   const handleEventChange = (slug: string) => {
     const next = EVENTS.find(e => e.slug === slug);
     const min  = minTeammates(next);
-    const max  = maxTeammates(next);
-    // Pre-fill with the minimum required teammates
+    // Pre-fill with minimum required teammates only
     const members = Array.from({ length: min }, defaultMember);
-    // Clamp existing members to max
-    patch({
-      eventSlug:   slug,
-      teamName:    "",
-      teamMembers: members,
-    });
+    patch({ eventSlug: slug, teamName: "", teamMembers: members });
   };
 
   // ── OTP handlers ─────────────────────────────────────────────────────────
   const resetEmailFlow = () => {
-    setEv({ status: "idle", message: "", resendCooldown: 0 });
+    setEmailVerif({ status: "idle", message: "", resendCooldown: 0 });
     setOtp(""); setOtpErr("");
     if (cooldown.current) clearInterval(cooldown.current);
   };
 
   const startCooldown = useCallback(() => {
-    setEv(p => ({ ...p, resendCooldown: RESEND_SECS }));
+    setEmailVerif(p => ({ ...p, resendCooldown: RESEND_SECS }));
     if (cooldown.current) clearInterval(cooldown.current);
     cooldown.current = setInterval(() => {
-      setEv(p => {
+      setEmailVerif(p => {
         if (p.resendCooldown <= 1) { clearInterval(cooldown.current!); return { ...p, resendCooldown: 0 }; }
         return { ...p, resendCooldown: p.resendCooldown - 1 };
       });
@@ -635,23 +641,23 @@ export default function LumousRegistrationPage() {
 
   const sendOtp = async () => {
     touch("email"); if (errors.email) return;
-    setEv({ status: "sending", message: "", resendCooldown: 0 }); setOtp(""); setOtpErr("");
-    try { await apiSendOtp(form.email); setEv({ status: "otp_sent", message: "", resendCooldown: 0 }); startCooldown(); }
-    catch (e: unknown) { setEv({ status: "error", message: e instanceof Error ? e.message : "Failed", resendCooldown: 0 }); }
+    setEmailVerif({ status: "sending", message: "", resendCooldown: 0 }); setOtp(""); setOtpErr("");
+    try { await apiSendOtp(form.email); setEmailVerif({ status: "otp_sent", message: "", resendCooldown: 0 }); startCooldown(); }
+    catch (e: unknown) { setEmailVerif({ status: "error", message: e instanceof Error ? e.message : "Failed", resendCooldown: 0 }); }
   };
 
   const resendOtp = async () => {
-    if (ev.resendCooldown > 0) return;
-    setEv(p => ({ ...p, status: "sending", message: "" })); setOtp(""); setOtpErr("");
-    try { await apiSendOtp(form.email); setEv({ status: "otp_sent", message: "OTP resent!", resendCooldown: 0 }); startCooldown(); }
-    catch (e: unknown) { setEv(p => ({ ...p, status: "otp_sent", message: e instanceof Error ? e.message : "Failed" })); }
+    if (emailVerif.resendCooldown > 0) return;
+    setEmailVerif(p => ({ ...p, status: "sending", message: "" })); setOtp(""); setOtpErr("");
+    try { await apiSendOtp(form.email); setEmailVerif({ status: "otp_sent", message: "OTP resent!", resendCooldown: 0 }); startCooldown(); }
+    catch (e: unknown) { setEmailVerif(p => ({ ...p, status: "otp_sent", message: e instanceof Error ? e.message : "Failed" })); }
   };
 
   const verifyOtp = async () => {
     if (otp.length !== OTP_LENGTH) { setOtpErr(`Enter all ${OTP_LENGTH} digits`); return; }
-    setOtpErr(""); setEv(p => ({ ...p, status: "verifying", message: "" }));
-    try { await apiVerifyOtp(form.email, otp); clearInterval(cooldown.current!); setEv({ status: "verified", message: "", resendCooldown: 0 }); }
-    catch (e: unknown) { setOtpErr(e instanceof Error ? e.message : "Wrong OTP"); setEv(p => ({ ...p, status: "otp_sent" })); }
+    setOtpErr(""); setEmailVerif(p => ({ ...p, status: "verifying", message: "" }));
+    try { await apiVerifyOtp(form.email, otp); clearInterval(cooldown.current!); setEmailVerif({ status: "verified", message: "", resendCooldown: 0 }); }
+    catch (e: unknown) { setOtpErr(e instanceof Error ? e.message : "Wrong OTP"); setEmailVerif(p => ({ ...p, status: "otp_sent" })); }
   };
 
   // ── Team helpers ──────────────────────────────────────────────────────────
@@ -661,14 +667,24 @@ export default function LumousRegistrationPage() {
   };
   const removeMember = (i: number) => {
     if (form.teamMembers.length <= minTm) return;
-    patch({ teamMembers: form.teamMembers.filter((_,idx) => idx !== i) });
+    patch({ teamMembers: form.teamMembers.filter((_, idx) => idx !== i) });
   };
   const updateMember = (i: number, f: keyof TeamMember, v: string) => {
-    patch({ teamMembers: form.teamMembers.map((m,idx) => idx === i ? { ...m, [f]: v } : m) });
+    patch({ teamMembers: form.teamMembers.map((m, idx) => idx === i ? { ...m, [f]: v } : m) });
+  };
+
+  // FIX: touch all member fields on submit attempt so errors become visible
+  const touchAllMembers = () => {
+    const updates: Record<string, boolean> = {};
+    form.teamMembers.forEach((_, i) => { updates[`m${i}`] = true; });
+    setTouched(p => ({ ...p, ...updates }));
   };
 
   // ── Submit ────────────────────────────────────────────────────────────────
   const submit = async () => {
+    // FIX: touch all fields on submit so all errors surface simultaneously
+    setTouched({ fullName: true, usn: true, email: true, phone: true, teamName: true });
+    touchAllMembers();
     if (!isFormValid) return;
     setFlow("creating_registration"); setFlowErr("");
     try {
@@ -684,7 +700,7 @@ export default function LumousRegistrationPage() {
 
   const reset = () => {
     setForm(defaultForm); setTouched({});
-    setEv({ status: "idle", message: "", resendCooldown: 0 }); setOtp(""); setOtpErr("");
+    setEmailVerif({ status: "idle", message: "", resendCooldown: 0 }); setOtp(""); setOtpErr("");
     setFlow("idle"); setFlowErr(""); setRegId(null); setRegAmount(0); setRegEventName("");
     localStorage.removeItem(STORAGE_KEY);
   };
@@ -716,7 +732,7 @@ export default function LumousRegistrationPage() {
           <p className="text-zinc-500 text-sm">Event Registration · Dayananda Sagar College</p>
         </motion.div>
 
-        {/* ── Notice: one event per registration ── */}
+        {/* ── Notice ── */}
         <motion.div
           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="mb-6 bg-amber-950/30 border border-amber-700/30 rounded-xl px-4 py-4"
@@ -726,7 +742,7 @@ export default function LumousRegistrationPage() {
             <li>→ <strong>One registration = one event.</strong> If you want to register for multiple events, please register separately for each event.</li>
             <li>→ Read all rules before registering. Team size limits are strictly enforced.</li>
             <li>→ Ideathon participants must upload PPT separately after registration.</li>
-            <li>→ <strong>Make sure your name is visible in payment screenshot</strong></li>
+            <li>→ <strong> Make sure your Name and Trasaction Id appears in Payment screenshot.</strong> </li>
           </ul>
           <div className="mt-3 pt-3 border-t border-amber-800/30 text-amber-400/60 text-xs">
             Queries: 📞 Naman Singh — 8334072002 &nbsp;|&nbsp; Shefali — 8867429955
@@ -800,6 +816,7 @@ export default function LumousRegistrationPage() {
                           onChange={e => patch({ usn: e.target.value })} onBlur={() => touch("usn")} maxLength={10}/>
                       </Field>
                     </div>
+                    {/* FIX: phone field now shows in readiness checklist and errors are visible */}
                     <Field label="Phone" id="phone" required error={touched.phone ? errors.phone : ""}>
                       <Input id="phone" type="tel" placeholder="10-digit number" value={form.phone}
                         onChange={e => patch({ phone: e.target.value })} onBlur={() => touch("phone")}/>
@@ -808,48 +825,48 @@ export default function LumousRegistrationPage() {
 
                   {/* 2. Email Verification */}
                   <Block title="Email Verification" icon="📧">
-                    <Field label="Email" id="email" required error={touched.email && ev.status === "idle" ? errors.email : undefined}>
+                    <Field label="Email" id="email" required error={touched.email && emailVerif.status === "idle" ? errors.email : undefined}>
                       <div className="flex gap-2">
                         <Input id="email" type="email" placeholder="you@example.com" value={form.email}
-                          onChange={e => { patch({ email: e.target.value }); if (ev.status !== "idle") resetEmailFlow(); }}
+                          onChange={e => { patch({ email: e.target.value }); if (emailVerif.status !== "idle") resetEmailFlow(); }}
                           onBlur={() => touch("email")}
-                          disabled={["otp_sent","verifying","verified","sending"].includes(ev.status)}
+                          disabled={["otp_sent", "verifying", "verified", "sending"].includes(emailVerif.status)}
                           className="flex-1"/>
-                        {!["verified","otp_sent","verifying"].includes(ev.status) && (
-                          <button onClick={sendOtp} disabled={ev.status === "sending" || !!errors.email}
+                        {!["verified", "otp_sent", "verifying"].includes(emailVerif.status) && (
+                          <button onClick={sendOtp} disabled={emailVerif.status === "sending" || !!errors.email}
                             className="px-4 py-3 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-black text-sm font-bold rounded-lg transition-colors whitespace-nowrap flex items-center gap-2">
-                            {ev.status === "sending" ? <><Spinner size="sm"/> …</> : "Send OTP"}
+                            {emailVerif.status === "sending" ? <><Spinner size="sm"/> …</> : "Send OTP"}
                           </button>
                         )}
                       </div>
                     </Field>
 
                     <AnimatePresence>
-                      {(ev.status === "otp_sent" || ev.status === "verifying") && (
+                      {(emailVerif.status === "otp_sent" || emailVerif.status === "verifying") && (
                         <motion.div key="otp" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
                           <div className="bg-zinc-800/60 border border-zinc-700 rounded-xl p-5 flex flex-col gap-4">
                             <p className="text-xs text-zinc-400">OTP sent to <span className="text-amber-400 font-semibold">{form.email}</span></p>
-                            <OtpInput value={otp} onChange={v => { setOtp(v); if (otpErr) setOtpErr(""); }} disabled={ev.status === "verifying"}/>
+                            <OtpInput value={otp} onChange={v => { setOtp(v); if (otpErr) setOtpErr(""); }} disabled={emailVerif.status === "verifying"}/>
                             {otpErr && <p className="text-xs text-red-400">✗ {otpErr}</p>}
                             <div className="flex flex-wrap gap-3 items-center">
-                              <button onClick={verifyOtp} disabled={ev.status === "verifying" || otp.length !== OTP_LENGTH}
+                              <button onClick={verifyOtp} disabled={emailVerif.status === "verifying" || otp.length !== OTP_LENGTH}
                                 className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 disabled:cursor-not-allowed text-black text-sm font-bold rounded-lg transition-colors flex items-center gap-2">
-                                {ev.status === "verifying" ? <><Spinner size="sm"/> Verifying…</> : "Verify"}
+                                {emailVerif.status === "verifying" ? <><Spinner size="sm"/> Verifying…</> : "Verify"}
                               </button>
-                              <button onClick={resendOtp} disabled={ev.resendCooldown > 0 || ev.status === "verifying"}
+                              <button onClick={resendOtp} disabled={emailVerif.resendCooldown > 0 || emailVerif.status === "verifying"}
                                 className="text-xs text-zinc-500 hover:text-amber-400 disabled:opacity-40 transition-colors">
-                                {ev.resendCooldown > 0 ? `Resend in ${ev.resendCooldown}s` : "Resend"}
+                                {emailVerif.resendCooldown > 0 ? `Resend in ${emailVerif.resendCooldown}s` : "Resend"}
                               </button>
                               <button onClick={resetEmailFlow} className="text-xs text-zinc-600 hover:text-zinc-400 ml-auto transition-colors">← Change email</button>
                             </div>
-                            {ev.message && <p className={`text-xs ${ev.message.includes("resent") || ev.message.includes("sent") ? "text-emerald-400" : "text-red-400"}`}>{ev.message}</p>}
+                            {emailVerif.message && <p className={`text-xs ${emailVerif.message.includes("resent") || emailVerif.message.includes("sent") ? "text-emerald-400" : "text-red-400"}`}>{emailVerif.message}</p>}
                           </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
 
                     <AnimatePresence>
-                      {ev.status === "verified" && (
+                      {emailVerif.status === "verified" && (
                         <motion.div key="verified" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
                           className="flex items-center justify-between bg-emerald-950/40 border border-emerald-700/40 rounded-xl px-4 py-3">
                           <span className="text-emerald-400 text-sm font-bold">✅ Email Verified</span>
@@ -858,12 +875,12 @@ export default function LumousRegistrationPage() {
                       )}
                     </AnimatePresence>
 
-                    {ev.status === "error" && (
-                      <p className="text-xs text-red-400">✗ {ev.message}</p>
+                    {emailVerif.status === "error" && (
+                      <p className="text-xs text-red-400">✗ {emailVerif.message}</p>
                     )}
                   </Block>
 
-                  {/* 3. Event Selection — single event, grouped */}
+                  {/* 3. Event Selection */}
                   <Block title="Select Event" icon="🎯">
                     <p className="text-xs text-zinc-600 -mt-2">Choose one event to register for.</p>
 
@@ -872,20 +889,21 @@ export default function LumousRegistrationPage() {
                         <div key={cat}>
                           <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-600 mb-2">{cat}</p>
                           <div className="flex flex-col gap-1.5">
-                            {events.map(ev => {
-                              const sel = form.eventSlug === ev.slug;
+                            {/* FIX: renamed loop variable from `ev` to `eventItem` to avoid collision with emailVerif state */}
+                            {events.map(eventItem => {
+                              const sel = form.eventSlug === eventItem.slug;
                               return (
                                 <motion.label
-                                  key={ev.slug} whileHover={{ x: 2 }} whileTap={{ scale: 0.99 }}
+                                  key={eventItem.slug} whileHover={{ x: 2 }} whileTap={{ scale: 0.99 }}
                                   className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${sel ? "bg-amber-500/10 border-amber-500/50 text-amber-300" : "bg-zinc-800/40 border-zinc-700/50 text-zinc-400 hover:border-zinc-600"}`}
                                 >
-                                  <input type="radio" name="event" className="sr-only" checked={sel} onChange={() => handleEventChange(ev.slug)}/>
+                                  <input type="radio" name="event" className="sr-only" checked={sel} onChange={() => handleEventChange(eventItem.slug)}/>
                                   <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${sel ? "border-amber-400 bg-amber-400" : "border-zinc-600"}`}>
                                     {sel && <div className="w-1.5 h-1.5 rounded-full bg-black"/>}
                                   </div>
-                                  <span className="text-lg">{ev.icon}</span>
-                                  <span className="text-sm font-medium flex-1">{ev.label}</span>
-                                  <span className="text-xs font-mono-dm text-zinc-500">{ev.note}</span>
+                                  <span className="text-lg">{eventItem.icon}</span>
+                                  <span className="text-sm font-medium flex-1">{eventItem.label}</span>
+                                  <span className="text-xs font-mono-dm text-zinc-500">{eventItem.note}</span>
                                 </motion.label>
                               );
                             })}
@@ -896,20 +914,20 @@ export default function LumousRegistrationPage() {
 
                     {/* Fee preview */}
                     <AnimatePresence>
-                      {selectedEv && (
+                      {selectedEvent && (
                         <motion.div
                           key="fee" initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                           className="bg-zinc-800/60 border border-zinc-700/50 rounded-xl p-4 flex items-center justify-between"
                         >
                           <div>
                             <p className="text-xs text-zinc-500 mb-0.5">Selected</p>
-                            <p className="text-sm font-semibold text-white">{selectedEv.icon} {selectedEv.label}</p>
+                            <p className="text-sm font-semibold text-white">{selectedEvent.icon} {selectedEvent.label}</p>
                           </div>
                           <div className="text-right">
                             <p className="text-xs text-zinc-500 mb-0.5">Total</p>
                             <p className="text-xl font-black text-amber-400 font-display">{formatINR(totalPaise)}</p>
-                            {selectedEv.feeType === "per_person" && (
-                              <p className="text-xs text-zinc-600">₹{selectedEv.fee} × {totalMembers} members</p>
+                            {selectedEvent.feeType === "per_person" && (
+                              <p className="text-xs text-zinc-600">₹{selectedEvent.fee} × {totalMembers} member{totalMembers !== 1 ? "s" : ""}</p>
                             )}
                           </div>
                         </motion.div>
@@ -917,9 +935,9 @@ export default function LumousRegistrationPage() {
                     </AnimatePresence>
                   </Block>
 
-                  {/* 4. Team Details (shown only if event needs members) */}
+                  {/* 4. Team Details */}
                   <AnimatePresence>
-                    {needsTeamInput && (
+                    {showTeamSection && (
                       <motion.div
                         key="team"
                         initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
@@ -928,33 +946,50 @@ export default function LumousRegistrationPage() {
                       >
                         <Block title="Team Details" icon="👥">
                           <div className="bg-zinc-800/40 border border-zinc-700/40 rounded-xl px-4 py-3 text-xs text-zinc-400 flex items-center justify-between">
-                            <span>{selectedEv?.note}</span>
+                            <span>{selectedEvent?.note}</span>
                             <span className={`font-bold ${sizeErr ? "text-red-400" : "text-emerald-400"}`}>
-                              {totalMembers}/{selectedEv?.exact ?? `${selectedEv?.min}–${selectedEv?.max}`}
+                              {totalMembers}/{selectedEvent?.exact ?? `${selectedEvent?.min}–${selectedEvent?.max}`}
                             </span>
                           </div>
 
-                          {sizeErr && (
-                            <p className="text-xs text-red-400">✗ {sizeErr}</p>
-                          )}
+                          {sizeErr && <p className="text-xs text-red-400">✗ {sizeErr}</p>}
 
-                          <Field label="Team Name" id="teamName" required error={touched.teamName ? teamNameErr : undefined}>
-                            <Input id="teamName" type="text" placeholder="Your team name" value={form.teamName}
-                              onChange={e => patch({ teamName: e.target.value })} onBlur={() => touch("teamName")}/>
-                          </Field>
+                          {/* Team name only required when there are teammates */}
+                          {hasTeammates && (
+                            <Field label="Team Name" id="teamName" required error={touched.teamName ? teamNameErr : undefined}>
+                              <Input id="teamName" type="text" placeholder="Your team name" value={form.teamName}
+                                onChange={e => patch({ teamName: e.target.value })} onBlur={() => touch("teamName")}/>
+                            </Field>
+                          )}
 
                           {/* Members */}
                           <div className="flex flex-col gap-3">
                             <div className="flex items-center justify-between">
                               <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-600">
-                                Teammates <span className="text-amber-400 normal-case tracking-normal">({form.teamMembers.length} of {maxTm})</span>
+                                Teammates{" "}
+                                <span className="text-amber-400 normal-case tracking-normal">
+                                  ({form.teamMembers.length} of {maxTm})
+                                </span>
                               </p>
                               <div className="flex gap-2">
-                                {form.teamMembers.length < maxTm && (
-                                  <button onClick={addMember} className="text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors">+ Add</button>
+                                {/* IMPROVEMENT 1: Show "Add teammate" when solo on optional-team events */}
+                                {eventCanHaveTeam && form.teamMembers.length < maxTm && (
+                                  <button
+                                    onClick={addMember}
+                                    className="text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1"
+                                  >
+                                    + Add teammate
+                                  </button>
                                 )}
                               </div>
                             </div>
+
+                            {/* IMPROVEMENT 2: Helpful hint for optional-team events when solo */}
+                            {eventCanHaveTeam && !eventRequiresTeam && form.teamMembers.length === 0 && (
+                              <p className="text-xs text-zinc-600 italic">
+                                You can register solo or add up to {maxTm} teammate{maxTm !== 1 ? "s" : ""} for this event.
+                              </p>
+                            )}
 
                             <AnimatePresence initial={false}>
                               {form.teamMembers.map((m, i) => (
@@ -963,12 +998,14 @@ export default function LumousRegistrationPage() {
                                   className="bg-zinc-800/40 border border-zinc-700/40 rounded-xl p-4 flex flex-col gap-3"
                                 >
                                   <div className="flex items-center justify-between">
-                                    <span className="text-xs text-zinc-600 font-bold uppercase tracking-wider">Member {i+1}</span>
+                                    <span className="text-xs text-zinc-600 font-bold uppercase tracking-wider">Member {i + 1}</span>
+                                    {/* Only allow removing if above the minimum required */}
                                     {form.teamMembers.length > minTm && (
                                       <button onClick={() => removeMember(i)} className="text-xs text-red-500 hover:text-red-400 transition-colors">Remove</button>
                                     )}
                                   </div>
                                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    {/* FIX: member errors now surface on submit via touchAllMembers() */}
                                     <Field label="Name" id={`mn-${i}`} required error={touched[`m${i}`] ? memberErrors[i]?.name : undefined}>
                                       <Input id={`mn-${i}`} type="text" placeholder="Full name" value={m.name}
                                         onChange={e => updateMember(i, "name", e.target.value)}
@@ -994,17 +1031,37 @@ export default function LumousRegistrationPage() {
                     )}
                   </AnimatePresence>
 
+                  {/* IMPROVEMENT: "Add teammates" prompt for solo-capable events when team section isn't shown yet */}
+                  <AnimatePresence>
+                    {eventCanHaveTeam && !showTeamSection && (
+                      <motion.div
+                        key="add-team-prompt"
+                        initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <button
+                          onClick={addMember}
+                          className="w-full border border-dashed border-zinc-700 hover:border-amber-500/50 hover:bg-amber-500/5 text-zinc-600 hover:text-amber-400 text-xs font-bold uppercase tracking-widest rounded-xl py-3 transition-all"
+                        >
+                          + Add teammates (optional · up to {maxTm})
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   {/* 5. Submit */}
                   <div className="flex flex-col gap-3 pt-1">
-                    {/* Readiness indicators */}
+                    {/* Readiness indicators — FIX: phone now included */}
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1">
                       {[
-                        [!errors.fullName && form.fullName, "Full name"],
-                        [!errors.usn && form.usn, "USN"],
-                        [ev.status === "verified", "Email verified"],
+                        [!errors.fullName && !!form.fullName, "Full name"],
+                        [!errors.usn && !!form.usn, "USN"],
+                        [!errors.phone && !!form.phone, "Phone"],          // FIX: was missing
+                        [emailVerif.status === "verified", "Email verified"],
                         [!!form.eventSlug, "Event selected"],
-                        ...(needsTeamInput ? [
-                          [!teamNameErr && form.teamName, "Team name"],
+                        ...(showTeamSection ? [
+                          [!teamNameErr || !hasTeammates, "Team name"],
                           [!sizeErr && form.teamMembers.length >= minTm, "Team size valid"],
                         ] : []),
                       ].map(([ok, label], i) => (
@@ -1017,7 +1074,7 @@ export default function LumousRegistrationPage() {
                     <motion.button
                       whileHover={isFormValid ? { scale: 1.015 } : {}}
                       whileTap={isFormValid ? { scale: 0.985 } : {}}
-                      onClick={submit} disabled={!isFormValid}
+                      onClick={submit}
                       className={`w-full py-4 rounded-xl text-base font-black font-display tracking-wider transition-all flex items-center justify-center gap-2 ${
                         isFormValid
                           ? "bg-amber-500 hover:bg-amber-400 text-black shadow-lg shadow-amber-500/20"
