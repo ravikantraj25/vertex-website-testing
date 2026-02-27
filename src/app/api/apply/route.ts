@@ -6,9 +6,9 @@ import { ratelimit } from "@/lib/ratelimit";
  * POST /api/apply
  * Public (Authenticated Users): Submit a recruitment application
  * Any logged-in user can submit an application
- */
+ */ 
 export async function POST(request: NextRequest) {
-       
+        
     try {
         // Check if user is authenticated (any role)
         const session = await getSession();
