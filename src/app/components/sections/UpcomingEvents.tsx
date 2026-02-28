@@ -13,7 +13,7 @@ const upcomingEvent = {
   description:
     "A multi-event inter-departmental showdown — where ideas spark, creativity roars, and every department brings its A-game.",
   accent: "#fbbf24",
-  date: "11th & 15th March 2026",
+  date: "11th - 15th March 2026",
   venue: "Dept of ETE",
   subEvents: [
     { label: "Inspire (Ideathon)", Icon: Brain },
