@@ -767,7 +767,7 @@ export default function LumousRegistrationPage() {
           </div>
 
           <a
-            href="https://drive.google.com/file/d/1HAujdGlUDSMKCaTVjhlrY-lr_As0NC0u/view?usp=sharing"
+            href="https://drive.google.com/file/d/1DTBWmRSt2gY8iDVAYTbsmnojs7weL9Jt/view?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-between w-full px-4 py-3 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/25 rounded-xl transition-all duration-200 group"
