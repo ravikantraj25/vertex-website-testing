@@ -74,4 +74,4 @@ Issue template:
 ## Code of Conduct
 - Be respectful and collaborative
 - Follow review feedback professionally
-- Ask for help if stuck
+- Ask for help if stuck.
