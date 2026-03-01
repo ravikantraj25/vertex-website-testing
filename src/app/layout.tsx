@@ -3,6 +3,7 @@ import { Google_Sans_Flex } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
 import Providers from "./providers";
+import PostHogProvider from '../components/PostHogProvider'
 
 const googleSansFlex = Google_Sans_Flex({
   variable: "--font-google-sans-flex",
@@ -24,7 +25,8 @@ export default function RootLayout({
       <body
         className={`${googleSansFlex.variable} antialiased bg-neutral-950 text-white`}
       >
-        <Providers>
+        <PostHogProvider>
+         <Providers>
           <Script src="https://checkout.razorpay.com/v1/checkout.js" />
         {children}
          <Script
@@ -32,7 +34,8 @@ export default function RootLayout({
 
           strategy="afterInteractive"
         />
-        </Providers>
+          </Providers>
+          </PostHogProvider>
       </body>
     </html>
   );
