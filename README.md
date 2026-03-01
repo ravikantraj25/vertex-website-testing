@@ -1,5 +1,5 @@
 # Project Contributing Guide
-
+ 
 Thank you for your interest in contributing to this project. Please follow the steps and standards below to ensure smooth collaboration.
 
 ## Prerequisites
@@ -8,7 +8,7 @@ Thank you for your interest in contributing to this project. Please follow the s
 - Git installed locally
 
 ## Getting Started
-1. Clone the repository
+1.  Clone the repository
    - git clone https://github.com/your-org/your-nextjs-project.git
    -  cd your-nextjs-project
 
@@ -74,4 +74,4 @@ Issue template:
 ## Code of Conduct
 - Be respectful and collaborative
 - Follow review feedback professionally
-- Ask for help if stuck
+- Ask for help if stuck.
