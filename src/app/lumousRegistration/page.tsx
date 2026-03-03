@@ -112,13 +112,6 @@ const EVENTS: EventItem[] = [
     note: "Max 4 members · Free",
   },
   {
-    slug: "cricket", label: "Cricket (Boys)", icon: "🏏",
-    category: "Sports",
-    feeType: "per_team", fee: 150,
-    min: 8, max: 11,
-    note: "8(Playing)+3(Optional Substitutes) members · ₹150 per team · Upto 8 teams only (First Come First Serve)",
-  },
-  {
     slug: "volleyball", label: "Volleyball (Girls)", icon: "🏐",
     category: "Sports",
     feeType: "per_team", fee: 100,
