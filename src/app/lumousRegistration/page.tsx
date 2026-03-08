@@ -84,13 +84,6 @@ interface RegisterApiResponse {
 
 const EVENTS: EventItem[] = [
   {
-    slug: "ideathon", label: "Inspire (Ideathon)", icon: "🎯",
-    category: "Technical / Fun",
-    feeType: "free", fee: 0,
-    min: 2, max: 3,
-    note: "2–3 members · ₹100 per team if shortlisted",
-  },
-  {
     slug: "bgmi", label: "BGMI", icon: "🎮",
     category: "Technical / Fun",
     feeType: "per_team", fee: 50,
@@ -138,13 +131,7 @@ const EVENTS: EventItem[] = [
     feeType: "per_team", fee: 50,
     exact: 2,
     note: "Exactly 2 members · ₹50 per team",
-  }, {
-    slug: "trapezoid", label: "Trap E Zoid (Hardware escape room )", icon: "🎮",
-    category: "Technical / Fun",
-    feeType: "per_team", fee: 150,
-    exact: 2,
-    note: "Exactly 2 members · ₹150 per team",
-  },
+  }, 
 ];
 
 const CATEGORIES = [...new Set(EVENTS.map((e) => e.category))];
