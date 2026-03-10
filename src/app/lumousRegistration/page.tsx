@@ -90,13 +90,7 @@ const EVENTS: EventItem[] = [
     min: 1, max: 4,
     note: "₹50 per team · Max 4 members",
   },
-  {
-    slug: "igp", label: "India's Got Patent", icon: "🎯",
-    category: "Technical / Fun",
-    feeType: "free", fee: 0,
-    min: 1, max: 2,
-    note: "1–2 members · Free",
-  },
+
   {
     slug: "reeluminati", label: "Reeluminati", icon: "🎬",
     category: "Technical / Fun",
