@@ -61,12 +61,7 @@ function Navbar() {
               {item.label}
             </Link>
           ))} */}
-          <Link
-            href="/lumousRegistration"
-            className="ml-2 px-4 py-1.5 text-sm font-semibold text-black bg-yellow-400 hover:bg-yellow-300 rounded-lg transition duration-150 ease-in-out"
-          >
-            Register for Lumos
-          </Link>
+        
         </nav>
       </div>
     </header>
