@@ -84,39 +84,19 @@ interface RegisterApiResponse {
 
 const EVENTS: EventItem[] = [
   {
-    slug: "ideathon", label: "Inspire (Ideathon)", icon: "🎯",
-    category: "Technical / Fun",
-    feeType: "free", fee: 0,
-    min: 2, max: 3,
-    note: "2–3 members · ₹100 per team if shortlisted",
-  },
-  {
     slug: "bgmi", label: "BGMI", icon: "🎮",
     category: "Technical / Fun",
     feeType: "per_team", fee: 50,
     min: 1, max: 4,
     note: "₹50 per team · Max 4 members",
   },
-  {
-    slug: "igp", label: "India's Got Patent", icon: "🎯",
-    category: "Technical / Fun",
-    feeType: "free", fee: 0,
-    min: 1, max: 2,
-    note: "1–2 members · Free",
-  },
+
   {
     slug: "reeluminati", label: "Reeluminati", icon: "🎬",
     category: "Technical / Fun",
     feeType: "free", fee: 0,
     min: 1, max: 4,
     note: "Max 4 members · Free",
-  },
-  {
-    slug: "cricket", label: "Cricket (Boys)", icon: "🏏",
-    category: "Sports",
-    feeType: "per_team", fee: 150,
-    min: 8, max: 11,
-    note: "8(Playing)+3(Optional Substitutes) members · ₹150 per team · Upto 8 teams only (First Come First Serve)",
   },
   {
     slug: "volleyball", label: "Volleyball (Girls)", icon: "🏐",
@@ -145,13 +125,7 @@ const EVENTS: EventItem[] = [
     feeType: "per_team", fee: 50,
     exact: 2,
     note: "Exactly 2 members · ₹50 per team",
-  }, {
-    slug: "trapezoid", label: "Trap E Zoid (Hardware escape room )", icon: "🎮",
-    category: "Technical / Fun",
-    feeType: "per_team", fee: 150,
-    exact: 2,
-    note: "Exactly 2 members · ₹150 per team",
-  },
+  }
 ];
 
 const CATEGORIES = [...new Set(EVENTS.map((e) => e.category))];
@@ -542,13 +516,6 @@ function SuccessScreen({ email, eventName, onReset }: { email: string; eventName
         ))}
       </div>
 
-      <div className="bg-yellow-950/40 border border-yellow-700/30 rounded-xl px-4 py-3 w-full max-w-xs">
-        <p className="text-yellow-300 text-xs">
-          Registered for <strong>Ideathon</strong>? Upload your PPT{" "}
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSdd2YvB151Kp81pyx8saAp9AXmv31r07wahv6fQdZKzbi7GXg/viewform?usp=publish-editor" target="_blank" rel="noreferrer" className="underline font-semibold">here</a>.
-        </p>
-      </div>
-
       <div className="flex flex-col gap-2 w-full max-w-xs">
         <p className="text-xs text-zinc-600 text-center">Want to join another event?</p>
         <button
@@ -782,8 +749,7 @@ export default function LumousRegistrationPage() {
           <ul className="text-amber-200/70 text-[13px] space-y-2.5 list-none leading-relaxed">
             <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span><strong className="text-amber-200/90">One registration = one event.</strong> If you want to register for multiple events, please register separately for each event.</span></li>
             <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span>Read all rules before registering. Team size limits are strictly enforced.</span></li>
-            <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span>Ideathon participants must upload PPT separately after registration.</span></li>
-            <li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span>Prize pool for Non-technical Events will be informed later via website and social media.</span></li>
+<li className="flex gap-2"><span className="text-amber-500/60 shrink-0">→</span><span>Prize pool for Non-technical Events will be informed later via website and social media.</span></li>
           </ul>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-3 border-t border-amber-800/20 text-[12px] text-amber-400/50">

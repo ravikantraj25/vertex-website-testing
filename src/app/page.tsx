@@ -15,7 +15,7 @@ export default function Home() {
     <div>
    <Navbar/>
    <ChipScroll/>
-   <UpcomingEvents/>
+   {/* <UpcomingEvents/> */}
    <AboutVertex/>
    <Domains/>
    <Journey/>

@@ -1,34 +1,30 @@
-// scripts/cleanup-all-registrations.ts
-import { prisma } from "@/lib/prisma";
+import { PrismaClient } from "@prisma/client";
 
-async function cleanupAll() {
-  console.log("\n========== CLEANUP STARTED ==========");
+const prisma = new PrismaClient();
+import { EventType } from "@prisma/client";
+async function main() {
+  console.log("🌱 Seeding events...");
 
-  // Order matters — delete dependents first
+  await prisma.event.upsert({
+    where: { slug: "reeluminati" },
+    update: {},
+    create: {
+      slug: "reeluminati",
+      name: "Reeluminati",
+      type: EventType.TEAM,
+      price: 0, // ₹150
+    },
+  });
 
-  const participations = await prisma.participation.deleteMany({});
-  console.log(`✓ Deleted ${participations.count} participation(s)`);
 
-  const teams = await prisma.team.deleteMany({});
-  console.log(`✓ Deleted ${teams.count} team(s)`);
-
-  const payments = await prisma.payment.deleteMany({});
-  console.log(`✓ Deleted ${payments.count} payment(s)`);
-
-  const registrations = await prisma.registration.deleteMany({});
-  console.log(`✓ Deleted ${registrations.count} registration(s)`);
-
-  const participants = await prisma.participant.deleteMany({});
-  console.log(`✓ Deleted ${participants.count} participant(s)`);
-
-  console.log("========== CLEANUP COMPLETE ==========\n");
+  console.log("✅ Seeding completed!");
 }
 
-cleanupAll()
-  .catch((e) => {
-    console.error("Cleanup failed:", e);
-    process.exit(1);
+main()
+  .then(async () => {
+    await prisma.$disconnect();
   })
-  .finally(async () => {
+  .catch(async (e) => {
+    console.error(e);
     await prisma.$disconnect();
   });
