@@ -54,7 +54,7 @@ export default function AboutVertex() {
             </div>
             <div className="flex min-w-[120px] flex-col items-center justify-center rounded-2xl border border-white/5 bg-[#111] px-6 py-5">
               <span className="text-lg font-bold text-white">Student</span>
-              <span className="mt-1 text-[10px] font-bold tracking-widest text-[#555]">LED CLUB</span>
+              <span className="mt-1 text-[10px] font-bold tracking-widest text-[#555]">Led Club</span>
             </div>
           </div>
         </motion.div>
