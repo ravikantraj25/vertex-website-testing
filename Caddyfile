@@ -1,0 +1,7 @@
+# Caddy terminates TLS (auto Let's Encrypt) and proxies to the Next.js container.
+# DOMAIN and LETSENCRYPT_EMAIL are supplied via docker-compose environment.
+{$DOMAIN} {
+	encode gzip zstd
+	reverse_proxy app:3000
+	tls {$LETSENCRYPT_EMAIL}
+}
