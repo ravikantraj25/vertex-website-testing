@@ -7,15 +7,17 @@ import { ratelimit } from "@/lib/ratelimit";
  * Public: List all achievements
  */
 export async function GET(request: NextRequest) {
-      const ip: string | null = request.headers.get("x-forwarded-for");
-       if(!ip) {
+    const ip: string | null = request.headers.get("x-forwarded-for");
+    if (!ip) {
         return new Response("Unable to determine IP address", { status: 400 });
-       }
-      const { success } = await ratelimit.limit(ip);
-    
-      if (!success) {
-        return new Response("Too many requests", { status: 429 });
-      }
+    }
+    if (ratelimit) {
+        const { success } = await ratelimit.limit(ip);
+
+        if (!success) {
+            return new Response("Too many requests", { status: 429 });
+        }
+    }
     try {
         const achievements = await prisma.achievement.findMany({
             orderBy: { year: "desc" },
@@ -44,7 +46,7 @@ export async function GET(request: NextRequest) {
  * Admin Only: Create a new achievement
  */
 export async function POST(request: NextRequest) {
-     
+
     try {
         // Check admin authorization
         const session = await requireAdmin();
