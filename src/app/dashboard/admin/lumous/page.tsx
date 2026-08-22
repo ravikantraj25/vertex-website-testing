@@ -2,6 +2,7 @@
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+import ActionButtons from "./ActionButtons";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -395,6 +396,9 @@ export default async function LumousAdminPage() {
                                     ? `₹${team.amountPaid} · ${team.paymentStatus}`
                                     : "FREE"}
                                 </span>
+                                {team.paymentStatus === "PENDING" && team.amountPaid > 0 && team.ssUploaded && (
+                                  <ActionButtons registrationId={team.registrationId} />
+                                )}
                               </div>
                             </div>
 
@@ -492,6 +496,9 @@ export default async function LumousAdminPage() {
                                 >
                                   {solo.paymentStatus}
                                 </span>
+                                {solo.paymentStatus === "PENDING" && solo.amountPaid > 0 && solo.ssUploaded && (
+                                  <div className="mt-2"><ActionButtons registrationId={solo.registrationId} /></div>
+                                )}
                               </td>
                               <td className="px-4 py-3 text-center">
                                 {solo.amountPaid === 0 ? (

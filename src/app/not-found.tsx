@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 export default function NotFound() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [path, setPath] = useState("/???");
+
+  useEffect(() => {
+    setPath(window.location.pathname);
+  }, []);
 
   // Animated starfield / particle background
   useEffect(() => {
@@ -181,7 +186,7 @@ export default function NotFound() {
         <div className="fade-up-3 font-mono-dm text-sm text-neutral-500 mb-8 bg-neutral-900/60 border border-neutral-800 rounded-xl px-5 py-4 text-left w-full max-w-md">
           <span className="text-amber-400">$</span>{" "}
           <span className="text-neutral-300">resolve</span>{" "}
-          <span className="text-red-400">"{typeof window !== "undefined" ? window.location.pathname : "/???"}"</span>
+          <span className="text-red-400">"{path}"</span>
           <br />
           <span className="text-neutral-600">↳ </span>
           <span className="text-red-400">RouteNotFoundError</span>
