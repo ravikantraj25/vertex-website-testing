@@ -319,12 +319,14 @@ const confirmedMemberParticipations = await prisma.participation.findMany({
 });
 
 if (confirmedMemberParticipations.length > 0) {
-  const conflicting = confirmedMemberParticipations.map((p) => ({
-    name:     p.participant.name,
-    usn:      p.participant.usn,
-    phone:    p.participant.phoneNo ?? "N/A",
-    teamName: p.team?.name ?? "Solo",
-  }));
+  const conflicting = confirmedMemberParticipations
+    .filter((p) => p.participant != null)
+    .map((p) => ({
+      name:     p.participant!.name,
+      usn:      p.participant!.usn,
+      phone:    p.participant!.phoneNo ?? "N/A",
+      teamName: p.team?.name ?? "Solo",
+    }));
 
   console.warn(
     `[innoverse-register] ${conflicting.length} member(s) already confirmed for ${eventSlug}:`,

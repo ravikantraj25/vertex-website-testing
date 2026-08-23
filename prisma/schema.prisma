@@ -152,8 +152,8 @@ model Team {
 
 model Participation {
   id              String       @id @default(auto()) @map("_id") @db.ObjectId
-  participant     Participant  @relation(fields: [participantId], references: [id])
-  participantId   String       @db.ObjectId
+  participant     Participant?  @relation(fields: [participantId], references: [id])
+  participantId   String?       @db.ObjectId
   event           Event        @relation(fields: [eventId], references: [id])
   eventId         String       @db.ObjectId
   team            Team?        @relation(fields: [teamId], references: [id])
