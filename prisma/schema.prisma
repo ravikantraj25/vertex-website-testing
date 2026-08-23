@@ -158,8 +158,8 @@ model Participation {
   eventId         String       @db.ObjectId
   team            Team?        @relation(fields: [teamId], references: [id])
   teamId          String?      @db.ObjectId
-  registration    Registration @relation(fields: [registrationId], references: [id])
-  registrationId  String       @db.ObjectId
+  registration    Registration? @relation(fields: [registrationId], references: [id])
+  registrationId  String?       @db.ObjectId
   createdAt       DateTime     @default(now())
 
   @@unique([participantId, eventId])

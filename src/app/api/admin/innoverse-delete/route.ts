@@ -49,15 +49,17 @@ export async function DELETE(req: Request) {
       });
       console.log(`[admin/innoverse-delete] Deleted ${deletedParticipations.count} participation(s)`);
 
-      await prisma.payment.deleteMany({
-        where: { registrationId: regId },
-      });
-      console.log(`[admin/innoverse-delete] Deleted payment for reg: ${regId}`);
+      if (regId) {
+        await prisma.payment.deleteMany({
+          where: { registrationId: regId },
+        });
+        console.log(`[admin/innoverse-delete] Deleted payment for reg: ${regId}`);
 
-      await prisma.registration.delete({
-        where: { id: regId },
-      });
-      console.log(`[admin/innoverse-delete] Deleted registration: ${regId}`);
+        await prisma.registration.delete({
+          where: { id: regId },
+        });
+        console.log(`[admin/innoverse-delete] Deleted registration: ${regId}`);
+      }
 
       await prisma.team.delete({
         where: { id: teamId },
