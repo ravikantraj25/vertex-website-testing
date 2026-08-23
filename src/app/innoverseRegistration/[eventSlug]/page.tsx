@@ -108,10 +108,15 @@ const EVENTS: EventItem[] = [
     min: 2, max: 4,
     note: "2-4 members · ₹100 per team · Max 35 registrations",
     rules: [
-      "Teams must build projects from the ground up; plug-and-play assembled kits are prohibited.",
-      "Hardware must work physically during the live demo. Internal circuitry must be accessible for inspection.",
-      "Team members must be able to explain their hardware architecture and code.",
-      "Wireless interference and unsafe wiring are prohibited."
+      "Tracks: 1) Intelligent Systems & Automation (Robotics, Edge AI, Sustainable Tech). 2) Open Innovation.",
+      "Round 1 (Online Filter): Submit a 5-slide PDF, 1-minute working video, and a complete Bill of Materials (BOM).",
+      "Round 2 (Hardware Expo): Live presentation and demo of the physical, working prototype.",
+      "Originality & Authorship: No off-the-shelf, fully assembled plug-and-play kits.",
+      "Live Demo Mandate: Purely software-based simulations or pre-recorded videos of a broken project will result in disqualification.",
+      "No Black Box Rule: All internal circuitry (wiring, PCB, sensors) must be accessible for judge inspection.",
+      "Code Transparency: Teams must have their IDE open. Any 'Random Teammate' can be asked to explain the architecture or code.",
+      "Safety Protocols: Absolutely no exposed mains AC (220V) wiring. Safe lithium battery management is required.",
+      "Judging: Prototype Functionality (25%), Technical Complexity (25%), Build & Design Quality (20%), Innovation & Cost (15%), Presentation & Pitch (15%)."
     ]
   },
   {
