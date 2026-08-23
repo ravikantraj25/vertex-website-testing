@@ -147,7 +147,7 @@ const CATEGORIES = [...new Set(EVENTS.map((e) => e.category))];
 
 const USN_REGEX = /^1ds\d{2}[a-z]{2}\d{3}$/i;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const STORAGE_KEY = "lumos_reg_form_v2";
+const STORAGE_KEY = "innoverse_reg_form_v2";
 const OTP_LENGTH = 6;
 const RESEND_SECS = 30;
 const MAX_SS_MB = 5;
@@ -285,7 +285,7 @@ async function apiRegister(form: FormState, eventSlug: string): Promise<Register
     };
   }
 
-  const res = await fetch("/api/lumous-register", {
+  const res = await fetch("/api/innoverse-register", {
     method:  "POST",
     headers: { "Content-Type": "application/json" },
     body:    JSON.stringify(body),
@@ -561,7 +561,7 @@ function SuccessScreen({ email, eventName, onReset }: { email: string; eventName
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function LumousRegistrationPage() {
+export default function InnoVerseRegistrationPage() {
   const params = useParams();
   const router = useRouter();
   const eventSlug = params.eventSlug as string;
@@ -572,7 +572,7 @@ export default function LumousRegistrationPage() {
   useEffect(() => {
     const validEvent = EVENTS.find(e => e.slug === eventSlug);
     if (!validEvent) {
-      router.push("/lumousRegistration");
+      router.push("/innoverseRegistration");
     } else {
       setForm(f => ({ ...f, eventSlug }));
     }
@@ -769,7 +769,7 @@ export default function LumousRegistrationPage() {
             Registrations Open
           </div>
           <h1 className="font-display text-6xl sm:text-7xl text-white mb-2 leading-none">
-            LUMOS <span className="text-amber-400">2026</span>
+            INNOVERSE <span className="text-amber-400">2026</span>
           </h1>
           <p className="text-zinc-500 text-sm">Event Registration · Dayananda Sagar College</p>
         </motion.div>
@@ -1241,7 +1241,7 @@ export default function LumousRegistrationPage() {
           </div>
         </motion.div>
 
-        <p className="text-center text-zinc-700 text-xs mt-6">Lumos 2026 · Vertex · Dayananda Sagar College</p>
+        <p className="text-center text-zinc-700 text-xs mt-6">InnoVerse 2026 · Vertex · Dayananda Sagar College</p>
       </div>
     </div>
   );

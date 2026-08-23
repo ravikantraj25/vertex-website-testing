@@ -64,7 +64,7 @@ export async function POST(req: Request) {
 const uploadResult = await new Promise<any>((resolve, reject) => {
   const stream = cloudinary.uploader.upload_stream(
     {
-      folder: "lumous2026/paymentScreenshots",
+      folder: "innoverse2026/paymentScreenshots",
       resource_type: "image",
       public_id: `${registrationId}_${Date.now()}`,
     },
@@ -117,16 +117,16 @@ try {
 
 if (registration?.participant?.email) {
   await transporter.sendMail({
-    from: `"Vertex - Lumous 2026" <${process.env.SMTP_USER}>`,
+    from: `"Vertex - InnoVerse 2026" <${process.env.SMTP_USER}>`,
     to: registration.participant.email,
-    subject: "Lumous 2026 Registration Received ✅",
+    subject: "InnoVerse 2026 Registration Received ✅",
     html: `
     <div style="font-family: Arial, sans-serif; padding: 20px; background:#f4f6f8;">
       <div style="max-width: 500px; margin:auto; background:white; padding:30px; border-radius:10px;">
         
         <h2 style="color:#4f46e5;">Hello from Vertex 🚀</h2>
         
-        <p>Your registration for <strong>Lumous 2026</strong> has been received successfully.</p>
+        <p>Your registration for <strong>InnoVerse 2026</strong> has been received successfully.</p>
         
         <p>
           Your payment screenshot has been uploaded and is currently 
@@ -162,7 +162,7 @@ if (registration?.participant?.email) {
         </p>
 
         <p style="margin-top:30px; font-size:12px; color:#777;">
-          — Team Vertex | Lumous 2026
+          — Team Vertex | InnoVerse 2026
         </p>
       </div>
     </div>

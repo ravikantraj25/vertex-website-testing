@@ -1,4 +1,4 @@
-// app/dashboard/admin/lumous/page.tsx
+// app/dashboard/admin/innoverse/page.tsx
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -170,11 +170,11 @@ function MemberRow({ member }: { member: MemberDetail }) {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function LumousAdminPage() {
+export default async function InnoVerseAdminPage() {
   try {
-    return await LumousAdminPageContent();
+    return await InnoVerseAdminPageContent();
   } catch (error: any) {
-    console.error("LumousAdminPage Error:", error);
+    console.error("InnoVerseAdminPage Error:", error);
     return (
       <div className="p-10 bg-red-50 text-red-600 min-h-screen">
         <h1 className="text-2xl font-bold">Admin Page Error</h1>
@@ -189,7 +189,7 @@ export default async function LumousAdminPage() {
   }
 }
 
-async function LumousAdminPageContent() {
+async function InnoVerseAdminPageContent() {
 
   // ── Query ──────────────────────────────────────────────────────────────────
   // Fetch all participations (all statuses) so admin can see pending too.
@@ -341,7 +341,7 @@ async function LumousAdminPageContent() {
         {/* ── Header ── */}
         <header className="border-b border-zinc-200 pb-6">
           <h1 className="text-3xl font-black text-zinc-900 tracking-tight">
-            Lumous 2026 — Registrations
+            InnoVerse 2026 — Registrations
           </h1>
           <p className="text-zinc-500 mt-1 text-sm">
             All registrations across all events · All statuses shown

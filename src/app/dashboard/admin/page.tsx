@@ -98,13 +98,13 @@ export default function AdminDashboard() {
             </button>
           </div>
 
-          {/* Lumous Section (NEW) */}
-          <DashboardSection title="Lumos 2026">
-            <Link href="/dashboard/admin/lumous">
+          {/* InnoVerse Section (NEW) */}
+          <DashboardSection title="InnoVerse 2026">
+            <Link href="/dashboard/admin/innoverse">
               <ActionCard 
                 actionType="view" 
-                title="See Lumous Registration" 
-                description="View and verify all participants, teams, and payments for Lumous." 
+                title="See InnoVerse Registration" 
+                description="View and verify all participants, teams, and payments for InnoVerse." 
               />
             </Link>
           </DashboardSection>

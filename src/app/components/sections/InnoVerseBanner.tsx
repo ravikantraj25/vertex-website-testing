@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export default function LumousBanner() {
+export default function InnoVerseBanner() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -38,7 +38,7 @@ export default function LumousBanner() {
           className="text-6xl sm:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500 tracking-tight mb-6"
           style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.05em" }}
         >
-          LUMOS <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-600 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">2026</span>
+          INNOVERSE <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-600 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">2026</span>
         </motion.h1>
 
         {/* Subtitle */}
@@ -68,7 +68,7 @@ export default function LumousBanner() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="flex flex-col sm:flex-row gap-4"
         >
-          <Link href="/lumousRegistration">
+          <Link href="/innoverseRegistration">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

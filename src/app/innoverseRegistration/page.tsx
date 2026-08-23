@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import Navbar from "../components/Navbar";
 
-export default function LumousEventHub() {
+export default function InnoVerseEventHub() {
   return (
     <div className="min-h-screen bg-black text-zinc-100 selection:bg-amber-500/30 font-sans pb-24">
       <Navbar />
@@ -22,7 +22,7 @@ export default function LumousEventHub() {
             Registrations Open
           </div>
           <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-500 tracking-tight mb-6" style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.05em" }}>
-            LUMOS <span className="text-amber-400">2026</span>
+            INNOVERSE <span className="text-amber-400">2026</span>
           </h1>
           <p className="text-zinc-400 text-lg md:text-xl leading-relaxed">
             Choose an event below to view its specific guidelines, rules, and to register your team.
@@ -63,7 +63,7 @@ export default function LumousEventHub() {
                 </div>
               </div>
               <div className="flex flex-col justify-end md:w-48 shrink-0">
-                <Link href="/lumousRegistration/protopitch">
+                <Link href="/innoverseRegistration/protopitch">
                   <button className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                     Register Now
                   </button>
@@ -101,7 +101,7 @@ export default function LumousEventHub() {
                 </div>
               </div>
               <div className="flex flex-col justify-end md:w-48 shrink-0">
-                <Link href="/lumousRegistration/embedded-enigma">
+                <Link href="/innoverseRegistration/embedded-enigma">
                   <button className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                     Register Now
                   </button>
@@ -139,7 +139,7 @@ export default function LumousEventHub() {
                 </div>
               </div>
               <div className="flex flex-col justify-end md:w-48 shrink-0">
-                <Link href="/lumousRegistration/line-follower">
+                <Link href="/innoverseRegistration/line-follower">
                   <button className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                     Register Now
                   </button>

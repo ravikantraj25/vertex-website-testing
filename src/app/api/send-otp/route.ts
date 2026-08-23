@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Vertex | Lumos 2026 OTP</title>
+    <title>Vertex | InnoVerse 2026 OTP</title>
   </head>
   <body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color:#f4f6f8;">
     <table width="100%" cellpadding="0" cellspacing="0" style="padding: 40px 0;">
@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
                 <p>You're almost there!</p>
                 <p>
                   Use the OTP below to complete your registration for 
-                  <strong>Lumous 2026</strong>.
+                  <strong>InnoVerse 2026</strong>.
                 </p>
               </td>
             </tr>

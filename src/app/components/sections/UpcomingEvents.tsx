@@ -7,7 +7,7 @@ import Image from "next/image";
 
 const upcomingEvent = {
   num: "01",
-  title: "LUMOS 2.0",
+  title: "INNOVERSE 2.0",
   subtitle: "Inter-Departmental Fest",
   category: "Cultural & Technical",
   description:

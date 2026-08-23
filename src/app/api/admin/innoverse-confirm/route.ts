@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Registration not found" }, { status: 404 });
     }
 
-    const eventName = registration.participations[0]?.event?.name || "Lumous 2026 Event";
+    const eventName = registration.participations[0]?.event?.name || "InnoVerse 2026 Event";
 
     if (action === "APPROVE") {
       await prisma.$transaction([
@@ -50,9 +50,9 @@ export async function POST(req: Request) {
 
       if (registration.participant.email) {
         await transporter.sendMail({
-          from: `"Vertex - Lumous 2026" <${process.env.SMTP_USER}>`,
+          from: `"Vertex - InnoVerse 2026" <${process.env.SMTP_USER}>`,
           to: registration.participant.email,
-          subject: "Registration Confirmed! 🎉 - Lumous 2026",
+          subject: "Registration Confirmed! 🎉 - InnoVerse 2026",
           html: `
             <div style="font-family: Arial, sans-serif; padding: 20px; background:#f4f6f8;">
               <div style="max-width: 500px; margin:auto; background:white; padding:30px; border-radius:10px;">
@@ -60,8 +60,8 @@ export async function POST(req: Request) {
                 <p>Hi ${registration.participant.name},</p>
                 <p>Your payment for <strong>${eventName}</strong> has been successfully verified by our team.</p>
                 <p>Your registration is now <strong>CONFIRMED</strong>!</p>
-                <p>We look forward to seeing you at Lumous 2026.</p>
-                <p style="margin-top:30px; font-size:12px; color:#777;">— Team Vertex | Lumous 2026</p>
+                <p>We look forward to seeing you at InnoVerse 2026.</p>
+                <p style="margin-top:30px; font-size:12px; color:#777;">— Team Vertex | InnoVerse 2026</p>
               </div>
             </div>
           `,
@@ -84,9 +84,9 @@ export async function POST(req: Request) {
 
       if (registration.participant.email) {
         await transporter.sendMail({
-          from: `"Vertex - Lumous 2026" <${process.env.SMTP_USER}>`,
+          from: `"Vertex - InnoVerse 2026" <${process.env.SMTP_USER}>`,
           to: registration.participant.email,
-          subject: "Payment Issue - Lumous 2026",
+          subject: "Payment Issue - InnoVerse 2026",
           html: `
             <div style="font-family: Arial, sans-serif; padding: 20px; background:#f4f6f8;">
               <div style="max-width: 500px; margin:auto; background:white; padding:30px; border-radius:10px;">
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
                   <li>Naman Singh: 8334072002</li>
                   <li>Shefali: 8867429955</li>
                 </ul>
-                <p style="margin-top:30px; font-size:12px; color:#777;">— Team Vertex | Lumous 2026</p>
+                <p style="margin-top:30px; font-size:12px; color:#777;">— Team Vertex | InnoVerse 2026</p>
               </div>
             </div>
           `,
@@ -111,7 +111,7 @@ export async function POST(req: Request) {
     }
 
   } catch (error) {
-    console.error("[POST /api/admin/lumos-confirm]", error);
+    console.error("[POST /api/admin/innoverse-confirm]", error);
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }
