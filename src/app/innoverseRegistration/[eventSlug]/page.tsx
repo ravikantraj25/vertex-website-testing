@@ -115,15 +115,19 @@ const EVENTS: EventItem[] = [
     ]
   },
   {
-    slug: "line-follower", label: "Line Follower", icon: "🤖",
-    category: "Technical",
+    slug: "vector-chase", label: "Vector Chase", icon: "🤖",
+    category: "October technical event",
     feeType: "free", fee: 0,
     min: 1, max: 2,
-    note: "1-2 members · Max 25 registrations",
+    note: "1-2 members · Max 25 registrations · Strictly a line follower circuit",
     rules: [
-      "General Vertex rules apply: outside hardware/tools are prohibited.",
-      "Personal electronic devices must remain stowed during active rounds.",
-      "Specific rules and track dimensions will be provided to registered participants prior to the event."
+      "Bot Rules: Max 25x25x25 cm box, 2.5 kg weight limit, max 12V DC onboard power.",
+      "Autonomy: Must be 100% autonomous. Wireless/remote controls and sticky wheels are strictly banned.",
+      "Components: After inspection, major components cannot be changed to a different spec.",
+      "Authenticity: Bot must be designed & built by the team. Readymade/outsourced bots are disqualified.",
+      "Trials: 3 official runs of max 3 minutes each. 3-minute setup window provided.",
+      "Human Intervention: Max 3 touches allowed per trial. Restart from last checkpoint upon touch.",
+      "Track Rules: 30mm lines (white on black or black on white), with sharp curves and intersections."
     ]
   },
   {

@@ -38,11 +38,11 @@ async function main() {
   });
 
   await prisma.event.upsert({
-    where: { slug: "line-follower" },
+    where: { slug: "vector-chase" },
     update: {},
     create: {
-      slug: "line-follower",
-      name: "Line Follower",
+      slug: "vector-chase",
+      name: "Vector Chase",
       type: EventType.TEAM,
       price: 0,
     },

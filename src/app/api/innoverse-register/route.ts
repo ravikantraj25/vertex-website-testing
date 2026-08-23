@@ -36,7 +36,7 @@ const eventRules: Record<
   { min?: number; max?: number; exact?: number; feeType: string; fee?: number }
 > = {
   protopitch:        { min: 2, max: 4, feeType: "per_team", fee: 100 },
-  "line-follower":   { min: 1, max: 2, feeType: "free" },
+  "vector-chase":    { min: 1, max: 2, feeType: "free" },
   "embedded-enigma": { min: 1, max: 2, feeType: "free" },
 };
 

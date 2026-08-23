@@ -110,13 +110,18 @@ export default function InnoVerseEventHub() {
             </div>
           </motion.div>
 
-          {/* LINE FOLLOWER */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-6 md:p-10 hover:border-amber-500/30 transition-all">
-            <div className="flex flex-col md:flex-row gap-8 justify-between">
+          {/* VECTOR CHASE */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="group relative bg-zinc-900/50 backdrop-blur-md rounded-3xl p-8 border border-zinc-800/50 hover:border-amber-500/30 transition-all overflow-hidden"
+          >
+            <div className="flex flex-col md:flex-row gap-6 justify-between h-full relative z-10">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">🤖</span>
-                  <h2 className="text-3xl font-bold text-white">Line Follower</h2>
+                  <span className="text-4xl">🤖</span>
+                  <h2 className="text-3xl font-bold text-white">Vector Chase</h2>
                   <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-full border border-emerald-500/20">Free</span>
                 </div>
                 <p className="text-amber-500 text-sm font-semibold uppercase tracking-widest mb-4">Technical Challenge</p>
@@ -139,7 +144,7 @@ export default function InnoVerseEventHub() {
                 </div>
               </div>
               <div className="flex flex-col justify-end md:w-48 shrink-0">
-                <Link href="/innoverseRegistration/line-follower">
+                <Link href="/innoverseRegistration/vector-chase">
                   <button className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                     Register Now
                   </button>
