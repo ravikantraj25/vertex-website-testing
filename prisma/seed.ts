@@ -15,7 +15,38 @@ async function main() {
       price: 0, // ₹150
     },
   });
+  await prisma.event.upsert({
+    where: { slug: "protopitch" },
+    update: {},
+    create: {
+      slug: "protopitch",
+      name: "Protopitch",
+      type: EventType.TEAM,
+      price: 10000, // ₹100
+    },
+  });
 
+  await prisma.event.upsert({
+    where: { slug: "embedded-enigma" },
+    update: {},
+    create: {
+      slug: "embedded-enigma",
+      name: "Embedded Enigma",
+      type: EventType.TEAM,
+      price: 0,
+    },
+  });
+
+  await prisma.event.upsert({
+    where: { slug: "line-follower" },
+    update: {},
+    create: {
+      slug: "line-follower",
+      name: "Line Follower",
+      type: EventType.TEAM,
+      price: 0,
+    },
+  });
 
   console.log("✅ Seeding completed!");
 }

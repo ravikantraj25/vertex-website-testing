@@ -7,6 +7,10 @@ interface TeamMember {
   name: string;
   usn: string;
   phone?: string;
+  gender: string;
+  collegeName: string;
+  year: string;
+  department: string;
 }
 
 interface RegisterBody {
@@ -15,6 +19,10 @@ interface RegisterBody {
   email: string;
   phone?: string;
   eventSlug: string;
+  gender: string;
+  collegeName: string;
+  year: string;
+  department: string;
   team?: {
     name?: string;
     members?: TeamMember[];
@@ -27,16 +35,9 @@ const eventRules: Record<
   string,
   { min?: number; max?: number; exact?: number; feeType: string; fee?: number }
 > = {
-  ideathon:    { min: 2, max: 3,  feeType: "free" },
-  bgmi:        { min: 1, max: 4,  feeType: "per_team", fee: 50 },
-  igp:         { min: 1, max: 2,  feeType: "free" },
-  reeluminati: { min: 1, max: 4,  feeType: "free" },
-  cricket:     { min: 8, max: 11, feeType: "per_team", fee: 150 },
-  volleyball:  { min: 6, max: 9,  feeType: "per_team", fee: 100 },
-  lagori:      { exact: 6,        feeType: "free" },
-  dodgeball:   { exact: 6,        feeType: "free" },
-  cooking:     { exact: 2,        feeType: "per_team", fee: 50 },
-  trapezoid:   { exact: 2,        feeType: "per_team", fee: 150 },
+  protopitch:        { min: 2, max: 4, feeType: "per_team", fee: 100 },
+  "line-follower":   { min: 1, max: 2, feeType: "free" },
+  "embedded-enigma": { min: 1, max: 2, feeType: "free" },
 };
 
 // ─── Validation ───────────────────────────────────────────────────────────────
@@ -47,11 +48,21 @@ function validateBody(body: Partial<RegisterBody>): string | null {
   if (!body.email?.includes("@"))                return "Invalid email";
   if (!body.eventSlug?.trim())                   return "An event must be selected";
 
+  const validGenders = ["Male", "Female", "Other", "Prefer not to say"];
+  if (!body.gender || !validGenders.includes(body.gender)) return "Invalid gender";
+  if (!body.collegeName || body.collegeName.trim().length < 3) return "College name must be at least 3 characters";
+  if (!body.year || !["1", "2", "3", "4"].includes(body.year)) return "Invalid year";
+  if (!body.department?.trim()) return "Department is required";
+
   const members = body.team?.members;
   if (members && Array.isArray(members)) {
     for (const m of members) {
       if (!m.name?.trim())        return "All team members must have a name";
       if (!USN_REGEX.test(m.usn)) return `Invalid USN for member: ${m.name}`;
+      if (!m.gender || !validGenders.includes(m.gender)) return `Invalid gender for member: ${m.name}`;
+      if (!m.collegeName || m.collegeName.trim().length < 3) return `Invalid college name for member: ${m.name}`;
+      if (!m.year || !["1", "2", "3", "4"].includes(m.year)) return `Invalid year for member: ${m.name}`;
+      if (!m.department?.trim()) return `Invalid department for member: ${m.name}`;
     }
   }
   return null;
@@ -103,7 +114,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: validationError }, { status: 400 });
     }
 
-    const { fullName, eventSlug, team: teamData } = body;
+    const { fullName, eventSlug, team: teamData, gender, collegeName, year, department } = body;
     const usn   = body.usn.trim().toUpperCase();
     const email = body.email.trim().toLowerCase();
     const phone = body.phone?.trim() ?? undefined;
@@ -113,6 +124,10 @@ export async function POST(req: Request) {
           name:  m.name.trim(),
           usn:   m.usn.trim().toUpperCase(),
           phone: m.phone?.trim() ?? undefined,
+          gender: m.gender,
+          collegeName: m.collegeName,
+          year: m.year,
+          department: m.department,
         }))
       : [];
 
@@ -205,8 +220,8 @@ export async function POST(req: Request) {
     try {
       participant = await prisma.participant.upsert({
         where:  { usn },
-        create: { name: fullName, usn, email, emailVerified: true, phoneNo: phone },
-        update: { name: fullName, email, emailVerified: true, phoneNo: phone },
+        create: { name: fullName, usn, email, emailVerified: true, phoneNo: phone, gender, collegeName, year, department },
+        update: { name: fullName, email, emailVerified: true, phoneNo: phone, gender, collegeName, year, department },
       });
     } catch (err) {
       logError("lumous-register / upsert leader", err);
@@ -449,6 +464,10 @@ if (confirmedMemberParticipations.length > 0) {
               email:         `${member.usn.toLowerCase()}@pending.techfest`,
               emailVerified: false,
               phoneNo:       member.phone ?? undefined,
+              gender:        member.gender,
+              collegeName:   member.collegeName,
+              year:          member.year,
+              department:    member.department,
             },
             update: {
               name:    member.name,

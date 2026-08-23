@@ -116,6 +116,10 @@ model Participant {
   phoneNo        String?
   email          String          
   emailVerified  Boolean         @default(false)
+  gender         String
+  collegeName    String
+  year           String
+  department     String
   participations Participation[]
   registrations  Registration[]
   ledTeams       Team[]          @relation("TeamLeader")

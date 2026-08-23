@@ -12,6 +12,10 @@ interface MemberDetail {
   usn: string;
   email: string;
   phoneNo: string | null;
+  gender: string;
+  collegeName: string;
+  year: string;
+  department: string;
   isLeader: boolean;
 }
 
@@ -42,6 +46,10 @@ interface SoloEntry {
     usn: string;
     email: string;
     phoneNo: string | null;
+    gender: string;
+    collegeName: string;
+    year: string;
+    department: string;
   };
 }
 
@@ -150,6 +158,12 @@ function MemberRow({ member }: { member: MemberDetail }) {
           {member.email}
         </a>
       </div>
+      <div className="w-full sm:w-auto mt-2 sm:mt-0 flex flex-wrap gap-2 text-[10px] text-zinc-500 bg-zinc-50 px-2 py-1 rounded">
+        <span><span className="font-semibold">Col:</span> {member.collegeName}</span>
+        <span><span className="font-semibold">Dept:</span> {member.department}</span>
+        <span><span className="font-semibold">Yr:</span> {member.year}</span>
+        <span><span className="font-semibold">Gen:</span> {member.gender}</span>
+      </div>
     </li>
   );
 }
@@ -210,7 +224,7 @@ export default async function LumousAdminPage() {
         if (!teamsMap.has(p.teamId)) {
           teamsMap.set(p.teamId, {
             id:                 p.teamId,
-            teamName:           p.team.name,
+            teamName:           p.team?.name ?? "Unknown Team",
             leaderId:           leaderMap.get(p.teamId) ?? "",
             screenshotUrl,
             ssUploaded,
@@ -232,12 +246,16 @@ export default async function LumousAdminPage() {
         }
 
         team.members.push({
-          id:       p.participant.id,
-          name:     p.participant.name,
-          usn:      p.participant.usn,
-          email:    p.participant.email,
-          phoneNo:  p.participant.phoneNo ?? null,
-          isLeader: p.participant.id === team.leaderId,
+          id:          p.participant?.id ?? "unknown",
+          name:        p.participant?.name ?? "Unknown Participant",
+          usn:         p.participant?.usn ?? "N/A",
+          email:       p.participant?.email ?? "N/A",
+          phoneNo:     p.participant?.phoneNo ?? null,
+          gender:      p.participant?.gender ?? "N/A",
+          collegeName: p.participant?.collegeName ?? "N/A",
+          year:        p.participant?.year ?? "N/A",
+          department:  p.participant?.department ?? "N/A",
+          isLeader:    p.participant?.id === team.leaderId,
         });
       } else {
         solos.push({
@@ -249,11 +267,15 @@ export default async function LumousAdminPage() {
           registrationStatus,
           paymentStatus,
           participant: {
-            id:      p.participant.id,
-            name:    p.participant.name,
-            usn:     p.participant.usn,
-            email:   p.participant.email,
-            phoneNo: p.participant.phoneNo ?? null,
+            id:          p.participant?.id ?? "unknown",
+            name:        p.participant?.name ?? "Unknown Participant",
+            usn:         p.participant?.usn ?? "N/A",
+            email:       p.participant?.email ?? "N/A",
+            phoneNo:     p.participant?.phoneNo ?? null,
+            gender:      p.participant?.gender ?? "N/A",
+            collegeName: p.participant?.collegeName ?? "N/A",
+            year:        p.participant?.year ?? "N/A",
+            department:  p.participant?.department ?? "N/A",
           },
         });
       }
@@ -443,6 +465,7 @@ export default async function LumousAdminPage() {
                             <th className="px-4 py-3">Participant</th>
                             <th className="px-4 py-3">USN</th>
                             <th className="px-4 py-3">Contact</th>
+                            <th className="px-4 py-3">Details</th>
                             <th className="px-4 py-3">Amount</th>
                             <th className="px-4 py-3">Reg Status</th>
                             <th className="px-4 py-3">Pay Status</th>
@@ -475,6 +498,14 @@ export default async function LumousAdminPage() {
                                 >
                                   {solo.participant.email}
                                 </a>
+                              </td>
+                              <td className="px-4 py-3 text-[10px] text-zinc-500 leading-tight">
+                                <div className="max-w-[120px] truncate" title={solo.participant.collegeName}>
+                                  <span className="font-semibold text-zinc-700">Col:</span> {solo.participant.collegeName}
+                                </div>
+                                <div><span className="font-semibold text-zinc-700">Dept:</span> {solo.participant.department}</div>
+                                <div><span className="font-semibold text-zinc-700">Yr:</span> {solo.participant.year}</div>
+                                <div><span className="font-semibold text-zinc-700">Gen:</span> {solo.participant.gender}</div>
                               </td>
                               <td className="px-4 py-3 font-bold whitespace-nowrap">
                                 {solo.amountPaid > 0 ? (
