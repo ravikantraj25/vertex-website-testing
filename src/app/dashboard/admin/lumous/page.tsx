@@ -171,6 +171,25 @@ function MemberRow({ member }: { member: MemberDetail }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function LumousAdminPage() {
+  try {
+    return await LumousAdminPageContent();
+  } catch (error: any) {
+    console.error("LumousAdminPage Error:", error);
+    return (
+      <div className="p-10 bg-red-50 text-red-600 min-h-screen">
+        <h1 className="text-2xl font-bold">Admin Page Error</h1>
+        <p className="mt-2 text-sm">Please screenshot this and send it to the developer:</p>
+        <pre className="mt-4 p-4 bg-red-100 rounded text-xs overflow-auto border border-red-200">
+          {error?.message || "Unknown error"}
+          {"\n\n"}
+          {error?.stack}
+        </pre>
+      </div>
+    );
+  }
+}
+
+async function LumousAdminPageContent() {
 
   // ── Query ──────────────────────────────────────────────────────────────────
   // Fetch all participations (all statuses) so admin can see pending too.
